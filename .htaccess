@@ -1,0 +1,16 @@
+# Custome rewrite rules for the item catalog project
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /booking-sys/
+
+  # Prevent rewriting for .php files in /actions and its subfolders
+  RewriteCond %{REQUEST_URI} ^/booking-sys/.*/actions/.*\.php$ [NC]
+  RewriteRule .* - [L]
+
+  # If the requested file or directory does not exist
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  
+  # Route all requests to index.php
+  RewriteRule ^(.*)$ index.php [L]
+</IfModule>

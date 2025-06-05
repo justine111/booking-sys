@@ -1,0 +1,22 @@
+@import '../fonts/inter/inter.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.content-wrapper {
+  @apply sm:ml-64;
+  @apply pt-16;
+  @apply h-dvh;
+  @apply transition-all;
+  @apply duration-300;
+}
+
+.content {
+  @apply p-4;
+  @apply mt-4;
+}
+
+.collapsed {
+  @apply sm:ml-0;
+}
