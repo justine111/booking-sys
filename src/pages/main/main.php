@@ -1,4 +1,4 @@
-<section class="py-8 antialiased mt-16">
+<section class="py-8 antialiased mt-16 mb-12">
   <div class="mx-auto max-w-screen-xl px-4 2xl:px-0">
 
     <form class="max-w-lg mx-auto">
@@ -191,7 +191,7 @@
       <div class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
         <div class="h-56 w-full">
           <a href="#">
-            <img class="mx-auto h-full dark:hidden" src="https://flowbite.s3.amazonaws.com/blocks/e-commerce/iphone-light.svg" alt="" />
+            <img class="mx-auto h-full rounded-lg" src="<?= $basePath ?>/src/repositories/uploads/pic1.jpg" alt="" />
             <img class="mx-auto hidden h-full dark:block" src="https://flowbite.s3.amazonaws.com/blocks/e-commerce/iphone-dark.svg" alt="" />
           </a>
         </div>
@@ -1096,5 +1096,3 @@
     </div>
   </form>
 </section>
-
-<?php require_once __DIR__ . '/../ai/index.php'; ?>

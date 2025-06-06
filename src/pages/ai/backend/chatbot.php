@@ -1,7 +1,14 @@
 <?php
-require __DIR__ . '/booking-sys/src/pages/ai/vendor/autoload.php';
-$dotenv = Dotenv\Dotenv::createImmutable(dirname(__DIR__, 2));
+
+require_once __DIR__ . '/vendor/autoload.php';
+
+use Dotenv\Dotenv;
+
+// Load .env file from the current directory (backend)
+$dotenv = Dotenv::createImmutable(__DIR__);
 $dotenv->load();
+
+// Your logic here...
 
 $api_key = $_ENV['GEMINI_API_KEY'] ?? getenv('GEMINI_API_KEY');
 if (!$api_key) {
