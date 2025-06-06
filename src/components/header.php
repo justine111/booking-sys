@@ -30,7 +30,7 @@
   </div>
 
   <script src="<?= $basePath ?>/src/assets/js/vendor/flowbite.min.js"></script>
-  <script src="<?= $basePath ?>/src/assets/js/script.js"></script>
+  <!-- <script src="<?= $basePath ?>/src/assets/js/script.js"></script> -->
 </body>
 
 </html>

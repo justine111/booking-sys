@@ -1,4 +1,7 @@
 {
+  "scripts": {
+    "watch": "npx tailwindcss -i ./src/assets/css/input.css -o ./src/assets/css/output.css --minify --watch"
+  },
   "devDependencies": {
     "tailwindcss": "^3.4.17"
   }

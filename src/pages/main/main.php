@@ -1,4 +1,4 @@
-<section class="bg-gray-50 py-8 antialiased dark:bg-gray-900 md:py-12">
+<section class="bg-gray-50 py-8 antialiased mt-16">
   <div class="mx-auto max-w-screen-xl px-4 2xl:px-0">
     <!-- Heading & Filters -->
     <div class="mb-4 items-end justify-between space-y-4 sm:flex sm:space-y-0 md:mb-8">
@@ -80,7 +80,7 @@
       <div class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
         <div class="h-56 w-full">
           <a href="#">
-            <img class="mx-auto h-full dark:hidden" src="https://flowbite.s3.amazonaws.com/blocks/e-commerce/imac-front.svg" alt="" />
+            <img class="mx-auto h-full" src="<?= $basePath ?>/src/assets/img/tuc-logo-svg.svg" alt="" />
             <img class="mx-auto hidden h-full dark:block" src="https://flowbite.s3.amazonaws.com/blocks/e-commerce/imac-front-dark.svg" alt="" />
           </a>
         </div>
