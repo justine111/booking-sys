@@ -48,7 +48,9 @@
             </li>
           </ol>
         </nav>
-        <h2 class="mt-3 text-xl font-semibold text-gray-900 dark:text-white sm:text-2xl">Electronics</h2>
+        <h2 class="mt-3 text-lg font-semibold text-orange-500 dark:text-white">  
+          Popular Space Spot for Your Needs.
+        </h2>
       </div>
       <div class="flex items-center space-x-4">
         <button data-modal-toggle="filterModal" data-modal-target="filterModal" type="button" class="flex w-full items-center justify-center rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700 sm:w-auto">
@@ -94,10 +96,10 @@
       </div>
     </div>
     <div class="mb-4 grid gap-4 sm:grid-cols-2 md:mb-8 lg:grid-cols-4 xl:grid-cols-4">
-      <div class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+      <div class="rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800">
         <div class="h-56 w-full">
           <a href="#">
-            <img class="mx-auto h-full" src="<?= $basePath ?>/src/assets/img/tuc-logo-svg.svg" alt="" />
+            <img class="mx-auto h-full rounded-lg" src="<?= $basePath ?>/src/repositories/uploads/pic1.jpg" alt="" />
             <img class="mx-auto hidden h-full dark:block" src="https://flowbite.s3.amazonaws.com/blocks/e-commerce/imac-front-dark.svg" alt="" />
           </a>
         </div>
@@ -188,10 +190,10 @@
           </div>
         </div>
       </div>
-      <div class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+      <div class="rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800">
         <div class="h-56 w-full">
           <a href="#">
-            <img class="mx-auto h-full rounded-lg" src="<?= $basePath ?>/src/repositories/uploads/pic1.jpg" alt="" />
+            <img class="mx-auto h-full rounded-lg" src="<?= $basePath ?>/src/repositories/uploads/pic2.jpg" alt="" />
             <img class="mx-auto hidden h-full dark:block" src="https://flowbite.s3.amazonaws.com/blocks/e-commerce/iphone-dark.svg" alt="" />
           </a>
         </div>
