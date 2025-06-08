@@ -4,7 +4,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ultrasteel Rewards Club</title>
+  <title>StaySmart</title>
+  <link rel="icon" type="image/png" href="<?= $basePath ?>/src/assets/img/logo.gif">
   <link href="<?= $basePath ?>/src/assets/css/output.css" rel="stylesheet">
   <link href="<?= $basePath ?>/src/assets/css/vendor/flowbite.min.css" rel="stylesheet">
   <link href="<?= $basePath ?>/src/assets/css/vendor/fontawesome/css/all.css" rel="stylesheet" />

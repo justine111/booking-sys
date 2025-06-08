@@ -1,3 +1,9 @@
+<?php
+require_once __DIR__ . '/../../controller/room-controller.php';
+
+$roomController = new RoomsController();
+?>
+
 <section class="py-8 antialiased mt-16 mb-12">
   <div class="mx-auto max-w-screen-xl px-4 2xl:px-0">
 
@@ -69,111 +75,60 @@
     </div>
     <div class="mb-4 grid gap-4 sm:grid-cols-2 md:mb-8 lg:grid-cols-4 xl:grid-cols-4">
 
-      <div class="rounded-lg border border-gray-200 bg-white shadow-lg dark:border-gray-700 dark:bg-gray-800">
+    <?php 
+    $rooms = $roomController->getHotels();
+    foreach($rooms as $room): 
+    ?>
+      <div class="relative rounded-lg border border-gray-200 bg-white shadow-lg dark:border-gray-700 dark:bg-gray-800">
+        <!-- Badge/Seal -->
+        <div class="absolute pl-2 top-2 left-2 z-10">
+          <span class="inline-block rounded-full bg-orange-500 px-3 py-1 text-xs font-medium text-white shadow">
+        <?= $room['status'] ?>
+          </span>
+        </div>
         <div class="h-auto w-full">
           <a href="#">
-            <img class="mx-auto h-full rounded-t-lg" src="<?= $basePath ?>/src/repositories/uploads/pic1.jpg" alt="" />
-            <img class="mx-auto hidden h-full dark:block" src="https://flowbite.s3.amazonaws.com/blocks/e-commerce/imac-front-dark.svg" alt="" />
+        <img class="mx-auto h-full rounded-t-lg" src="<?= $basePath ?>/src/repositories/uploads/<?= $room['filename']; ?>" alt="" />
+        <img class="mx-auto hidden h-full dark:block" src="https://flowbite.s3.amazonaws.com/blocks/e-commerce/imac-front-dark.svg" alt="" />
           </a>
         </div>
         <div class="pt-2 p-2">
           <div class="flex items-center justify-between gap-4">
-            <div class="flex items-center justify-end gap-1">
-              <a href="#" 
-                class="text-lg font-semibold leading-tight text-gray-900 hover:underline dark:text-white">
-                Summit Hotel, Tacloban City
-              </a>
-            </div>
-          </div>
-
-          <div class="mt-1 flex items-center gap-2">
-            <p class="text-sm font-medium text-gray-900 dark:text-white">
-              ₱3,538 for 2 nights
-            </p>
-          </div>
-        </div>
-      </div>
-            <div class="rounded-lg border border-gray-200 bg-white shadow-lg dark:border-gray-700 dark:bg-gray-800">
-        <div class="h-auto w-full">
-          <a href="#">
-            <img class="mx-auto h-full rounded-t-lg" src="<?= $basePath ?>/src/repositories/uploads/pic2.jpg" alt="" />
-            <img class="mx-auto hidden h-full dark:block" src="https://flowbite.s3.amazonaws.com/blocks/e-commerce/imac-front-dark.svg" alt="" />
+        <div class="flex items-center justify-end gap-1">
+          <a href="#" 
+            class="text-lg font-semibold leading-tight text-gray-900 hover:underline dark:text-white">
+            <?= $room['title']; ?>
           </a>
         </div>
-        <div class="pt-2 p-2">
-          <div class="flex items-center justify-between gap-4">
-            <div class="flex items-center justify-end gap-1">
-              <a href="#" 
-                class="text-lg font-semibold leading-tight text-gray-900 hover:underline dark:text-white">
-                Summit Hotel, Tacloban City
-              </a>
-            </div>
           </div>
 
           <div class="mt-1 flex items-center gap-2">
-            <p class="text-sm font-medium text-gray-900 dark:text-white">
-              ₱3,538 for 2 nights
-            </p>
+        <p class="text-sm font-medium text-gray-900 dark:text-white">
+         ₱<?= $room['price_per_night'] ?> for 2 nights
+        </p>
           </div>
         </div>
       </div>
-            <div class="rounded-lg border border-gray-200 bg-white shadow-lg dark:border-gray-700 dark:bg-gray-800">
-        <div class="h-auto w-full">
-          <a href="#">
-            <img class="mx-auto h-full rounded-t-lg" src="<?= $basePath ?>/src/repositories/uploads/pic3.jpg" alt="" />
-            <img class="mx-auto hidden h-full dark:block" src="https://flowbite.s3.amazonaws.com/blocks/e-commerce/imac-front-dark.svg" alt="" />
-          </a>
-        </div>
-        <div class="pt-2 p-2">
-          <div class="flex items-center justify-between gap-4">
-            <div class="flex items-center justify-end gap-1">
-              <a href="#" 
-                class="text-lg font-semibold leading-tight text-gray-900 hover:underline dark:text-white">
-                Summit Hotel, Tacloban City
-              </a>
-            </div>
-          </div>
-
-          <div class="mt-1 flex items-center gap-2">
-            <p class="text-sm font-medium text-gray-900 dark:text-white">
-              ₱3,538 for 2 nights
-            </p>
-          </div>
-        </div>
-      </div>
-            <div class="rounded-lg border border-gray-200 bg-white shadow-lg dark:border-gray-700 dark:bg-gray-800">
-        <div class="h-auto w-full">
-          <a href="#">
-            <img class="mx-auto h-full rounded-t-lg" src="<?= $basePath ?>/src/repositories/uploads/pic4.jpg" alt="" />
-            <img class="mx-auto hidden h-full dark:block" src="https://flowbite.s3.amazonaws.com/blocks/e-commerce/imac-front-dark.svg" alt="" />
-          </a>
-        </div>
-        <div class="pt-2 p-2">
-          <div class="flex items-center justify-between gap-4">
-            <div class="flex items-center justify-end gap-1">
-              <a href="#" 
-                class="text-lg font-semibold leading-tight text-gray-900 hover:underline dark:text-white">
-                Summit Hotel, Tacloban City
-              </a>
-            </div>
-          </div>
-
-          <div class="mt-1 flex items-center gap-2">
-            <p class="text-sm font-medium text-gray-900 dark:text-white">
-              ₱3,538 for 2 nights
-            </p>
-          </div>
-        </div>
-      </div>
-
-
-
-
-
-
+      <?php endforeach; ?>
     </div>
+  </div>
+
     <div class="w-full text-center">
-      <button type="button" class="rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700">Show more</button>
+      <div class="flex flex-col items-center">
+        <span class="text-sm text-gray-700 dark:text-gray-400">
+      Showing <span class="font-semibold text-gray-900 dark:text-white">1</span> to <span class="font-semibold text-gray-900 dark:text-white">10</span> of <span class="font-semibold text-gray-900 dark:text-white">100</span> Entries
+  </span>
+  <!-- Buttons -->
+  <div class="inline-flex mt-2 xs:mt-0">
+      <button class="flex items-center justify-center px-3 h-8 text-sm font-medium text-white bg-gray-800 rounded-s hover:bg-gray-900 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+          Prev
+      </button>
+      <button class="flex items-center justify-center px-3 h-8 text-sm font-medium text-white bg-gray-800 border-0 border-s border-gray-700 rounded-e hover:bg-gray-900 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+          Next
+      </button>
+  </div>
+  </div>
+      </div>
     </div>
   </div>
 

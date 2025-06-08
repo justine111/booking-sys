@@ -4,7 +4,7 @@
       <a href="#" class="flex items-center">
         <img src="<?= $basePath ?>/src/assets/img/logo.gif" class="mr-3 h-8 sm:h-9" alt="Logo" />
         <div>
-          <span class="self-center text-xl text-orange-500 font-semibold whitespace-nowrap">StayScape</span>
+          <span class="self-center text-xl text-orange-500 font-semibold whitespace-nowrap">StaySmart</span>
           <p class="text-xs text-green-600 font-semibold leading-none">Tacloban City</p>
         </div>
       </a>
