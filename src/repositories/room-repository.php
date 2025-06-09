@@ -3,30 +3,68 @@ require_once __DIR__ . '/../connection/connection.php';
 
 class RoomsRepository
 {
-    private $db;
+  private $db;
 
-    public function __construct()
-    {
-        $connection = new Connection_class();
-        $this->db = $connection->getConnection();
-    }
+  public function __construct()
+  {
+      $connection = new Connection_class();
+      $this->db = $connection->getConnection();
+  }
 
-    public function getHotels()
-    {
-        try {
-            $query = "SELECT title, description, price_per_night, address, filename, status
-                      FROM properties
-                      WHERE status = 'available'";
-            $stmt = $this->db->prepare($query);
-            $stmt->execute();
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {
-            return [
-                'error' => 'Database query failed: ' . $e->getMessage()
-            ]; // Log error or handle gracefully
-            return [];
+  public function countHotels($searchQuery = null)
+  {
+    try {
+      $searchQuery = trim($searchQuery);
+
+      $query = "SELECT COUNT(property_id) as total FROM properties WHERE status IS NOT NULL";
+      if (!empty($searchQuery)) {
+        $query .= " AND title LIKE :searchQuery
+          OR price_per_night LIKE :searchQuery
+          OR address LIKE :searchQuery
+          OR status LIKE :searchQuery";
         }
+      $stmt = $this->db->prepare($query);
+      if (!empty($searchQuery)) {
+        $searchQuery = "%$searchQuery%";
+        $stmt->bindParam(':searchQuery', $searchQuery);
+      }
+      $stmt->execute();
+      return $stmt->fetchColumn();
+    } catch (PDOException $e) {
+      return [
+        'error' => 'Database query failed: ' . $e->getMessage()
+      ]; // Log error or handle gracefully
     }
+  }
+
+  public function getHotels($searchQuery = null)
+  {
+    try {
+      $searchQuery = trim($searchQuery);
+
+      $query = "SELECT title, description, price_per_night, address, filename, status
+                FROM properties
+                WHERE status = 'available'";
+      if (!empty($searchQuery)) {
+        $query .= " AND title LIKE :searchQuery
+          OR price_per_night LIKE :searchQuery
+          OR address LIKE :searchQuery
+          OR status LIKE :searchQuery";
+      }
+      $stmt = $this->db->prepare($query);
+      if (!empty($searchQuery)) {
+        $searchQuery = "%$searchQuery%";
+        $stmt->bindParam(':searchQuery', $searchQuery);
+      }
+      $stmt->execute();
+      return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+      return [
+        'error' => 'Database query failed: ' . $e->getMessage()
+      ]; // Log error or handle gracefully
+      return [];
+    }
+  }
 
 
     // public function countStudent($searchQuery = null)

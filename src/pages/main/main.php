@@ -7,13 +7,12 @@ $pageSize = isset($_GET['pageSize']) && is_numeric($_GET['pageSize']) ? (int)$_G
 $page = isset($_GET['page']) && is_numeric($_GET['page']) ? (int)$_GET['page'] : 1;
 $offset = ($page - 1) * $pageSize;
 
-//$count = $studentController->countStudent($searchQuery);
-//$totalPages = ceil($count / $pageSize);
+$count = $roomController->countHotels($searchQuery);
+$totalPages = ceil($count / $pageSize);
 ?>
 
 <section class="py-8 antialiased mt-16 mb-12">
   <div class="mx-auto max-w-screen-xl px-4 2xl:px-0">
-
     <form class="max-w-lg mx-auto" method="GET">
       <label for="default-search" class="text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
       <div class="relative">
@@ -85,7 +84,7 @@ $offset = ($page - 1) * $pageSize;
     <div class="mb-4 grid gap-4 sm:grid-cols-2 md:mb-8 lg:grid-cols-4 xl:grid-cols-4">
 
       <?php
-      $rooms = $roomController->getHotels();
+      $rooms = $roomController->getHotels($searchQuery);
       foreach ($rooms as $room):
       ?>
         <div class="relative rounded-lg border border-gray-200 bg-white shadow-lg dark:border-gray-700 dark:bg-gray-800">
@@ -124,7 +123,9 @@ $offset = ($page - 1) * $pageSize;
   <div class="w-full text-center">
     <div class="flex flex-col items-center">
       <span class="text-sm text-gray-700 dark:text-gray-400">
-        Showing <span class="font-semibold text-gray-900 dark:text-white">1</span> to <span class="font-semibold text-gray-900 dark:text-white">10</span> of <span class="font-semibold text-gray-900 dark:text-white">100</span> Entries
+        Showing <span class="font-semibold text-gray-900 dark:text-white"><?= $page ?></span>
+        to <span class="font-semibold text-gray-900 dark:text-white"><?= $count ?></span>
+        of <span class="font-semibold text-gray-900 dark:text-white"><?= $count ?></span> Entries
       </span>
       <!-- Buttons -->
       <div class="inline-flex mt-2 xs:mt-0">
