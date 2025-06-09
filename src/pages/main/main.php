@@ -756,3 +756,53 @@ $offset = ($page - 1) * $pageSize;
     </div>
   </form>
 </section>
+
+
+<!-- <div>
+  <div class="p-2 flex justify-between gap-2">
+    <div class="font-semibold">
+      <span class="text-sm text-gray-600">
+        Page <?= $page; ?> of <?= $totalPages; ?> (<?= $count; ?> total data)
+      </span>
+    </div>
+
+    <div class="flex gap-x-2 items-center">
+      <select
+        id="per-page"
+        class="bg-gray-200 text-gray-900 text-xs rounded-md border-gray-300 border block w-full p-1 focus:border-none focus:ring-gray-300"
+        onchange="window.location.href='<?= $basePath ?>/member?page=1&pageSize=' + this.value + '&search=<?= htmlspecialchars($searchQuery); ?>&sort=<?= $sort; ?>&order=<?= $order; ?>'">
+        <option value="10" <?= $pageSize == 10 ? 'selected' : ''; ?>>10</option>
+        <option value="16" <?= $pageSize == 16 ? 'selected' : ''; ?>>16</option>
+        <option value="20" <?= $pageSize == 20 ? 'selected' : ''; ?>>20</option>
+        <option value="30" <?= $pageSize == 30 ? 'selected' : ''; ?>>30</option>
+        <option value="50" <?= $pageSize == 50 ? 'selected' : ''; ?>>50</option>
+        <option value="100" <?= $pageSize == 100 ? 'selected' : ''; ?>>100</option>
+      </select>
+      <div class="flex gap-2 text-sm items-center">
+        <a
+          href="<?= $basePath ?>/member?page=1&pageSize=<?= $pageSize; ?>&search=<?= $searchQuery; ?>&sort=<?= $sort; ?>&order=<?= $order; ?>"
+          class="w-5 sm:w-10 flex justify-center items-center border-gray-300 border px-3 py-1 md:py-1.5 bg-gray-200 text-gray-600 rounded-md <?= $page > 1 ? '' : 'pointer-events-none uppercase opacity-50'; ?>">
+          <i class="fa-solid fa-angles-left"></i>
+        </a>
+        <!-- Previous Page-->
+<a
+  href="<?= $basePath ?>/member?page=<?= $page - 1; ?>&pageSize=<?= $pageSize; ?>&search=<?= $searchQuery; ?>&sort=<?= $sort; ?>&order=<?= $order; ?>"
+  class="w-5 sm:w-10 flex justify-center items-center border-gray-300 border px-3 py-1 sm:py-1.5 bg-gray-200 text-gray-600 rounded-md <?= $page > 1 ? '' : 'pointer-events-none uppercase opacity-50'; ?>">
+  <i class="fa-solid fa-angle-left"></i>
+</a>
+<!-- Next Page -->
+<a
+  href="<?= $basePath ?>/member?page=<?= $page + 1; ?>&pageSize=<?= $pageSize; ?>&search=<?= $searchQuery; ?>&sort=<?= $sort; ?>&order=<?= $order; ?>"
+  class="w-5 sm:w-10 flex justify-center items-center border-gray-300 border px-3 py-1 sm:py-1.5 bg-gray-200 text-gray-600 rounded-md <?= $page < $totalPages ? '' : 'pointer-events-none uppercase opacity-50'; ?>">
+  <i class="fa-solid fa-angle-right"></i>
+</a>
+<!-- Go to Last Page -->
+<a
+  href="<?= $basePath ?>/member?page=<?= $totalPages; ?>&pageSize=<?= $pageSize; ?>&search=<?= $searchQuery; ?>&sort=<?= $sort; ?>&order=<?= $order; ?>"
+  class="w-5 sm:w-10 flex justify-center items-center border-gray-300 border px-3 py-1 sm:py-1.5 bg-gray-200 text-gray-600 rounded-md <?= $page < $totalPages ? '' : 'pointer-events-none uppercase opacity-50'; ?>">
+  <i class="fa-solid fa-angles-right"></i>
+</a>
+</div>
+</div>
+</div>
+</div> -->
