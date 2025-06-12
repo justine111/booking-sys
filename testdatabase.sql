@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.1
+-- version 5.2.0
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jun 08, 2025 at 11:39 PM
--- Server version: 10.4.32-MariaDB
--- PHP Version: 8.0.30
+-- Generation Time: Jun 12, 2025 at 09:08 AM
+-- Server version: 10.4.24-MariaDB
+-- PHP Version: 7.4.29
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -36,7 +36,7 @@ CREATE TABLE `bookings` (
   `total_amount` decimal(10,2) NOT NULL,
   `booking_status` enum('pending','confirmed','cancelled','completed') DEFAULT 'pending',
   `created_at` datetime DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
@@ -51,7 +51,7 @@ CREATE TABLE `payments` (
   `amount_paid` decimal(10,2) DEFAULT NULL,
   `payment_date` datetime DEFAULT current_timestamp(),
   `status` enum('pending','paid','failed') DEFAULT 'pending'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
@@ -71,17 +71,25 @@ CREATE TABLE `properties` (
   `filename` varchar(100) DEFAULT NULL,
   `status` enum('available','booked','inactive') DEFAULT 'available',
   `created_at` datetime DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `properties`
 --
 
 INSERT INTO `properties` (`property_id`, `host_id`, `title`, `description`, `address`, `city`, `price_per_night`, `amenities`, `filename`, `status`, `created_at`) VALUES
-(4, 1, 'Summit Hotel', 'Test Description', 'Marasbaras street Tacloban city', 'Tacloban City', 2000.00, 'Aircon, Smart TV', 'pic1.jpg', 'available', '2025-06-08 17:20:12'),
-(5, 1, 'Hotel Canelsa', 'test description', 'Tacloban City', 'Tacloban City', 1000.00, 'Aircon, Smart TV', 'pic2.jpg', 'available', '2025-06-08 17:21:16'),
-(6, 1, 'Hotel Alejandro', 'Test description', 'Paterno street Tacloban city', 'Tacloban City', 1500.00, 'Smart TV, Aircon, Hot and cold shower', 'pic3.jpg', 'available', '2025-06-08 17:25:20'),
-(7, 1, 'Kuya Jeromes ', 'Test description', 'Tacloban City', 'Tacloban City', 3000.00, 'TV', 'pic4.jpg', 'available', '2025-06-08 17:26:21');
+(4, 1, 'Summit Hotel', 'Test Description', 'Marasbaras street Tacloban city', 'Tacloban City', '2000.00', 'Aircon, Smart TV', 'pic1.jpg', 'available', '2025-06-08 17:20:12'),
+(5, 1, 'Hotel Canelsa', 'test description', 'Tacloban City', 'Tacloban City', '1000.00', 'Aircon, Smart TV', 'pic2.jpg', 'available', '2025-06-08 17:21:16'),
+(6, 1, 'Hotel Alejandro', 'Test description', 'Paterno street Tacloban city', 'Tacloban City', '1500.00', 'Smart TV, Aircon, Hot and cold shower', 'pic3.jpg', 'available', '2025-06-08 17:25:20'),
+(7, 1, 'Kuya Jeromes ', 'Test description', 'Tacloban City', 'Tacloban City', '3000.00', 'TV', 'pic4.jpg', 'available', '2025-06-08 17:26:21'),
+(8, 1, 'Loe\'s Lodge', 'Test description', 'Tacloban City', 'Tacloban City', '500.00', 'Aircondition', 'pic5.jpg', 'available', '2025-06-09 12:31:29'),
+(9, 1, 'Avuer Hotel', 'test', 'Tacloban city', 'Tacloban City', '2000.00', 'Aircondition, Smart TV', 'pic6.jpg', 'available', '2025-06-09 12:32:29'),
+(11, 1, 'BeHotel', 'test', 'Tacloban city', 'Tacloban City', '1000.00', 'Aircondition', 'pic7.jpg', 'available', '2025-06-09 12:33:42'),
+(12, 1, 'Madona of Japan', 'test', 'Tacloban city', 'Tacloban City', '300.00', NULL, 'pic8.jpg', 'available', '2025-06-09 12:34:22'),
+(13, 1, 'GRAND LA VOGUE HOTEL ', 'test description', 'GRAND LA VOGUE HOTEL ', 'Tacloban City', '5000.00', 'Smart TV, Aircondition', 'pic9.jpg', 'booked', '2025-06-12 14:18:58'),
+(14, 1, 'Joshua Hotel Hub', 'test description', 'Tacloban city', 'Tacloban City', '3000.00', 'Aricondition', 'pic10.jpg', 'available', '2025-06-12 14:22:22'),
+(15, 1, 'Koh Phangan', 'Koh Phangan', 'Koh Phangan', 'Tacloban City', '3500.00', 'TV', 'pic11.jpg', 'available', '2025-06-12 14:28:21'),
+(16, 1, 'The Zero Star Hotel', 'test', 'test', 'Tacloban City', '6000.00', 'TV', 'pic12.jpg', 'available', '2025-06-12 14:29:52');
 
 -- --------------------------------------------------------
 
@@ -95,7 +103,7 @@ CREATE TABLE `reviews` (
   `rating` int(11) DEFAULT NULL CHECK (`rating` >= 1 and `rating` <= 5),
   `comment` text DEFAULT NULL,
   `created_at` datetime DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
@@ -111,7 +119,7 @@ CREATE TABLE `users` (
   `user_type` enum('host','guest') NOT NULL,
   `phone_number` varchar(20) DEFAULT NULL,
   `created_at` datetime DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `users`
@@ -180,7 +188,7 @@ ALTER TABLE `payments`
 -- AUTO_INCREMENT for table `properties`
 --
 ALTER TABLE `properties`
-  MODIFY `property_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `property_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT for table `reviews`
