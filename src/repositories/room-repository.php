@@ -42,7 +42,7 @@ class RoomsRepository
     try {
       $searchQuery = trim($searchQuery);
 
-      $query = "SELECT title, description, price_per_night, address, filename, status
+      $query = "SELECT property_id, title, description, price_per_night, address, filename, status
                 FROM properties
                 WHERE status != 'inactive'";
       if (!empty($searchQuery)) {
@@ -68,6 +68,24 @@ class RoomsRepository
       return [];
     }
   }
+
+  public function getHotelById($roomId)
+  {
+    try {
+      $query = "SELECT property_id, title, description, price_per_night, address, filename, status
+                FROM properties
+                WHERE property_id = :id AND status != 'inactive'";
+      $stmt = $this->db->prepare($query);
+      $stmt->bindParam(':id', $roomId, PDO::PARAM_INT);
+      $stmt->execute();
+      return $stmt->fetch(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+      return [
+        'error' => 'Database query failed: ' . $e->getMessage()
+      ]; // Log error or handle gracefully
+    }
+  }
+}
 
 
   // public function countStudent($searchQuery = null)
@@ -136,4 +154,4 @@ class RoomsRepository
   //     $stmt->execute();
   //     return $stmt->fetchAll(PDO::FETCH_ASSOC);
   // }
-}
+

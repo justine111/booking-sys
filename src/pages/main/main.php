@@ -165,10 +165,11 @@ $totalPages = ceil($count / $pageSize);
                 <p class="text-xs font-medium text-gray-500 dark:text-white">
                   ₱<?= $room['price_per_night'] ?> for 2 nights
                 </p>
-                <button class="flex items-center gap-1 text-xs font-medium text-gray-500 hover:text-orange-500">
+                <a href="details.php?id=<?= $room['property_id'] ?>"
+                  class="flex items-center gap-1 text-xs font-medium text-gray-500 hover:text-orange-500">
                   <i class="fas fa-eye"></i>
                   View
-                </button>
+                </a>
               </div>
             </div>
           </div>
