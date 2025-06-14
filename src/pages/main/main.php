@@ -11,28 +11,8 @@ $count = $roomController->countHotels($searchQuery);
 $totalPages = ceil($count / $pageSize);
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
+<?php require_once __DIR__ . '/components/header.php'; ?>
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>StaySmart</title>
-  <link rel="icon" type="image/png" href="/booking-sys/src/assets/img/logo.gif">
-  <link href="/booking-sys/src/assets/css/output.css" rel="stylesheet">
-  <link href="/booking-sys/src/assets/css/vendor/flowbite.min.css" rel="stylesheet">
-  <link href="/booking-sys/src/assets/css/vendor/fontawesome/css/all.css" rel="stylesheet" />
-  <link href="/booking-sys/src/assets/css/vendor/sweet-alert2.css" rel="stylesheet" />
-  <link href="/booking-sys/src/assets/css/vendor/toastr/toastr.min.css" rel="stylesheet" />
-  <link href="/booking-sys/src/assets/css/vendor/global.css" rel="stylesheet" />
-
-  <script src="/booking-sys/src/assets/js/vendor/sweet-alert2.js"></script>
-  <script src="/booking-sys/src/assets/css/vendor/toastr/toastr.min.js"></script>
-  <script src="/booking-sys/src/assets/js/vendor/apex-chart.js"></script>
-  <script src="/booking-sys/src/assets/js/vendor/flowbite.min.js"></script>
-</head>
-
-<body>
   <header class="fixed w-full z-20 top-0 start-0">
     <nav class="bg-white border-gray-200 border-b px-4 lg:px-6 py-2.5 dark:bg-gray-800">
       <div class="flex flex-wrap justify-between items-center mx-auto max-w-screen-xl">
@@ -815,12 +795,7 @@ $totalPages = ceil($count / $pageSize);
     </form>
   </section>
 
-  <footer class="fixed bottom-0 left-0 w-full bg-white dark:bg-gray-900 shadow-lg py-4 px-8 z-40">
-    <div class="max-w-screen-2xl mx-auto flex items-center justify-between">
-      <span class="text-sm text-gray-500 dark:text-gray-400">© <?= date('Y') ?> Your Company. All rights reserved.</span>
-      <a href="#" class="text-sm text-blue-600 hover:underline">Contact</a>
-    </div>
-  </footer>
+  <?php require_once __DIR__ . '/components/footer.php'; ?>
 
 
   <!-- <div>
@@ -873,6 +848,3 @@ $totalPages = ceil($count / $pageSize);
   </div> -->
 
   <?php require_once __DIR__ . '/../ai/index.php'; ?>
-</body>
-
-</html>
