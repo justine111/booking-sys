@@ -72,7 +72,14 @@ class RoomsRepository
   public function getHotelById($roomId)
   {
     try {
-      $query = "SELECT property_id, title, description, price_per_night, address, filename, status
+      $query = "SELECT 
+                  property_id, 
+                  title, 
+                  description, 
+                  price_per_night, 
+                  address, 
+                  filename, 
+                  status
                 FROM properties
                 WHERE property_id = :id AND status != 'inactive'";
       $stmt = $this->db->prepare($query);
