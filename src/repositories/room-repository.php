@@ -1,9 +1,8 @@
 <?php
-require_once __DIR__ . '/../connection/connection.php';
+require_once __DIR__ . '/base-repository.php';
 
-class RoomsRepository
+class RoomsRepository extends base_repository
 {
-  private $db;
 
   public function __construct()
   {

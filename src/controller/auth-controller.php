@@ -1,14 +1,14 @@
 <?php
 require_once __DIR__ . '/../repositories/auth-repository.php';
 
-class AuthController
+class auth_controller
 {
   private $authRepository;
   private $db;
 
   public function __construct()
   {
-    $this->authRepository = new authRepository();
+    $this->authRepository = new auth_repository();
 
     $connection = new Connection_class();
     $this->db = $connection->getConnection();
