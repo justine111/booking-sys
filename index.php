@@ -18,8 +18,6 @@ try {
     $basePath = '/booking-sys';
     $path = str_replace($basePath, '', $requestUri);
     $path = trim($path, '/');
-
-    // Default to 'home' if no path is provided
     $page = empty($path) ? 'dashboard' : $path;
 
     require_once 'src/route.php';
