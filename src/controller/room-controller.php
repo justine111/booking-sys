@@ -17,7 +17,7 @@ class RoomsController
     } catch (Exception $e) {
       return [
         'error' => 'Failed to count hotels: ' . $e->getMessage()
-      ]; // Log error or handle gracefully
+      ];
     }
   }
 
@@ -28,7 +28,18 @@ class RoomsController
     } catch (Exception $e) {
       return [
         'error' => 'Failed to retrieve hotels: ' . $e->getMessage()
-      ]; // Log error or handle gracefully
+      ];
+    }
+  }
+
+  public function getHotelById($roomId)
+  {
+    try {
+      return $this->repository->getHotelById($roomId);
+    } catch (Exception $e) {
+      return [
+        'error' => 'Failed to retrieve hotel: ' . $e->getMessage()
+      ];
     }
   }
 }

@@ -5,7 +5,7 @@ session_start();
 date_default_timezone_set('Asia/Manila');
 
 require_once __DIR__ . '/src/controller/auth-controller.php';
-$AunthController = new authController();
+$AunthController = new auth_controller();
 
 try {
     $user_id = "TUC DEV";
