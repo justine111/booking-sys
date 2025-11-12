@@ -7,22 +7,22 @@ date_default_timezone_set('Asia/Manila');
 require_once __DIR__ . '/src/controller/auth-controller.php';
 $AunthController = new auth_controller();
 
+$requestUri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+$basePath = '/booking-sys';
+$path = trim(str_replace($basePath, '', $requestUri), '/');
+$page = $_GET['page'] ?? (empty($path) ? 'dashboard' : $path);
+
 try {
-    $user_id = "TUC DEV";
-    $user_name = "TUC_DEV";
-    $user_role = "Admin";
-    $department = "IT";
+  if (!isset($_SESSION['id'])) {
+    throw new Exception('Authentication failed. Please login');
+  }
+  $userId = $_SESSION['id'] ?? 1;
+  $username = $_SESSION['username'] ?? 'TUC_DEV';
+  $userRole = $_SESSION['role'] ?? 'Admin';
 
-    // Get the requested URI and remove the base path
-    $requestUri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-    $basePath = '/booking-sys';
-    $path = str_replace($basePath, '', $requestUri);
-    $path = trim($path, '/');
-    $page = empty($path) ? 'dashboard' : $path;
-
-    require_once 'src/route.php';
+  require_once 'src/route.php';
 } catch (Exception $e) {
-    $AunthController->logout();
-    //var_dump($_SESSION);
-    //var_dump($e->getMessage());
+  $AunthController->logout();
+  //var_dump($_SESSION);
+  //var_dump($e->getMessage());
 }
