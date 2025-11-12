@@ -31,33 +31,16 @@ class auth_controller extends base_controller
         if (session_status() === PHP_SESSION_NONE) {
           session_start();
         }
-        $_SESSION['username'] = $response['username'];
-        $_SESSION['role_id'] = $response['role_id'];
-        $_SESSION['church_id'] = $response['church_id'];
-        $_SESSION['member_id'] = $response['member_id'];
-        $_SESSION['admin_id'] = $response['admin_id'];
-        $_SESSION['Linc_leader'] = $response['Linc_leader'];
+        $_SESSION['user_id'] = $response['user_id'];
+        $_SESSION['name'] = $response['name'];
+        $_SESSION['user_type'] = $response['user_type'];
 
-        if ($response['role_id'] == 1) {
-          $baseUrlmain = $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'];
-          $baseUrl = $baseUrlmain . '/tupa-revamp/src/pages/church-selection.php';
-          return [
-            'error' => false,
-            'message' => $baseUrl
-          ];
-        } else if ($response['role_id'] == 0 && $response['Linc_leader'] == 1) {
-          $baseUrl = '/tupa-revamp/linc-group';
-          return [
-            'error' => false,
-            'message' => $baseUrl
-          ];
-        } else {
-          $baseUrl = '/tupa-revamp/';
-          return [
-            'error' => false,
-            'message' => $baseUrl
-          ];
-        }
+        $baseUrlmain = $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'];
+        $baseUrl = '/booking-sys/';
+        return [
+          'error' => false,
+          'message' => $baseUrl
+        ];
       }
     } catch (Exception $e) {
       return [

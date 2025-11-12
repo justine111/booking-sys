@@ -85,7 +85,7 @@ require_once __DIR__ . '/components/header.php';
               </span>
             </div>
 
-            <a href="details.php?id=<?= $room['property_id'] ?>" class="block aspect-[4/3] overflow-hidden">
+            <a href="details.php?id=<?= $room['property_id'] ?>" class="block overflow-hidden">
                 <img
                 src="/booking-sys/src/repositories/uploads/<?= htmlspecialchars($room['filename']); ?>"
                 loading="lazy"
@@ -153,7 +153,7 @@ require_once __DIR__ . '/components/header.php';
         'budget-hotel' => 'Affordable stays for smart travelers.'
       ];
       foreach ($placeholders as $id => $desc): ?>
-        <div class="hidden grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4" id="<?= $id ?>" role="tabpanel">
+        <div class="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4" id="<?= $id ?>" role="tabpanel">
           <div class="p-6 bg-white rounded-xl shadow text-center">
             <h3 class="text-xl font-semibold text-gray-800"><?= ucfirst(str_replace('-', ' ', $id)) ?></h3>
             <p class="mt-2 text-gray-500"><?= $desc ?></p>

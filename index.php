@@ -16,9 +16,9 @@ try {
   if (!isset($_SESSION['id'])) {
     throw new Exception('Authentication failed. Please login');
   }
-  $userId = $_SESSION['id'] ?? 1;
-  $username = $_SESSION['username'] ?? 'TUC_DEV';
-  $userRole = $_SESSION['role'] ?? 'Admin';
+  $userId = $_SESSION['user_id'];
+  $name = $_SESSION['name'];
+  $userRole = $_SESSION['user_type'];
 
   require_once 'src/route.php';
 } catch (Exception $e) {
