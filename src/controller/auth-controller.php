@@ -17,16 +17,29 @@ class auth_controller extends base_controller
       $username = trim($_POST['username']);
       $password = trim($_POST['password']);
 
-      if (empty($username)) {
-        throw new Exception('Username is required.');
+      if (empty($username) && empty($password)) {
+        return $this->response([
+          'error' => true,
+          'message' => 'Username and Password Is Required'
+        ]);
+      } else if (empty($username)) {
+        return $this->response([
+          'error' => true,
+          'message' => 'Username Is Required'
+        ]);
+      } else if (empty($password)) {
+        return $this->response([
+          'error' => true,
+          'message' => 'Password Is Required'
+        ]);
       }
-      if (empty($password)) {
-        throw new Exception('Password is required.');
-      }
-
       $response = $this->authRepository->login($username, $password);
+
       if (!$response) {
-        throw new Exception('Invalid username or password.');
+        return $this->response([
+          'error' => true,
+          'message' => 'Invalid username or password.'
+        ]);
       } else {
         if (session_status() === PHP_SESSION_NONE) {
           session_start();
