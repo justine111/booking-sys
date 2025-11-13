@@ -3,18 +3,8 @@ require_once __DIR__ . '/base-repository.php';
 
 class RoomsRepository extends base_repository
 {
-
-  public function __construct()
-  {
-    $connection = new Connection_class();
-    $this->db = $connection->getConnection();
-  }
-
   public function countHotels($searchQuery = null)
   {
-    try {
-      $searchQuery = trim($searchQuery);
-
       $query = "SELECT COUNT(property_id) as total FROM properties WHERE status IS NOT NULL";
       if (!empty($searchQuery)) {
         $query .= " AND title LIKE :searchQuery
@@ -28,12 +18,8 @@ class RoomsRepository extends base_repository
         $stmt->bindParam(':searchQuery', $searchQuery);
       }
       $stmt->execute();
+      
       return $stmt->fetchColumn();
-    } catch (PDOException $e) {
-      return [
-        'error' => 'Database query failed: ' . $e->getMessage()
-      ]; // Log error or handle gracefully
-    }
   }
 
   public function getHotels($searchQuery = null, $limit, $offset)

@@ -1,9 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
   const forms = [
-    { id: '#add-new-member', action: 'add-new-member-action.php' },
-    { id: '#updateMember', action: 'update-member-action.php' },
-    { id: '#uploadProfile', action: 'upload-profile-action.php' },
-    { id: '#addMilestone', action: 'add-milestone-action.php' }
+    { id: '#login-form', action: 'login-action.php' },
   ];
 
   forms.forEach(({ id, action }) => {
@@ -12,10 +9,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     form.addEventListener('submit', async function (e) {
       e.preventDefault();
-      clearInputErrors();
+      //clearInputErrors();
   
       const formData = new FormData(this);
-      await sendRequest(`/tupas/src/pages/members/action/${action}`, formData, this);
+      await sendRequest(`/booking-sys/src/pages/main/action/${action}`, formData, this);
     });
   
   });

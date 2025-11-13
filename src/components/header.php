@@ -9,12 +9,11 @@
   <link href="<?= $basePath ?>/src/assets/css/output.css" rel="stylesheet">
   <link href="<?= $basePath ?>/src/assets/css/vendor/flowbite.min.css" rel="stylesheet">
   <link href="<?= $basePath ?>/src/assets/css/vendor/fontawesome/css/all.css" rel="stylesheet" />
-  <link href="<?= $basePath ?>/src/assets/css/vendor/sweet-alert2.css" rel="stylesheet" />
-  <link href="<?= $basePath ?>/src/assets/css/vendor/toastr/toastr.min.css" rel="stylesheet" />
+  <link href="<?= $basePath ?>/src/assets/toastify/toastify.min.css" rel="stylesheet" />
   <link href="<?= $basePath ?>/src/assets/css/vendor/global.css" rel="stylesheet" />
 
-  <script src="<?= $basePath ?>/src/assets/js/vendor/sweet-alert2.js"></script>
-  <script src="<?= $basePath ?>/src/assets/css/vendor/toastr/toastr.min.js"></script>
+  <script src="<?= $basePath ?>/src/assets/toastify/toastify-js.js"></script>
+  <script src="<?= $basePath ?>/src/assets/lucide/lucide.min.js"></script>
   <script src="<?= $basePath ?>/src/assets/js/vendor/apex-chart.js"></script>
 </head>
 

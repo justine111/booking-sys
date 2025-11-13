@@ -10,11 +10,11 @@
   <link href="/booking-sys/src/assets/css/vendor/flowbite.min.css" rel="stylesheet">
   <link href="/booking-sys/src/assets/css/vendor/fontawesome/css/all.css" rel="stylesheet" />
   <link href="/booking-sys/src/assets/css/vendor/sweet-alert2.css" rel="stylesheet" />
-  <link href="/booking-sys/src/assets/css/vendor/toastr/toastr.min.css" rel="stylesheet" />
+  <link href="/booking-sys/src/assets/toastify/toastify.min.css" rel="stylesheet" />
   <link href="/booking-sys/src/assets/css/vendor/global.css" rel="stylesheet" />
 
-  <script src="/booking-sys/src/assets/js/vendor/sweet-alert2.js"></script>
-  <script src="/booking-sys/src/assets/css/vendor/toastr/toastr.min.js"></script>
+    <script src="/booking-sys/src/assets/toastify/toastify-js.js"></script>
+  <script src="/booking-sys/src/assets/lucide/lucide.min.js"></script>
   <script src="/booking-sys/src/assets/js/vendor/apex-chart.js"></script>
   <script src="/booking-sys/src/assets/js/vendor/flowbite.min.js"></script>
 </head>
