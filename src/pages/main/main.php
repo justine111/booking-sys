@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/../../controller/room-controller.php';
 
-$roomController = new RoomsController();
+$roomController = new room_controller();
 $searchQuery = $_GET['search'] ?? null;
 $pageSize = isset($_GET['pageSize']) && is_numeric($_GET['pageSize']) ? (int)$_GET['pageSize'] : 12;
 $page = isset($_GET['page']) && is_numeric($_GET['page']) ? (int)$_GET['page'] : 1;
@@ -87,7 +87,7 @@ require_once __DIR__ . '/components/header.php';
 
             <a href="details.php?id=<?= $room['property_id'] ?>" class="block overflow-hidden">
                 <img
-                src="/booking-sys/src/repositories/uploads/<?= htmlspecialchars($room['filename']); ?>"
+                src="/booking-sys/src/repositories/uploads/<?= htmlspecialchars($room['img1']); ?>"
                 loading="lazy"
                 class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
             </a>

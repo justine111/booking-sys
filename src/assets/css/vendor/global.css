@@ -1,3 +1,9 @@
+@import url('https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap');
+
+body {
+    font-family: 'Geist', sans-serif;
+}
+
 .videoPreview {
     border: 6px solid #001A6E;
     width: 773px;

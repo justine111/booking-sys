@@ -27,7 +27,7 @@ class RoomsRepository extends base_repository
     try {
       $searchQuery = trim($searchQuery);
 
-      $query = "SELECT property_id, title, description, price_per_night, address, filename, status
+      $query = "SELECT property_id, title, description, price_per_night, address, img1, status
                 FROM properties
                 WHERE status != 'inactive'";
       if (!empty($searchQuery)) {
@@ -77,73 +77,79 @@ class RoomsRepository extends base_repository
       ]; // Log error or handle gracefully
     }
   }
+
+  public function addHotel(
+      $hotelName,
+      $address,
+      $city,
+      $price,
+      $host,
+      $description,
+      $amenities,
+      $img1,
+      $img2,
+      $img3,
+      $img4
+) {
+
+    $allowed_types = ['image/jpeg', 'image/png', 'image/gif'];
+$upload_dir = $_SERVER['DOCUMENT_ROOT'] . '/booking-sys/src/repositories/uploads/';
+
+if (!is_dir($upload_dir)) {
+    mkdir($upload_dir, 0777, true);
 }
 
+$handleFileUpload = function($file) use ($allowed_types, $upload_dir) {
+    if ($file['error'] !== UPLOAD_ERR_OK) {
+        throw new Exception("File upload error: Code " . $file['error']);
+    }
 
-  // public function countStudent($searchQuery = null)
-  // {
-  //     $searchQuery = trim($searchQuery);
-  //     $sql = "SELECT COUNT(a.student_id) as total 
-  //           FROM students a
-  //           WHERE a.inactive = 0 IN (0, 1)";
-  //     if (!empty($searchQuery)) {
-  //         $sql .= " AND a.last_name LIKE :searchQuery
-  //             OR a.first_name LIKE :searchQuery
-  //             OR a.middle_name LIKE :searchQuery
-  //             OR a.student_code LIKE :searchQuery
-  //             OR a.address LIKE :searchQuery";
-  //     }
-  //     $stmt = $this->db->prepare($sql);
-  //     if (!empty($searchQuery)) {
-  //         $searchQuery = "%$searchQuery%";
-  //         $stmt->bindParam(':searchQuery', $searchQuery);
-  //     }
-  //     $stmt->execute();
-  //     return $stmt->fetchColumn();
-  // }
+    if (!in_array($file['type'], $allowed_types)) {
+        throw new Exception("Invalid file type: " . $file['type']);
+    }
 
-  // public function getStudent($searchQuery = null, $limit, $offset, $sort, $order)
-  // {
-  //     $searchQuery = trim($searchQuery);
+    $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
+    $unique_name = uniqid('hotel_img_') . '.' . $extension;
+    $destination = $upload_dir . $unique_name;
 
-  //     $sql = "SELECT 
-  //             a.student_id,
-  //             a.student_code,
-  //             concat(a.last_name, ', ', a.first_name) as name,
-  //             a.birthdate,
-  //             a.address,
-  //             a.civil_status,
-  //             a.gender,
-  //             a.email,
-  //             b.church_name,
-  //             a.is_enrolled,
-  //             a.avatar_path,
-  //             a.inactive
-  //           FROM students a
-  //           LEFT JOIN admin_churches b ON a.church_id = b.church_id
-  //           WHERE a.inactive IN (0, 1)";
+    if (!move_uploaded_file($file['tmp_name'], $destination)) {
+        throw new Exception("Failed to move uploaded file to: " . $destination);
+    }
 
-  //     if (!empty($searchQuery)) {
-  //         $sql .= " AND a.last_name LIKE :searchQuery
-  //             OR a.first_name LIKE :searchQuery
-  //             OR a.middle_name LIKE :searchQuery
-  //             OR a.student_code LIKE :searchQuery
-  //             OR a.address LIKE :searchQuery
-  //             OR b.church_name LIKE :searchQuery";
-  //     }
+    return $unique_name;
+};
 
-  //     $sql .= " ORDER BY " . $sort . " " . $order . " LIMIT :limit OFFSET :offset";
-  //     $stmt = $this->db->prepare($sql);
 
-  //     if (!empty($searchQuery)) {
-  //         $searchParam = "%$searchQuery%";
-  //         $stmt->bindParam(':searchQuery', $searchParam, PDO::PARAM_STR);
-  //     }
+    try {
+      $filename1 = $handleFileUpload($img1);
+      $filename2 = $handleFileUpload($img2);
+      $filename3 = $handleFileUpload($img3);
+      $filename4 = $handleFileUpload($img4);
 
-  //     $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
-  //     $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
+      $query = "INSERT INTO properties 
+                (title, address, city, price_per_night, host_id, description, amenities, img1, img2, img3, img4, status) 
+                VALUES 
+                (:title, :address, :city, :price_per_night, :host, :description, :amenities, :image_1_filename, :image_2_filename, :image_3_filename, :image_4_filename, 'available')";
+      $stmt = $this->db->prepare($query);
+      $stmt->bindParam(':title', $hotelName);
+      $stmt->bindParam(':address', $address);
+      $stmt->bindParam(':city', $city);
+      $stmt->bindParam(':price_per_night', $price);
+      $stmt->bindParam(':host', $host);
+      $stmt->bindParam(':description', $description);
+      $stmt->bindParam(':amenities', $amenities);
+      $stmt->bindParam(':image_1_filename', $filename1);
+      $stmt->bindParam(':image_2_filename', $filename2);
+      $stmt->bindParam(':image_3_filename', $filename3);
+      $stmt->bindParam(':image_4_filename', $filename4);
 
-  //     $stmt->execute();
-  //     return $stmt->fetchAll(PDO::FETCH_ASSOC);
-  // }
+      return $stmt->execute();
+    } catch (PDOException $e) {
+      return [
+        'error' => 'Database insertion failed: ' . $e->getMessage()
+      ]; // Log error or handle gracefully
+    }
+  }
+}
+
 
