@@ -1,6 +1,5 @@
 <div id="addHotelModal" tabindex="-1" aria-hidden="true" class="fixed inset-0 z-50 items-center justify-center hidden w-full p-4 overflow-x-hidden overflow-y-auto bg-gray-900/70 backdrop-blur-sm">
   <div class="relative w-full max-w-4xl max-h-full bg-white rounded-xl overflow-hidden">
-
     <div class="p-4">
       <div class="flex items-start justify-between">
         <div>
@@ -24,7 +23,6 @@
       <div class="p-4">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div class="space-y-4">
-
             <div>
               <label for="hotel-name" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">
                 <span class="flex items-center gap-1">
@@ -132,53 +130,77 @@
                 </span>
               </label>
 
-              <!-- Compact Image Preview Grid -->
               <div class="space-y-4">
-                <!-- Compact Preview Grid -->
                 <div id="imagePreviewGrid" class="grid grid-cols-4 gap-3">
-                  <!-- Preview slots - Compact size -->
-                  <div class="image-preview-slot border-2 border-dashed border-gray-300 rounded-lg aspect-square flex items-center justify-center bg-gray-50 dark:bg-gray-700 dark:border-gray-600 relative overflow-hidden group cursor-pointer transition-all duration-200 hover:border-blue-400">
-                    <div class="text-center p-2">
-                      <svg class="w-6 h-6 text-gray-400 mx-auto mb-1 group-hover:text-blue-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                      </svg>
-                      <p class="text-xs text-gray-500 group-hover:text-blue-400 transition-colors">Add Image</p>
+                  <!-- Image Slot 1 -->
+                  <div class="image-slot-container relative">
+                    <input type="file" name="image_1" id="image_1" accept="image/*"
+                      class="hidden image-input" data-slot="1">
+                    <div class="image-preview-slot border-2 border-dashed border-gray-300 rounded-lg aspect-square flex items-center justify-center bg-gray-50 dark:bg-gray-700 dark:border-gray-600 relative overflow-hidden group cursor-pointer transition-all duration-200 hover:border-blue-400"
+                      data-slot="1">
+                      <div class="text-center p-2">
+                        <svg class="w-6 h-6 text-gray-400 mx-auto mb-1 group-hover:text-blue-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                        </svg>
+                        <p class="text-xs text-gray-500 group-hover:text-blue-400 transition-colors">Image 1</p>
+                      </div>
                     </div>
+                    <input type="hidden" name="image_1_filename" id="image_1_filename" value="">
                   </div>
-                  <div class="image-preview-slot border-2 border-dashed border-gray-300 rounded-lg aspect-square flex items-center justify-center bg-gray-50 dark:bg-gray-700 dark:border-gray-600 relative overflow-hidden group cursor-pointer transition-all duration-200 hover:border-blue-400">
-                    <div class="text-center p-2">
-                      <svg class="w-6 h-6 text-gray-400 mx-auto mb-1 group-hover:text-blue-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                      </svg>
-                      <p class="text-xs text-gray-500 group-hover:text-blue-400 transition-colors">Add Image</p>
+
+                  <!-- Image Slot 2 -->
+                  <div class="image-slot-container relative">
+                    <input type="file" name="image_2" id="image_2" accept="image/*"
+                      class="hidden image-input" data-slot="2">
+                    <div class="image-preview-slot border-2 border-dashed border-gray-300 rounded-lg aspect-square flex items-center justify-center bg-gray-50 dark:bg-gray-700 dark:border-gray-600 relative overflow-hidden group cursor-pointer transition-all duration-200 hover:border-blue-400"
+                      data-slot="2">
+                      <div class="text-center p-2">
+                        <svg class="w-6 h-6 text-gray-400 mx-auto mb-1 group-hover:text-blue-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                        </svg>
+                        <p class="text-xs text-gray-500 group-hover:text-blue-400 transition-colors">Image 2</p>
+                      </div>
                     </div>
+                    <input type="hidden" name="image_2_filename" id="image_2_filename" value="">
                   </div>
-                  <div class="image-preview-slot border-2 border-dashed border-gray-300 rounded-lg aspect-square flex items-center justify-center bg-gray-50 dark:bg-gray-700 dark:border-gray-600 relative overflow-hidden group cursor-pointer transition-all duration-200 hover:border-blue-400">
-                    <div class="text-center p-2">
-                      <svg class="w-6 h-6 text-gray-400 mx-auto mb-1 group-hover:text-blue-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                      </svg>
-                      <p class="text-xs text-gray-500 group-hover:text-blue-400 transition-colors">Add Image</p>
+
+                  <!-- Image Slot 3 -->
+                  <div class="image-slot-container relative">
+                    <input type="file" name="image_3" id="image_3" accept="image/*"
+                      class="hidden image-input" data-slot="3">
+                    <div class="image-preview-slot border-2 border-dashed border-gray-300 rounded-lg aspect-square flex items-center justify-center bg-gray-50 dark:bg-gray-700 dark:border-gray-600 relative overflow-hidden group cursor-pointer transition-all duration-200 hover:border-blue-400"
+                      data-slot="3">
+                      <div class="text-center p-2">
+                        <svg class="w-6 h-6 text-gray-400 mx-auto mb-1 group-hover:text-blue-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                        </svg>
+                        <p class="text-xs text-gray-500 group-hover:text-blue-400 transition-colors">Image 3</p>
+                      </div>
                     </div>
+                    <input type="hidden" name="image_3_filename" id="image_3_filename" value="">
                   </div>
-                  <div class="image-preview-slot border-2 border-dashed border-gray-300 rounded-lg aspect-square flex items-center justify-center bg-gray-50 dark:bg-gray-700 dark:border-gray-600 relative overflow-hidden group cursor-pointer transition-all duration-200 hover:border-blue-400">
-                    <div class="text-center p-2">
-                      <svg class="w-6 h-6 text-gray-400 mx-auto mb-1 group-hover:text-blue-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                      </svg>
-                      <p class="text-xs text-gray-500 group-hover:text-blue-400 transition-colors">Add Image</p>
+
+                  <!-- Image Slot 4 -->
+                  <div class="image-slot-container relative">
+                    <input type="file" name="image_4" id="image_4" accept="image/*"
+                      class="hidden image-input" data-slot="4">
+                    <div class="image-preview-slot border-2 border-dashed border-gray-300 rounded-lg aspect-square flex items-center justify-center bg-gray-50 dark:bg-gray-700 dark:border-gray-600 relative overflow-hidden group cursor-pointer transition-all duration-200 hover:border-blue-400"
+                      data-slot="4">
+                      <div class="text-center p-2">
+                        <svg class="w-6 h-6 text-gray-400 mx-auto mb-1 group-hover:text-blue-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                        </svg>
+                        <p class="text-xs text-gray-500 group-hover:text-blue-400 transition-colors">Image 4</p>
+                      </div>
                     </div>
+                    <input type="hidden" name="image_4_filename" id="image_4_filename" value="">
                   </div>
                 </div>
-
-                <!-- File Input (Hidden) -->
-                <input type="file" name="room-images" id="room-images" accept="image/*" multiple
-                  class="hidden" max="4">
 
                 <!-- Upload Info -->
                 <div class="text-center">
                   <p class="text-xs text-gray-500 dark:text-gray-400">
-                    Click on any slot to upload images
+                    Click on any slot to upload individual images
                   </p>
                   <p id="imageCount" class="text-xs font-medium text-green-600 mt-1">0/4 images selected</p>
                 </div>
@@ -188,18 +210,11 @@
         </div>
       </div>
 
-      <!-- Modal footer -->
       <div class="flex items-center justify-between p-4 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-700/50">
-        <button type="button"
-          class="px-6 py-3 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-600 dark:text-gray-300 dark:border-gray-500 dark:hover:bg-gray-500 transition-colors duration-200">
-          Cancel
-        </button>
         <button type="submit"
-          class="px-8 py-3 text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-indigo-700 rounded-lg hover:from-blue-700 hover:to-indigo-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 transform hover:-translate-y-0.5 shadow-md hover:shadow-lg">
+          class="px-3 py-3 text-sm font-medium text-white bg-blue-600 rounded-lg hover:from-blue-700 hover:to-indigo-800 focus:outline-none focus:ring-2 focus:ring-blue-500">
           <span class="flex items-center gap-2">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-            </svg>
+            <i data-lucide="house-plus" class="w-[18px]"></i>
             Create Hotel Room
           </span>
         </button>
