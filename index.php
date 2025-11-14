@@ -13,7 +13,7 @@ $path = trim(str_replace($basePath, '', $requestUri), '/');
 $page = $_GET['page'] ?? (empty($path) ? 'dashboard' : $path);
 
 try {
-  if (!isset($_SESSION['id'])) {
+  if (!isset($_SESSION['user_id'])) {
     throw new Exception('Authentication failed. Please login');
   }
   $userId = $_SESSION['user_id'];

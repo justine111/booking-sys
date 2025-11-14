@@ -14,8 +14,8 @@ class auth_controller extends base_controller
   public function login()
   {
     try {
-      $username = 'james@gmail.com'; //trim($_POST['username'])
-      $password = 'password'; //trim($_POST['password'])
+      $username = trim($_POST['username']);
+      $password = trim($_POST['password']);
 
       if (empty($username) && empty($password)) {
         return $this->response([
@@ -48,7 +48,6 @@ class auth_controller extends base_controller
         $_SESSION['name'] = $response['name'];
         $_SESSION['user_type'] = $response['user_type'];
 
-        $baseUrlmain = $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'];
         $baseUrl = '/booking-sys/';
         return [
           'error' => false,

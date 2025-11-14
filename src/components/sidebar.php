@@ -59,34 +59,38 @@
     <ul class="space-y-2 font-medium">
       <li>
         <a href="dashboard" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
-          <img src="<?= $basePath ?>/src/assets/icons/dashboard.png" class="w-7">
+          <i data-lucide="chart-spline" class="w-[18px] mr-1"></i>
           <span class="ms-2">Dashboard</span>
         </a>
       </li>
       <li>
         <a href="hotel" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
-          <img src="<?= $basePath ?>/src/assets/icons/hotels.png" class="w-7">
+          <i data-lucide="house" class="w-[18px] mr-1"></i>
           <span class="flex-1 ms-2 whitespace-nowrap">Hotels</span>
         </a>
       </li>
       <li>
         <a href="room" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
-          <img src="<?= $basePath ?>/src/assets/icons/rooms.png" class="w-7">
+          <i data-lucide="bed-single" class="w-[18px] mr-1"></i>
           <span class="flex-1 ms-2 whitespace-nowrap">Rooms</span>
         </a>
       </li>
       <li>
         <a href="booking" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
-          <img src="<?= $basePath ?>/src/assets/icons/booking.png" class="w-7">
+          <i data-lucide="notebook-pen" class="w-[18px] mr-1"></i>
           <span class="flex-1 ms-2 whitespace-nowrap">Booking</span>
         </a>
       </li>
       <li>
         <a href="user" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
-          <img src="<?= $basePath ?>/src/assets/icons/users.png" class="w-7">
+          <i data-lucide="users" class="w-[18px] mr-1"></i>
           <span class="flex-1 ms-3 whitespace-nowrap">Users</span>
         </a>
       </li>
     </ul>
   </div>
 </aside>
+
+<script>
+  lucide.createIcons();
+</script>
