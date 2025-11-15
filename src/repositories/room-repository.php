@@ -201,7 +201,7 @@ class RoomsRepository extends base_repository
               a.img1,
               a.created_at,
               a.status,
-              b.name
+              b.name  
             FROM properties a
             LEFT JOIN hosts b
             ON a.host_id = b.host_id
