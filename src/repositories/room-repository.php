@@ -63,7 +63,10 @@ class RoomsRepository extends base_repository
                   description, 
                   price_per_night, 
                   address, 
-                  filename, 
+                  img1, 
+                  img2, 
+                  img3,
+                  img4,
                   status
                 FROM properties
                 WHERE property_id = :id AND status != 'inactive'";
