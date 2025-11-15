@@ -7,23 +7,45 @@ $pageSize = isset($_GET['pageSize']) && is_numeric($_GET['pageSize']) ? (int)$_G
 $page = isset($_GET['page']) && is_numeric($_GET['page']) ? (int)$_GET['page'] : 1;
 $offset = ($page - 1) * $pageSize;
 
-// $count = $ManageMembers->countAllMemberPerChurch($searchQuery, $churchId);
-// $totalPages = ceil($count / $pageSize);
-
+$count = $roomManage->getCountOfHotels($searchQuery);
+$totalPages = ceil($count / $pageSize);
 ?>
 
 <main class="content-wrapper">
   <div class="content">
-    <div class="flex items-center justify-between">
-      <button type="button"
-        data-modal-show="addHotelModal"
-        data-modal-target="addHotelModal"
-        class="mb-4 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg text-sm px-3 py-2 text-center">
-        Add New Hotel
-      </button>
-    </div>
 
-    <?php require_once __DIR__ . '/./modal/add-new-hotel.php'; ?>
+    <div class="relative">
+      <div class="flex flex-col gap-4 pb-2">
+        <div class="flex items-center justify-between w-full">
+          <div>
+            <button type="button"
+              data-modal-show="addHotelModal"
+              data-modal-target="addHotelModal"
+              class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg text-sm px-3 py-2 text-center">
+              Add New Hotel
+            </button>
+          </div>
+          <?php require_once __DIR__ . '/./modal/add-new-hotel.php'; ?>
+
+          <div class="relative">
+            <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
+              <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
+              </svg>
+            </div>
+            <form method="GET" action="#" class="">
+              <input
+                type="search"
+                name="search"
+                id="live-search"
+                class="block w-64 sm:w-80 p-2 ps-10 text-sm text-gray-900 dark:text-gray-200 border border-gray-300 dark:bg-gray-800 dark:border-gray-600 rounded-lg bg-gray-50"
+                placeholder="Search unit..."
+                value="<?= htmlspecialchars($searchQuery) ?? ''; ?>" />
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <div class="relative">
       <div class="overflow-x-auto border rounded-lg border-gray-200 dark:border-gray-700">
@@ -31,14 +53,14 @@ $offset = ($page - 1) * $pageSize;
           <thead class="text-xs text-gray-700 uppercase bg-white border-b border-gray-200 dark:border-gray-700 dark:bg-gray-700 dark:text-gray-400">
             <tr>
               <th class="px-6 py-3">No</th>
-              <th class="px-6 py-3">Name</th>
-              <th class="px-6 py-3">Gender</th>
-              <th class="px-6 py-3">Birthday</th>
-              <th class="px-6 py-3">Blood type</th>
-              <th class="px-6 py-3">Civil Status</th>
-              <th class="px-6 py-3">Complate Address</th>
-              <th class="px-6 py-3">LinC Status</th>
-              <th class="px-6 py-3">Member Status</th>
+              <th class="px-6 py-3">Unit name</th>
+              <th class="px-6 py-3">Address</th>
+              <th class="px-6 py-3">Description</th>
+              <th class="px-6 py-3">Amenities</th>
+              <th class="px-6 py-3">Unit rate</th>
+              <th class="px-6 py-3">Date created</th>
+              <th class="px-6 py-3">Unit host</th>
+              <th class="px-6 py-3">Status</th>
               <th class="px-6 py-3 text-end">Actions</th>
             </tr>
           </thead>
@@ -48,12 +70,6 @@ $offset = ($page - 1) * $pageSize;
         </table>
       </div>
     </div>
+    <?php require_once __DIR__ . '/../../../components/pagination.php'; ?>
   </div>
 </main>
-
-<script>
-  <?php 
-    require_once __DIR__ . '/../../../assets/js/utils.js'; 
-    require_once __DIR__ . '/./js/script.js'; 
-  ?>
-</script>

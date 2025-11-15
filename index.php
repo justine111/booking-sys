@@ -9,8 +9,10 @@ $AunthController = new auth_controller();
 
 $requestUri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $basePath = '/booking-sys';
-$path = trim(str_replace($basePath, '', $requestUri), '/');
-$page = $_GET['page'] ?? (empty($path) ? 'dashboard' : $path);
+$path = str_replace($basePath, '', $requestUri);
+$path = trim($path, '/');
+// Default to 'dashboard' if no path is provided
+$page = empty($path) ? 'dashboard' : $path;
 
 try {
   if (!isset($_SESSION['user_id'])) {
