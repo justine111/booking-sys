@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 14, 2025 at 02:35 PM
+-- Generation Time: Nov 16, 2025 at 02:24 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -29,13 +29,59 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `bookings` (
   `booking_id` int(11) NOT NULL,
-  `guest_id` int(11) NOT NULL,
   `property_id` int(11) NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `contact_no` varchar(12) NOT NULL,
+  `duration` varchar(100) NOT NULL,
+  `message` varchar(255) DEFAULT NULL,
   `check_in_date` date NOT NULL,
   `check_out_date` date NOT NULL,
   `total_amount` decimal(10,2) NOT NULL,
-  `booking_status` enum('pending','confirmed','cancelled','completed') DEFAULT 'pending',
+  `booking_status` int(11) NOT NULL DEFAULT 0,
   `created_at` datetime DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `bookings`
+--
+
+INSERT INTO `bookings` (`booking_id`, `property_id`, `name`, `contact_no`, `duration`, `message`, `check_in_date`, `check_out_date`, `total_amount`, `booking_status`, `created_at`) VALUES
+(9, 6, 'Joshua Hernandez', '0931231231', '2 Days 1 Night', '', '0000-00-00', '0000-00-00', 0.00, 1, '2025-11-16 20:30:40');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `booking_status`
+--
+
+CREATE TABLE `booking_status` (
+  `id` int(11) NOT NULL,
+  `description` varchar(100) NOT NULL,
+  `date` datetime NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `booking_status`
+--
+
+INSERT INTO `booking_status` (`id`, `description`, `date`) VALUES
+(1, 'pending', '2025-11-15 21:53:10'),
+(2, 'confirmed', '2025-11-15 21:53:10'),
+(3, 'cancelled', '2025-11-15 21:53:27'),
+(4, 'complete', '2025-11-15 21:53:27'),
+(5, 'available', '2025-11-16 20:54:16'),
+(6, 'booked', '2025-11-16 20:54:16');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `hosts`
+--
+
+CREATE TABLE `hosts` (
+  `host_id` int(11) NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `date_created` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -70,7 +116,7 @@ CREATE TABLE `properties` (
   `amenities` text DEFAULT NULL,
   `img1` varchar(100) DEFAULT NULL,
   `img2` varchar(100) DEFAULT NULL,
-  `status` enum('available','booked','inactive') DEFAULT 'available',
+  `status` int(11) NOT NULL DEFAULT 0,
   `created_at` datetime DEFAULT current_timestamp(),
   `img3` varchar(100) DEFAULT NULL,
   `img4` varchar(100) DEFAULT NULL
@@ -81,19 +127,7 @@ CREATE TABLE `properties` (
 --
 
 INSERT INTO `properties` (`property_id`, `host_id`, `title`, `description`, `address`, `city`, `price_per_night`, `amenities`, `img1`, `img2`, `status`, `created_at`, `img3`, `img4`) VALUES
-(4, 1, 'Summit Hotel', 'Test Description', 'Marasbaras street Tacloban city', 'Tacloban City', 2000.00, 'Aircon, Smart TV', 'pic1.jpg', '', 'available', '2025-06-08 17:20:12', NULL, NULL),
-(5, 1, 'Hotel Canelsa', 'test description', 'Tacloban City', 'Tacloban City', 1000.00, 'Aircon, Smart TV', 'pic2.jpg', '', 'available', '2025-06-08 17:21:16', NULL, NULL),
-(6, 1, 'Hotel Alejandro', 'Test description', 'Paterno street Tacloban city', 'Tacloban City', 1500.00, 'Smart TV, Aircon, Hot and cold shower', 'pic3.jpg', '', 'available', '2025-06-08 17:25:20', NULL, NULL),
-(7, 1, 'Kuya Jeromes ', 'Test description', 'Tacloban City', 'Tacloban City', 3000.00, 'TV', 'pic4.jpg', '', 'available', '2025-06-08 17:26:21', NULL, NULL),
-(8, 1, 'Loe\'s Lodge', 'Test description', 'Tacloban City', 'Tacloban City', 500.00, 'Aircondition', 'pic5.jpg', '', 'available', '2025-06-09 12:31:29', NULL, NULL),
-(9, 1, 'Avuer Hotel', 'test', 'Tacloban city', 'Tacloban City', 2000.00, 'Aircondition, Smart TV', 'pic6.jpg', '', 'available', '2025-06-09 12:32:29', NULL, NULL),
-(11, 1, 'BeHotel', 'test', 'Tacloban city', 'Tacloban City', 1000.00, 'Aircondition', 'pic7.jpg', '', 'available', '2025-06-09 12:33:42', NULL, NULL),
-(12, 1, 'Madona of Japan', 'test', 'Tacloban city', 'Tacloban City', 300.00, NULL, 'pic8.jpg', '', 'available', '2025-06-09 12:34:22', NULL, NULL),
-(13, 1, 'GRAND LA VOGUE HOTEL ', 'test description', 'GRAND LA VOGUE HOTEL ', 'Tacloban City', 5000.00, 'Smart TV, Aircondition', 'pic9.jpg', '', 'booked', '2025-06-12 14:18:58', NULL, NULL),
-(14, 1, 'Joshua Hotel Hub', 'test description', 'Tacloban city', 'Tacloban City', 3000.00, 'Aricondition', 'pic10.jpg', '', 'available', '2025-06-12 14:22:22', NULL, NULL),
-(15, 1, 'Koh Phangan', 'Koh Phangan', 'Koh Phangan', 'Tacloban City', 3500.00, 'TV', 'pic11.jpg', '', 'available', '2025-06-12 14:28:21', NULL, NULL),
-(16, 1, 'The Zero Star Hotel', 'test', 'test', 'Tacloban City', 6000.00, 'TV', 'pic12.jpg', '', 'available', '2025-06-12 14:29:52', NULL, NULL),
-(17, 1, 'test', 'asdasd', 'Bryg Rizal II Babatngon, Leyte', 'asdas', 1000.00, 'asdsa', 'hotel_img_691728c12b743.png', 'hotel_img_691728c12b8e4.png', 'available', '2025-11-14 21:04:01', 'hotel_img_691728c12bac1.png', 'hotel_img_691728c130a9b.png');
+(18, 1, 'Joshua house', 'Fresn and clean with high mountain view,', 'Brgy Naga-asan', 'Babatngon', 2500.00, '', 'hotel_img_6919cf7d0e10f.jpg', 'hotel_img_6919cf7d0e262.jpg', 5, '2025-11-16 21:19:57', 'hotel_img_6919cf7d0e3ad.jpg', 'hotel_img_6919cf7d0e4d4.jpg');
 
 -- --------------------------------------------------------
 
@@ -159,9 +193,19 @@ INSERT INTO `user_roles` (`user_role_id`, `name`) VALUES
 -- Indexes for table `bookings`
 --
 ALTER TABLE `bookings`
-  ADD PRIMARY KEY (`booking_id`),
-  ADD KEY `fk_bookings_guest` (`guest_id`),
-  ADD KEY `fk_bookings_property` (`property_id`);
+  ADD PRIMARY KEY (`booking_id`);
+
+--
+-- Indexes for table `booking_status`
+--
+ALTER TABLE `booking_status`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `hosts`
+--
+ALTER TABLE `hosts`
+  ADD PRIMARY KEY (`host_id`);
 
 --
 -- Indexes for table `payments`
@@ -174,8 +218,7 @@ ALTER TABLE `payments`
 -- Indexes for table `properties`
 --
 ALTER TABLE `properties`
-  ADD PRIMARY KEY (`property_id`),
-  ADD KEY `fk_properties_host` (`host_id`);
+  ADD PRIMARY KEY (`property_id`);
 
 --
 -- Indexes for table `reviews`
@@ -199,7 +242,19 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `bookings`
 --
 ALTER TABLE `bookings`
-  MODIFY `booking_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `booking_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+
+--
+-- AUTO_INCREMENT for table `booking_status`
+--
+ALTER TABLE `booking_status`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+
+--
+-- AUTO_INCREMENT for table `hosts`
+--
+ALTER TABLE `hosts`
+  MODIFY `host_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `payments`
@@ -211,7 +266,7 @@ ALTER TABLE `payments`
 -- AUTO_INCREMENT for table `properties`
 --
 ALTER TABLE `properties`
-  MODIFY `property_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `property_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- AUTO_INCREMENT for table `reviews`
@@ -233,7 +288,6 @@ ALTER TABLE `users`
 -- Constraints for table `bookings`
 --
 ALTER TABLE `bookings`
-  ADD CONSTRAINT `fk_bookings_guest` FOREIGN KEY (`guest_id`) REFERENCES `users` (`user_id`),
   ADD CONSTRAINT `fk_bookings_property` FOREIGN KEY (`property_id`) REFERENCES `properties` (`property_id`);
 
 --
@@ -241,12 +295,6 @@ ALTER TABLE `bookings`
 --
 ALTER TABLE `payments`
   ADD CONSTRAINT `fk_payments_booking` FOREIGN KEY (`booking_id`) REFERENCES `bookings` (`booking_id`);
-
---
--- Constraints for table `properties`
---
-ALTER TABLE `properties`
-  ADD CONSTRAINT `fk_properties_host` FOREIGN KEY (`host_id`) REFERENCES `users` (`user_id`);
 
 --
 -- Constraints for table `reviews`

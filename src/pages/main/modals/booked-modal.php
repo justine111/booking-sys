@@ -20,6 +20,11 @@
 
       <!-- Modal body -->
       <form class="p-4" method="post" id="reservation-form">
+        <?php
+          $unitId = $_GET['id'];
+        ?>
+        <input type="hidden" name="unit" value="<?= $unitId ?>">
+
         <div class="grid gap-4 mb-4 grid-cols-2">
           <div class="col-span-2">
             <label for="name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Name <span class="text-gray-500 text-xs">(required)</span></label>

@@ -83,7 +83,7 @@ class RoomsRepository extends base_repository
 
   public function addHotel($hotelName, $address, $city, $price, $host, $description, $amenities, $img1, $img2, $img3, $img4)
   {
-    $allowed_types = ['image/jpeg', 'image/png', 'image/gif'];
+    $allowed_types = ['image/jpeg', 'image/png', 'image/gif', 'image/jpg'];
     $upload_dir = $_SERVER['DOCUMENT_ROOT'] . '/booking-sys/src/repositories/uploads/';
 
     if (!is_dir($upload_dir)) {
@@ -143,7 +143,7 @@ class RoomsRepository extends base_repository
               :image_2_filename, 
               :image_3_filename, 
               :image_4_filename, 
-              'available'
+              5
             )";
 
     $stmt = $this->db->prepare($sql);
@@ -203,11 +203,13 @@ class RoomsRepository extends base_repository
               a.price_per_night,
               a.img1,
               a.created_at,
-              a.status,
+              c.description as status,
               b.name  
             FROM properties a
             LEFT JOIN hosts b
             ON a.host_id = b.host_id
+            LEFT JOIN booking_status c
+            ON a.status = c.id
             WHERE a.status IS NOT NULL";
 
     if (!empty($searchQuery)) {

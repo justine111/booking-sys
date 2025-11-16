@@ -16,6 +16,7 @@ class booking_controller extends base_controller
     try {
       $this->repository->startTransaction();
 
+      $unitId = $_POST['unit'] ?? '';
       $name = $_POST['name'] ?? '';
       $phoneno = $_POST['phoneno'] ?? '';
       $duration = $_POST['stay-duration'] ?? '';
@@ -43,7 +44,7 @@ class booking_controller extends base_controller
         ];
       }
 
-      $result = $this->repository->reservation($name, $phoneno, $duration, $description);
+      $result = $this->repository->reservation($unitId, $name, $phoneno, $duration, $description);
       $this->repository->commitTransaction();
 
       return $this->response([
@@ -53,6 +54,15 @@ class booking_controller extends base_controller
       ]);
     } catch (Exception $e) {
       $this->repository->rollbackTransaction();
+      return $this->handleException($e);
+    }
+  }
+
+  public function getAllBookings()
+  {
+    try {
+      return $this->repository->getAllBookings();
+    } catch (Exception $e) {
       return $this->handleException($e);
     }
   }
