@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "staysmart-ai-assistant",
+  "private_key_id": "ff820bf82e47b4a7948a0d5f05b64da767ad6362",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvwIBADANBgkqhkiG9w0BAQEFAASCBKkwggSlAgEAAoIBAQDCpWX67TCjvECc\nb+e49yvvqV9IHJtgqDvDXOq3/kZaHaXTT2NDe8IeUkLEI6B7NS6btX8Px8zcglJd\nFfB6stsQUjaVxfPSt2R2BxdkxcqfRkeVkCso8wupZCcWDKljsb/J7W3+Jx3jOfDB\njX7m7z8z+jTiMeHntmGWAlHD746G7W40U0HGDe3fxnM8zBTXJ65t4JNBV92fqrBe\nuySBkRjJPYziIVhF0gebPC/zEyjvcPyZ7ebflYzb8i4CgK/iX7OFhVWTGQXcSLs+\nU/44J12A6t7Gb/kepvWVXIrXW+Ngq54KbEwungOPyGLIWzSnzrTP/h8EDJ8S/4bM\nu3On3AjvAgMBAAECggEAIW0S9sT9ydh9xf+nrQlxV55f+PvEqRQq8zFFM6SsgzQ9\nMm0bME8T9m4M/i7aE959qwq/j7+xjBqrN0YZvpBxczuTGSRd601IKMat+0XGNpT0\nnRgdeVJHqebDmZNCEZdIRs6JyZABH3DnSe3ZIaJrWas5orCLSWX2GzM5xGqisMPP\nbLBsZp9+C56VX2HG8Pwh2Xkz++llDrq8JIMkONJwFUhIBNXPowWILkUBJyjnjOpa\n/mP6BH3+w8eBAbhUHwNsfb2+ZvVh5/n7IvU1fb5jcmzsZSInq+i3/lkilMVUIWr5\ngdcv8nLGiPUAEff7eVEDZbIYDxcvKyAjMycDAylVRQKBgQDy178l6gyXRvCJmpqU\nmuuBajuHELwNYQc4c3sZBTc2Bkh5Qc56X5Nsag7PlcoMRXSGICzfS0QvdL5h/7MI\nqY3OoQrrBMGrM76vqsGrc4yenKLNYYuq613BEn1xfpnG7XOVyVutzoK7u/u43G5A\n4rWmIiweLFoCjd/Sb2gKvVaLEwKBgQDNMSi1mgUqzrr7I0PFNT0ldcMy8n2nAKXW\nRAAZaEvmHJTaMFXbzJUstKivzXsu+p/gGsP3Syo5RohFUA3WAO5K/2HEZmFvE5Yt\nic40W2ekM/ceDRyyyKFceaf/UMa7HMTBQVsvtfgpEZ+gCfjzyS5glY+5x0fVacl6\nCToz+EOKNQKBgQCsCSOlXHWnBd6J3Tj9ZfLJL9UUDkrqv346A7WFOCiw4SqenHwG\nPYdXGpt7fAYzQ1EVY93mIpAffnkRO/A9hsCrTXNKo4gAHRxNno6tQ6KvCxBap2wm\nna9BhDPSH3oZb0afKpMEQnRjQv1FLQP+e51sIHFYvtrVTGTv03TFhvS0eQKBgQCD\n1l4NsJQ5WPKSgan9f6N1+iAdD+jj8GqdLLvTl0uM4jhRqFTCEMSYIMtxiVjoamdm\nmkvnDAhpHIRZ5IG/SoHQ9h1fD1jzAWawg6ZVxZTlz+2rBUm3JWln/VKPnNrTRjy0\n3sUz9nsoCAbD0SR/nneJ3w6lkwD4givNmTgoRA9BMQKBgQDKEWA1CgPi6O5qWbdZ\naUs/5Rcxs6nNI22a+omLIsX6BAWYLCoAjfSaXHgs4n//wfT9XPkbB2+QmDo1cdMo\no3tZnIMyZrjCmAwKPgFRnYWeOpeaC09rIeAcmgaH3XUC8+mKASugF2J9Ak2a2ghl\nz8EQH6/c2oNFvzFFcSUPHEB8yA==\n-----END PRIVATE KEY-----\n",
+  "client_email": "ai-assistant-service@staysmart-ai-assistant.iam.gserviceaccount.com",
+  "client_id": "110419677929509333696",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/ai-assistant-service%40staysmart-ai-assistant.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}

@@ -38,9 +38,9 @@
             id="user-input"
             class="block w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50"
             placeholder="Ask Smart">
-          <!-- <button onclick="sendMessage()" class="ml-2 px-4 py-2 text-sm font-medium text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300">
-            Send
-          </button> -->
+          <button onclick="sendMessage()" class="ml-2 px-4 py-2 text-sm font-medium text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300">
+            <i data-lucide="send-horizontal" class="w-[20px]"></i>
+          </button>
         </div>
       </div>
     </div>
@@ -67,3 +67,7 @@
       sendMessage();
     }
   </script> -->
+
+  <script>
+    lucide.createIcons();
+  </script>
