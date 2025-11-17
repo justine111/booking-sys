@@ -1,6 +1,5 @@
 <?php
 require_once __DIR__ . '/../../controller/room-controller.php';
-
 $roomController = new room_controller();
 $roomId = $_GET['id'];
 
@@ -12,27 +11,29 @@ $roomDetails = $roomController->getHotelById($roomId);
 <section class="py-12 bg-white dark:bg-gray-900 antialiased mt-20">
   <div class="max-w-screen-xl px-4 mx-auto">
     <div class="lg:grid lg:grid-cols-2 lg:gap-12">
-      
-      <!-- IMAGE SECTION -->
       <div class="space-y-4">
         <!-- Main Image -->
-        <img 
+        <img
           id="mainPreviewImage"
           class="w-full h-[380px] object-cover rounded-xl shadow-md cursor-pointer hover:opacity-90 transition"
           src="/booking-sys/src/repositories/uploads/<?= $roomDetails['img1']; ?>"
           alt="Room Image"
-          onclick="openImageModal(this.src)"
-        />
+          onclick="openImageModal(this.src)" />
 
         <!-- Thumbnail Grid -->
         <div class="grid grid-cols-3 gap-4">
-          <?php for ($i = 0; $i < 3; $i++): ?>
-            <img 
-              class="w-full h-28 object-cover rounded-lg shadow cursor-pointer hover:opacity-80 transition"
-              src="/booking-sys/src/repositories/uploads/<?= $roomDetails['img2']; ?>"
-              onclick="changeMainImage(this.src)"
-            />
-          <?php endfor; ?>
+          <img
+            class="w-full h-28 object-cover rounded-lg shadow cursor-pointer hover:opacity-80 transition"
+            src="/booking-sys/src/repositories/uploads/<?= $roomDetails['img2']; ?>"
+            onclick="changeMainImage(this.src)" />
+          <img
+            class="w-full h-28 object-cover rounded-lg shadow cursor-pointer hover:opacity-80 transition"
+            src="/booking-sys/src/repositories/uploads/<?= $roomDetails['img3']; ?>"
+            onclick="changeMainImage(this.src)" />
+          <img
+            class="w-full h-28 object-cover rounded-lg shadow cursor-pointer hover:opacity-80 transition"
+            src="/booking-sys/src/repositories/uploads/<?= $roomDetails['img4']; ?>"
+            onclick="changeMainImage(this.src)" />
         </div>
       </div>
 
@@ -65,18 +66,17 @@ $roomDetails = $roomController->getHotelById($roomId);
           <button
             class="flex items-center justify-center py-2.5 px-5 text-sm font-medium 
             text-gray-900 bg-white border border-gray-300 rounded-lg 
-            hover:bg-gray-200 transition"
-          >
+            hover:bg-gray-200 transition">
             <i class="fa-regular fa-heart pr-2"></i> Add to favorites
           </button>
 
           <button
             data-modal-target="rate-modal"
             data-modal-toggle="rate-modal"
-            class="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg shadow"
-          >
-            <i class="fa-regular fa-star pr-1"></i> Leave a Review
+            class="px-6 py-2.5 text-white text-sm rounded-lg shadow <?php echo ($roomDetails['status'] == 6) ? 'bg-gray-400 cursor-not-allowed' : 'bg-orange-500'; ?>" <?php echo ($roomDetails['status'] == 6) ? 'disabled' : ''; ?>>
+            <i class="fa-regular fa-star pr-1"></i> Apply for Reservation
           </button>
+
 
           <?php require_once __DIR__ . '/./modals/booked-modal.php'; ?>
         </div>
@@ -92,9 +92,9 @@ $roomDetails = $roomController->getHotelById($roomId);
 </section>
 
 <!-- Image Preview Modal -->
-<div id="imageModal" 
-     class="fixed inset-0 bg-black bg-opacity-70 hidden items-center justify-center z-50 p-4">
-  <span 
+<div id="imageModal"
+  class="fixed inset-0 bg-black bg-opacity-70 hidden items-center justify-center z-50 p-4">
+  <span
     class="absolute top-6 right-6 text-white text-3xl cursor-pointer"
     onclick="closeImageModal()">&times;</span>
 
@@ -102,9 +102,9 @@ $roomDetails = $roomController->getHotelById($roomId);
 </div>
 
 
-    <?php require_once __DIR__ . '/components/footer.php'; ?>
+<?php require_once __DIR__ . '/components/footer.php'; ?>
 
-    <script>
+<script>
   // Change main preview image
   function changeMainImage(src) {
     document.getElementById("mainPreviewImage").src = src;

@@ -10,6 +10,9 @@ $offset = ($page - 1) * $pageSize;
 $count = $roomController->countHotels($searchQuery);
 $totalPages = ceil($count / $pageSize);
 
+$rooms = $roomController->getHotels($searchQuery, $pageSize, $offset);
+$resultCount = 0;
+
 $basePath = '/booking-sys/src/pages/main';
 require_once __DIR__ . '/components/header.php';
 ?>
@@ -64,54 +67,46 @@ require_once __DIR__ . '/components/header.php';
               <?= $label ?>
             </button>
           </li>
-        <?php $first = false; endforeach; ?>
+        <?php $first = false;
+        endforeach; ?>
       </ul>
     </div>
 
     <!-- Tab Content -->
     <div id="default-tab-content" class="mt-6">
-      <!-- Star Hotels -->
       <div class="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4" id="star-hotel" role="tabpanel">
         <?php
-        $rooms = $roomController->getHotels($searchQuery, $pageSize, $offset);
-        $resultCount = 0;
         foreach ($rooms as $room):
           $resultCount++;
         ?>
-          <div class="group relative overflow-hidden rounded-xl bg-white shadow hover:shadow-lg transition-all duration-300">
+          <div class="group relative overflow-hidden rounded-2xl bg-white shadow-md hover:shadow-lg transition-all duration-300">
             <div class="absolute top-3 left-3 z-10">
-              <span class="inline-flex items-center rounded-full <?= $room['status'] == 'available' ? 'bg-green-500' : 'bg-gray-500' ?> px-3 py-1 text-xs font-semibold text-white shadow">
-                <?= ucfirst($room['status']) ?>
+              <span class="inline-flex items-center rounded-full <?= $room['status'] == 5 ? 'bg-green-500' : 'bg-gray-500' ?> px-3 py-1 text-xs font-semibold text-white shadow">
+                <?= htmlentities($room['status'] == 5 ? 'Available' : 'Booked') ?>
               </span>
             </div>
 
             <a href="details.php?id=<?= $room['property_id'] ?>" class="block overflow-hidden">
-                <img
+              <img
                 src="/booking-sys/src/repositories/uploads/<?= htmlspecialchars($room['img1']); ?>"
                 loading="lazy"
                 class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
             </a>
 
-            <div class="p-4 space-y-2">
+            <div class="p-4 space-y-1">
               <div class="flex justify-between items-start">
-                <a href="details.php?id=<?= $room['property_id'] ?>"
-                   class="text-lg font-semibold text-gray-800 hover:text-orange-500 transition-colors duration-200">
-                   <?= htmlspecialchars($room['title']); ?>
+                <a href="details.php?id=<?= $room['property_id'] ?>" class="text-lg font-semibold text-orange-500 transition-colors duration-200">
+                  <?= htmlspecialchars($room['title']); ?>
                 </a>
                 <div class="flex items-center text-yellow-400">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292..."/>
-                  </svg>
-                  <span class="ml-1 text-sm font-medium text-gray-600">4.8</span>
+                  <i data-lucide="star" class="w-[16px] mr-1"></i>
+                  <span class="text-sm font-medium text-gray-600">4.8</span>
                 </div>
               </div>
 
               <p class="flex items-center text-sm text-gray-500">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M17.657 16.657L13.414 20.9a1.998..."/>
-                </svg>
-                <?= htmlspecialchars($room['location'] ?? 'City Center') ?>
+                <i data-lucide="map-pin" class="w-[16px] mr-1"></i>
+                <?= htmlspecialchars($room['address'] ?? 'City Center') ?>
               </p>
 
               <div class="flex items-center justify-between pt-2">
@@ -123,8 +118,8 @@ require_once __DIR__ . '/components/header.php';
                   </p>
                 </div>
                 <a href="details.php?id=<?= $room['property_id'] ?>"
-                   class="rounded-full bg-orange-500 px-4 py-2 text-sm text-white font-medium hover:bg-orange-600 transition-colors">
-                   View
+                  class="rounded-full bg-orange-500 px-4 py-2 text-sm text-white font-medium hover:bg-orange-600 transition-colors">
+                  View
                 </a>
               </div>
             </div>
@@ -134,7 +129,7 @@ require_once __DIR__ . '/components/header.php';
           <div class="col-span-full flex flex-col items-center justify-center py-12">
             <svg class="w-16 h-16 text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-          d="M9.75 17L9 21m5.25-4l.75 4M4 10V7a4 4 0 014-4h8a4 4 0 014 4v3m-2 0h2a2 2 0 012 2v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5a2 2 0 012-2h2m10 0V7a2 2 0 00-2-2H8a2 2 0 00-2 2v3" />
+                d="M9.75 17L9 21m5.25-4l.75 4M4 10V7a4 4 0 014-4h8a4 4 0 014 4v3m-2 0h2a2 2 0 012 2v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5a2 2 0 012-2h2m10 0V7a2 2 0 00-2-2H8a2 2 0 00-2 2v3" />
             </svg>
             <h3 class="text-lg font-semibold text-gray-700 mb-2">No rooms found</h3>
             <p class="text-gray-500 mb-4">We couldn't find any rooms matching your search criteria.</p>
@@ -172,9 +167,9 @@ require_once __DIR__ . '/components/header.php';
 
       <div class="flex mt-3">
         <a href="<?= $basePath ?>/main.php?page=<?= max(1, $page - 1) ?><?= $searchQuery ? '&search=' . urlencode($searchQuery) : '' ?>"
-           class="px-4 py-2 text-sm rounded-s bg-gray-800 text-white hover:bg-gray-900 transition-all <?= $page > 1 ? '' : 'opacity-40 pointer-events-none' ?>">Prev</a>
+          class="px-4 py-2 text-sm rounded-s bg-gray-800 text-white hover:bg-gray-900 transition-all <?= $page > 1 ? '' : 'opacity-40 pointer-events-none' ?>">Prev</a>
         <a href="<?= $basePath ?>/main.php?page=<?= min($totalPages, $page + 1) ?><?= $searchQuery ? '&search=' . urlencode($searchQuery) : '' ?>"
-           class="px-4 py-2 text-sm rounded-e bg-gray-800 text-white hover:bg-gray-900 transition-all <?= $page < $totalPages ? '' : 'opacity-40 pointer-events-none' ?>">Next</a>
+          class="px-4 py-2 text-sm rounded-e bg-gray-800 text-white hover:bg-gray-900 transition-all <?= $page < $totalPages ? '' : 'opacity-40 pointer-events-none' ?>">Next</a>
       </div>
     </div>
   </div>
@@ -184,3 +179,6 @@ require_once __DIR__ . '/components/header.php';
 require_once __DIR__ . '/components/footer.php';
 require_once __DIR__ . '/../ai/index.php';
 ?>
+<script>
+  lucide.createIcons();
+</script>

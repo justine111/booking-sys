@@ -9,8 +9,7 @@ class RoomsRepository extends base_repository
     if (!empty($searchQuery)) {
       $query .= " AND title LIKE :searchQuery
           OR price_per_night LIKE :searchQuery
-          OR address LIKE :searchQuery
-          OR status LIKE :searchQuery";
+          OR address LIKE :searchQuery";
     }
     $stmt = $this->db->prepare($query);
     if (!empty($searchQuery)) {
@@ -24,61 +23,60 @@ class RoomsRepository extends base_repository
 
   public function getHotels($searchQuery = null, $limit, $offset)
   {
-    try {
-      $searchQuery = trim($searchQuery);
+    $sql = "SELECT 
+	            a.property_id, 
+              a.title, 
+              a.description, 
+              a.address,
+              a.price_per_night, 
+              a.address, 
+              a.img1, 
+              a.status
+            FROM properties a
+            LEFT JOIN booking_status b
+            ON a.status = b.id
+            WHERE a.property_id IS NOT NULL";
 
-      $query = "SELECT property_id, title, description, price_per_night, address, img1, status
-                FROM properties
-                WHERE status != 'inactive'";
-      if (!empty($searchQuery)) {
-        $query .= " AND title LIKE :searchQuery
-          OR price_per_night LIKE :searchQuery
-          OR address LIKE :searchQuery
-          OR status LIKE :searchQuery";
-      }
-      $query .= " ORDER BY property_id DESC LIMIT :limit OFFSET :offset";
-      $stmt = $this->db->prepare($query);
-      if (!empty($searchQuery)) {
-        $searchQuery = "%$searchQuery%";
-        $stmt->bindParam(':searchQuery', $searchQuery);
-      }
-      $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
-      $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
-      $stmt->execute();
-      return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    } catch (PDOException $e) {
-      return [
-        'error' => 'Database query failed: ' . $e->getMessage()
-      ]; // Log error or handle gracefully
-      return [];
+    if (!empty($searchQuery)) {
+      $sql .= " AND a.title LIKE :searchQuery
+        OR a.price_per_night LIKE :searchQuery
+        OR a.address LIKE :searchQuery";
     }
+    $sql .= " ORDER BY a.property_id DESC LIMIT :limit OFFSET :offset";
+    $stmt = $this->db->prepare($sql);
+
+    if (!empty($searchQuery)) {
+      $searchQuery = "%$searchQuery%";
+      $stmt->bindParam(':searchQuery', $searchQuery);
+    }
+    $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
+    $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
+    $stmt->execute();
+
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
   }
 
   public function getHotelById($roomId)
   {
-    try {
-      $query = "SELECT 
-                  property_id, 
-                  title, 
-                  description, 
-                  price_per_night, 
-                  address, 
-                  img1, 
-                  img2, 
-                  img3,
-                  img4,
-                  status
-                FROM properties
-                WHERE property_id = :id AND status != 'inactive'";
-      $stmt = $this->db->prepare($query);
-      $stmt->bindParam(':id', $roomId, PDO::PARAM_INT);
-      $stmt->execute();
-      return $stmt->fetch(PDO::FETCH_ASSOC);
-    } catch (PDOException $e) {
-      return [
-        'error' => 'Database query failed: ' . $e->getMessage()
-      ]; // Log error or handle gracefully
-    }
+    $sql = "SELECT 
+              property_id, 
+              title, 
+              description, 
+              price_per_night, 
+              amenities,
+              address, 
+              img1, 
+              img2, 
+              img3,
+              img4,
+              status
+            FROM properties
+            WHERE property_id = :id";
+    $stmt = $this->db->prepare($sql);
+    $stmt->bindParam(':id', $roomId, PDO::PARAM_INT);
+    $stmt->execute();
+
+    return $stmt->fetch(PDO::FETCH_ASSOC);
   }
 
   public function addHotel($hotelName, $address, $city, $price, $host, $description, $amenities, $img1, $img2, $img3, $img4)
