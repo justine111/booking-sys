@@ -1,0 +1,18 @@
+2025-11-18 06:08:11 - Reservation Data: Array
+(
+    [selected_hotel] => Array
+        (
+            [property_id] => 18
+            [title] => Joshua house
+            [description] => Fresn and clean with high mountain view,
+            [price_per_night] => 2500.00
+            [address] => Brgy Naga-asan
+            [display_title] => Joshua house
+        )
+
+    [name] => Mark Justine Bengson
+    [phoneno] => 09184830422
+    [duration] => 2 days and 1 night
+    [description] => Please give us response thank you.
+)
+

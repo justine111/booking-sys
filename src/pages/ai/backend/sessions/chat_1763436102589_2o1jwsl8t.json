@@ -1,0 +1,13 @@
+{
+    "available_hotels": [
+        {
+            "title": "Joshua house",
+            "description": "Fresn and clean with high mountain view,",
+            "price_per_night": "2500.00",
+            "address": "Brgy Naga-asan",
+            "property_id": "Joshua house"
+        }
+    ],
+    "reservation_step": "completed",
+    "reservation_data": []
+}
