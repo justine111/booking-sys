@@ -1,11 +1,14 @@
+// Toggle chat window visibility
 function toggleChat() {
   const chatContainer = document.getElementById('chat-container');
   const chatToggle = document.getElementById('chat-toggle');
   chatContainer.classList.toggle('hidden');
   chatToggle.classList.toggle('hidden');
 }
+
 document.getElementById('chat-toggle').addEventListener('click', toggleChat);
 
+// Insert suggestion into input and send message
 function selectSuggestion(text) {
   document.getElementById('user-input').value = text;
   sendMessage();
@@ -76,8 +79,41 @@ function getUserLocation() {
       chatBox.appendChild(errorMessage);
       chatBox.scrollTop = chatBox.scrollHeight;
   }
+
+  navigator.geolocation.getCurrentPosition(
+    (position) => {
+      window.userLatitude = position.coords.latitude;
+      window.userLongitude = position.coords.longitude;
+      console.log(`User location obtained: Lat ${window.userLatitude}, Lng ${window.userLongitude}`);
+    },
+    (error) => {
+      let msg = '';
+      if (error.code === error.PERMISSION_DENIED) {
+        msg = 'Location access denied by user. Recommendations might not be location-specific.';
+      } else {
+        msg = 'Could not get your location. Recommendations might not be location-specific.';
+      }
+      showBotMessage(msg, 'error');
+    },
+    {
+      enableHighAccuracy: true,
+      timeout: 10000,
+      maximumAge: 60000
+    }
+  );
 }
 
+// Append bot messages to chat box
+function showBotMessage(message, type = 'info') {
+  const chatBox = document.getElementById('chat-box');
+  const botMessage = document.createElement('div');
+  botMessage.className = 'flex items-start';
+  botMessage.innerHTML = `<div class="bg-${type === 'error' ? 'red' : 'orange'}-100 text-${type === 'error' ? 'red' : 'orange'}-900 p-2 rounded-lg px-4 py-2 max-w-[70%]">Smart: ${message}</div>`;
+  chatBox.appendChild(botMessage);
+  chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+// Send user message to backend
 function sendMessage() {
   if (isProcessingReservation) {
     return; // Prevent multiple simultaneous requests during reservation flow
@@ -85,16 +121,11 @@ function sendMessage() {
 
   const userInputElement = document.getElementById('user-input');
   const userInput = userInputElement.value.trim();
-  const messageListWrapper = document.getElementById('chat-box');
-  
-  if (userInput === "") return;
+  if (!userInput) return;
 
-  // Clear any preview placeholder
-  if (messageListWrapper.textContent.trim() === 'Preview result...') {
-    messageListWrapper.innerHTML = '';
-  }
-  
-  // Append user message
+  const chatBox = document.getElementById('chat-box');
+
+  // Display user message
   const userMessage = document.createElement('div');
   userMessage.className = 'flex justify-end';
   userMessage.innerHTML = `<div class="bg-blue-100 text-blue-900 text-start rounded-lg px-2 py-2 max-w-[70%]">${userInput}</div>`;
@@ -123,12 +154,20 @@ function sendMessage() {
       Smart: Processing...
     </div>
   `;
-  messageListWrapper.appendChild(loadingMessage);
+  chatBox.appendChild(loadingMessage);
+  chatBox.scrollTop = chatBox.scrollHeight;
+
+  // Prepare request payload
+  const requestBody = { message: userInput };
+  if (window.userLatitude !== null && window.userLongitude !== null) {
+    requestBody.latitude = window.userLatitude;
+    requestBody.longitude = window.userLongitude;
+  }
 
   // Disable input during processing
   isProcessingReservation = true;
   userInputElement.disabled = true;
-
+  
   // Send request to backend
   fetch("/booking-sys/src/pages/ai/backend/chatbot.php", {
     method: 'POST',

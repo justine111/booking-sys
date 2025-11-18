@@ -200,6 +200,8 @@ if ($response === false) {
   exit;
 }
 
+curl_close($ch);
+
 $response_data = json_decode($response, true);
 $text = $response_data['candidates'][0]['content']['parts'][0]['text'] ?? null;
 
