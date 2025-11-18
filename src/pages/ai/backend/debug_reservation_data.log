@@ -1,4 +1,4 @@
-2025-11-18 06:08:11 - Reservation Data: Array
+2025-11-18 09:38:26 - Reservation Data: Array
 (
     [selected_hotel] => Array
         (
@@ -10,9 +10,9 @@
             [display_title] => Joshua house
         )
 
-    [name] => Mark Justine Bengson
+    [name] => cancel it
     [phoneno] => 09184830422
-    [duration] => 2 days and 1 night
-    [description] => Please give us response thank you.
+    [duration] => 1
+    [description] => r
 )
 

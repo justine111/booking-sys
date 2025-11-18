@@ -1,0 +1,20 @@
+{
+    "available_hotels": [
+        {
+            "property_id": "19",
+            "title": "Hotel Ranelo",
+            "description": "Dining options are described individually, highlighting the ambiance, cuisine, and notable features like signature dishes or renowned chefs.",
+            "price_per_night": "2500.00",
+            "address": "Brgy 110 Utap Tacloban City"
+        },
+        {
+            "property_id": "18",
+            "title": "Joshua house",
+            "description": "Fresn and clean with high mountain view,",
+            "price_per_night": "2500.00",
+            "address": "Brgy Naga-asan"
+        }
+    ],
+    "reservation_step": "ask_hotel_selection",
+    "reservation_data": []
+}

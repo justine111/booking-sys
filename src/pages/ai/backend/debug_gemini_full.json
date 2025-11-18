@@ -1,9 +1,0 @@
-{
-    "timestamp": "2025-11-18 03:44:07",
-    "user_message": "stay",
-    "matched_trigger": true,
-    "hotels_available": true,
-    "hotel_count": 1,
-    "final_prompt_length": 900,
-    "gemini_response_code": 200
-}

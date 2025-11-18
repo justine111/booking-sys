@@ -1,9 +1,11 @@
 <?php
 header('Content-Type: application/json');
 
-$api_key = 'AIzaSyAVTtWzjt2vP3pfDkNoabV3Dr7txtwlqRM'; //Gemini API keys
+// Your Gemini API key
+$api_key = 'AIzaSyAVTtWzjt2vP3pfDkNoabV3Dr7txtwlqRM';
 
-$sessions_dir = __DIR__ . '/sessions'; //ensure session folder exist
+// Ensure sessions directory exists
+$sessions_dir = __DIR__ . '/sessions';
 if (!is_dir($sessions_dir)) {
   mkdir($sessions_dir, 0755, true);
 }
@@ -21,12 +23,20 @@ $latitude = $input['latitude'] ?? null;
 $longitude = $input['longitude'] ?? null;
 $session_id = $input['session_id'] ?? uniqid('chat_', true);
 
+// ============================================
+// SESSION MANAGEMENT
+// ============================================
+
 $session_file = $sessions_dir . '/' . $session_id . '.json';
 $session_data = [];
 
 if (file_exists($session_file)) {
   $session_data = json_decode(file_get_contents($session_file), true) ?? [];
 }
+
+// ============================================
+// TRIGGER KEYWORDS
+// ============================================
 
 $hotel_triggers = [
   'hotel',
@@ -64,6 +74,10 @@ $reservation_triggers = [
   'confirm booking'
 ];
 
+// ============================================
+// CHECK TRIGGERS
+// ============================================
+
 $hotel_matched = false;
 $reservation_matched = false;
 
@@ -80,6 +94,10 @@ foreach ($reservation_triggers as $trigger) {
     break;
   }
 }
+
+// ============================================
+// FETCH HOTEL DATA IF NEEDED
+// ============================================
 
 $hotel_data = '';
 $hotels_available = false;
@@ -99,10 +117,14 @@ if ($hotel_matched || $reservation_matched || !empty($session_data['reservation_
   }
 }
 
-//chatbot reservation process
+// ============================================
+// RESERVATION FLOW MANAGEMENT - FIXED
+// ============================================
+
 $reservation_in_progress = !empty($session_data['reservation_step']);
 $direct_response = '';
 
+// Handle reservation flow FIRST
 if ($reservation_matched && !$reservation_in_progress) {
   // Start new reservation
   $session_data['reservation_step'] = 'ask_hotel_selection';
@@ -200,8 +222,6 @@ if ($response === false) {
   exit;
 }
 
-curl_close($ch);
-
 $response_data = json_decode($response, true);
 $text = $response_data['candidates'][0]['content']['parts'][0]['text'] ?? null;
 
@@ -284,9 +304,9 @@ function fetchHotelData()
         $result['hotels'][$index]['display_title'] = $title;
 
         $hotel_data .= ($index + 1) . ". **$title**\n";
-        $hotel_data .= "   $address\n";
-        $hotel_data .= "   $price per night\n";
-        $hotel_data .= "   $description\n\n";
+        $hotel_data .= "   📍 $address\n";
+        $hotel_data .= "   💰 $price per night\n";
+        $hotel_data .= "   📝 $description\n\n";
       }
       $result['data'] = $hotel_data;
     } else {
