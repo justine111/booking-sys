@@ -1,515 +1,792 @@
 <?php
 header('Content-Type: application/json');
 
-// Your Gemini API key
-$api_key = 'AIzaSyAVTtWzjt2vP3pfDkNoabV3Dr7txtwlqRM';
+// Security headers
+header('X-Content-Type-Options: nosniff');
+header('X-Frame-Options: DENY');
+header('X-XSS-Protection: 1; mode=block');
 
-// Ensure sessions directory exists
-$sessions_dir = __DIR__ . '/sessions';
-if (!is_dir($sessions_dir)) {
-  mkdir($sessions_dir, 0755, true);
+// Environment-based configuration
+class Config
+{
+  const API_KEY = 'AIzaSyAVTtWzjt2vP3pfDkNoabV3Dr7txtwlqRM';
+  const SESSIONS_DIR = __DIR__ . '/sessions';
+  const MAX_MESSAGE_LENGTH = 1000;
+  const SESSION_TIMEOUT = 3600; // 1 hour
 }
 
-// Get the raw POST data
-$input = json_decode(file_get_contents('php://input'), true);
+// Input validation and sanitization
+class InputValidator
+{
+  public static function validateInput($input)
+  {
+    if (!is_array($input)) {
+      throw new InvalidArgumentException('Input must be an array');
+    }
 
-if (!$input || !isset($input['message'])) {
-  echo json_encode(['error' => 'No message provided.']);
-  exit;
-}
+    if (!isset($input['message']) || empty(trim($input['message']))) {
+      throw new InvalidArgumentException('Message is required');
+    }
 
-$message = trim($input['message']);
-$latitude = $input['latitude'] ?? null;
-$longitude = $input['longitude'] ?? null;
-$session_id = $input['session_id'] ?? uniqid('chat_', true);
+    $message = trim($input['message']);
+    if (strlen($message) > Config::MAX_MESSAGE_LENGTH) {
+      throw new InvalidArgumentException('Message too long');
+    }
 
-// ============================================
-// SESSION MANAGEMENT
-// ============================================
+    // Sanitize message
+    $message = self::sanitizeText($message);
 
-$session_file = $sessions_dir . '/' . $session_id . '.json';
-$session_data = [];
+    $result = [
+      'message' => $message,
+      'latitude' => isset($input['latitude']) ? self::validateCoordinate($input['latitude']) : null,
+      'longitude' => isset($input['longitude']) ? self::validateCoordinate($input['longitude']) : null,
+      'session_id' => isset($input['session_id']) ? self::validateSessionId($input['session_id']) : self::generateSessionId()
+    ];
 
-if (file_exists($session_file)) {
-  $session_data = json_decode(file_get_contents($session_file), true) ?? [];
-}
+    return $result;
+  }
 
-// ============================================
-// TRIGGER KEYWORDS
-// ============================================
+  private static function sanitizeText($text)
+  {
+    $text = strip_tags($text);
+    $text = htmlspecialchars($text, ENT_QUOTES, 'UTF-8');
+    return $text;
+  }
 
-$hotel_triggers = [
-  'hotel',
-  'hotels',
-  'accommodation',
-  'stay',
-  'booking',
-  'lodging',
-  'inn',
-  'motel',
-  'resort',
-  'hostel',
-  'place to stay',
-  'where to stay',
-  'book hotel',
-  'cheap hotel',
-  'budget hotel',
-  'affordable stay',
-  'room',
-  'rooms',
-  'vacation stay'
-];
+  private static function validateCoordinate($coord)
+  {
+    if (!is_numeric($coord)) {
+      return null;
+    }
+    $coord = floatval($coord);
+    return ($coord >= -180 && $coord <= 180) ? $coord : null;
+  }
 
-$reservation_triggers = [
-  'book',
-  'reserve',
-  'reservation',
-  'booking',
-  'make reservation',
-  'i want to book',
-  'i want to reserve',
-  'make booking',
-  'reserve room',
-  'book room',
-  'confirm booking'
-];
+  private static function validateSessionId($sessionId)
+  {
+    if (!preg_match('/^chat_[a-zA-Z0-9_-]+$/', $sessionId)) {
+      return self::generateSessionId();
+    }
+    return $sessionId;
+  }
 
-// ============================================
-// CHECK TRIGGERS
-// ============================================
-
-$hotel_matched = false;
-$reservation_matched = false;
-
-foreach ($hotel_triggers as $trigger) {
-  if (stripos($message, $trigger) !== false) {
-    $hotel_matched = true;
-    break;
+  private static function generateSessionId()
+  {
+    return 'chat_' . time() . '_' . bin2hex(random_bytes(8));
   }
 }
 
-foreach ($reservation_triggers as $trigger) {
-  if (stripos($message, $trigger) !== false) {
-    $reservation_matched = true;
-    break;
+// Enhanced session management
+class SessionManager
+{
+  private $sessionFile;
+  private $sessionData;
+
+  public function __construct($sessionId)
+  {
+    $this->ensureSessionsDir();
+    $this->sessionFile = Config::SESSIONS_DIR . '/' . $sessionId . '.json';
+    $this->loadSession();
+    $this->cleanupOldSessions();
+  }
+
+  private function ensureSessionsDir()
+  {
+    if (!is_dir(Config::SESSIONS_DIR)) {
+      mkdir(Config::SESSIONS_DIR, 0755, true);
+    }
+  }
+
+  private function loadSession()
+  {
+    if (file_exists($this->sessionFile)) {
+      $data = json_decode(file_get_contents($this->sessionFile), true);
+      // Check if session is expired
+      if ($data && isset($data['timestamp']) && (time() - $data['timestamp']) < Config::SESSION_TIMEOUT) {
+        $this->sessionData = $data;
+        return;
+      }
+    }
+    $this->sessionData = ['timestamp' => time()];
+  }
+
+  public function saveSession()
+  {
+    $this->sessionData['timestamp'] = time();
+    file_put_contents($this->sessionFile, json_encode($this->sessionData, JSON_PRETTY_PRINT));
+  }
+
+  public function getData($key = null)
+  {
+    if ($key === null) {
+      return $this->sessionData;
+    }
+    return $this->sessionData[$key] ?? null;
+  }
+
+  public function setData($key, $value)
+  {
+    $this->sessionData[$key] = $value;
+  }
+
+  public function clearReservation()
+  {
+    unset($this->sessionData['reservation_step'], $this->sessionData['reservation_data'], $this->sessionData['available_hotels']);
+  }
+
+  private function cleanupOldSessions()
+  {
+    $files = glob(Config::SESSIONS_DIR . '/*.json');
+    $now = time();
+    foreach ($files as $file) {
+      if (($now - filemtime($file)) > Config::SESSION_TIMEOUT) {
+        @unlink($file);
+      }
+    }
   }
 }
 
-// ============================================
-// FETCH HOTEL DATA IF NEEDED
-// ============================================
+// Hotel service with better error handling
+class HotelService
+{
+  private const BACKEND_URL = "http://localhost/AI-Gemini/backend.php";
+  private const TIMEOUT = 15;
 
-$hotel_data = '';
-$hotels_available = false;
-$hotel_count = 0;
-$available_hotels = [];
+  public static function fetchHotels()
+  {
+    $ch = curl_init();
+    curl_setopt_array($ch, [
+      CURLOPT_URL => self::BACKEND_URL,
+      CURLOPT_RETURNTRANSFER => true,
+      CURLOPT_TIMEOUT => self::TIMEOUT,
+      CURLOPT_FAILONERROR => true
+    ]);
 
-if ($hotel_matched || $reservation_matched || !empty($session_data['reservation_step'])) {
-  $hotel_data_result = fetchHotelData();
-  $hotel_data = $hotel_data_result['data'];
-  $hotels_available = $hotel_data_result['available'];
-  $hotel_count = $hotel_data_result['count'];
-  $available_hotels = $hotel_data_result['hotels'];
+    $response = curl_exec($ch);
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    $error = curl_error($ch);
+    curl_close($ch);
 
-  // Store available hotels in session for reservation
-  if ($hotels_available) {
-    $session_data['available_hotels'] = $available_hotels;
+    if ($response === false) {
+      error_log("Hotel service error: $error");
+      return self::createErrorResult("Unable to fetch hotel data at the moment");
+    }
+
+    $data = json_decode($response, true);
+
+    if (json_last_error() !== JSON_ERROR_NONE) {
+      error_log("Hotel service JSON error: " . json_last_error_msg());
+      return self::createErrorResult("Invalid hotel data format");
+    }
+
+    return self::processHotelData($data);
+  }
+
+  private static function processHotelData($data)
+  {
+    if (empty($data['hotels']) || !is_array($data['hotels'])) {
+      return [
+        'data' => "Currently no hotels available under ₱3000.",
+        'available' => false,
+        'count' => 0,
+        'hotels' => []
+      ];
+    }
+
+    $hotelData = "";
+    $availableHotels = [];
+
+    foreach ($data['hotels'] as $index => $hotel) {
+      $title = $hotel['title'] ?? $hotel['name'] ?? 'Unknown Hotel';
+      $description = $hotel['description'] ?? 'No description available';
+      $price = isset($hotel['price_per_night']) ? '₱' . number_format($hotel['price_per_night'], 0) : 'Price not available';
+      $address = $hotel['address'] ?? $hotel['location'] ?? 'Address not specified';
+      $propertyId = $hotel['property_id'] ?? $hotel['id'] ?? $title;
+
+      $availableHotels[] = [
+        'property_id' => $propertyId,
+        'display_title' => $title,
+        'original_data' => $hotel
+      ];
+
+      $hotelData .= ($index + 1) . ". **$title**\n";
+      $hotelData .= "   📍 $address\n";
+      $hotelData .= "   💰 $price per night\n";
+      $hotelData .= "   📝 $description\n\n";
+    }
+
+    return [
+      'data' => $hotelData,
+      'available' => true,
+      'count' => count($data['hotels']),
+      'hotels' => $availableHotels
+    ];
+  }
+
+  private static function createErrorResult($message)
+  {
+    return [
+      'data' => $message,
+      'available' => false,
+      'count' => 0,
+      'hotels' => []
+    ];
   }
 }
 
-// ============================================
-// RESERVATION FLOW MANAGEMENT - FIXED
-// ============================================
+// Enhanced reservation handler
+class ReservationHandler
+{
+  private const RESERVATION_URL = "http://localhost/booking-sys/src/pages/ai/backend/reservation-endpoint.php";
 
-$reservation_in_progress = !empty($session_data['reservation_step']);
-$direct_response = '';
+  public static function process($reservationData)
+  {
+    $selectedHotel = $reservationData['selected_hotel'] ?? [];
+    $propertyId = $selectedHotel['property_id'] ?? '';
 
-// Handle reservation flow FIRST
-if ($reservation_matched && !$reservation_in_progress) {
-  // Start new reservation
-  $session_data['reservation_step'] = 'ask_hotel_selection';
-  $session_data['reservation_data'] = [];
-  $reservation_in_progress = true;
+    if (empty($propertyId)) {
+      return self::createErrorResult("Invalid hotel selection");
+    }
 
-  if ($hotels_available) {
-    $direct_response = "Great! I'd be happy to help you make a reservation. Here are our available budget hotels:\n\n" . $hotel_data . "\n\nPlease select a hotel by number (1, 2, etc.):";
-  } else {
-    $direct_response = "I'd love to help you make a reservation, but currently no hotels are available under ₱3000. Please check back later!";
+    $postData = [
+      'unit' => $propertyId,
+      'name' => $reservationData['name'] ?? '',
+      'phoneno' => $reservationData['phoneno'] ?? '',
+      'stay-duration' => $reservationData['duration'] ?? '',
+      'description' => $reservationData['description'] ?? ''
+    ];
+
+    // Validate required fields
+    $validation = self::validateReservationData($postData);
+    if (!$validation['valid']) {
+      return self::createErrorResult($validation['message']);
+    }
+
+    $ch = curl_init();
+    curl_setopt_array($ch, [
+      CURLOPT_URL => self::RESERVATION_URL,
+      CURLOPT_RETURNTRANSFER => true,
+      CURLOPT_POST => true,
+      CURLOPT_POSTFIELDS => http_build_query($postData),
+      CURLOPT_TIMEOUT => 15,
+    ]);
+
+    $response = curl_exec($ch);
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+
+    if ($response === false) {
+      return self::createErrorResult("Connection to reservation service failed");
+    }
+
+    $result = json_decode($response, true);
+    return self::parseReservationResponse($result, $reservationData);
   }
-} elseif ($reservation_in_progress) {
-  // Handle the reservation step
-  $step_result = handleReservationFlow($message, $session_data);
-  if (!empty($step_result)) {
-    $direct_response = $step_result;
+
+  private static function validateReservationData($data)
+  {
+    if (empty($data['name'])) {
+      return ['valid' => false, 'message' => 'Name is required'];
+    }
+    if (empty($data['phoneno'])) {
+      return ['valid' => false, 'message' => 'Phone number is required'];
+    }
+    if (empty($data['stay-duration']) || !is_numeric($data['stay-duration']) || $data['stay-duration'] <= 0) {
+      return ['valid' => false, 'message' => 'Valid stay duration is required'];
+    }
+    return ['valid' => true];
+  }
+
+  private static function parseReservationResponse($result, $reservationData)
+  {
+    if ($result && isset($result['error']) && !$result['error']) {
+      $hotelName = $reservationData['selected_hotel']['display_title'] ?? 'selected hotel';
+
+      $confirmationMessage = "✅ Booking confirmed for **" . $hotelName . "**!\n\n" .
+        "📋 Booking Details:\n" .
+        "• Name: " . ($reservationData['name'] ?? '') . "\n" .
+        "• Phone: " . ($reservationData['phoneno'] ?? '') . "\n" .
+        "• Duration: " . ($reservationData['duration'] ?? '') . " nights\n" .
+        "• Special Requests: " . ($reservationData['description'] ?? 'None') . "\n\n" .
+        "Thank you for your booking! " . ($result['message'] ?? 'We will contact you shortly.');
+
+      return [
+        'success' => true,
+        'message' => $confirmationMessage
+      ];
+    }
+
+    $errorMsg = $result['message'] ?? 'Reservation failed. Please try again.';
+    if (!empty($result['fields'])) {
+      $errorMsg .= "\n\nPlease check:\n";
+      foreach ($result['fields'] as $field => $error) {
+        $errorMsg .= "• " . $error . "\n";
+      }
+    }
+
+    return self::createErrorResult($errorMsg);
+  }
+
+  private static function createErrorResult($message)
+  {
+    return [
+      'success' => false,
+      'message' => "❌ " . $message
+    ];
   }
 }
 
-// ============================================
-// RESPONSE GENERATION - FIXED LOGIC
-// ============================================
+// Enhanced Chatbot Class with Fixed Reservation Flow
+class EnhancedChatbot
+{
+  private $sessionManager;
+  private $input;
+  private $triggers;
 
-// If we have a direct response from reservation flow, use it and skip Gemini
-if (!empty($direct_response)) {
-  // Save session
-  file_put_contents($session_file, json_encode($session_data, JSON_PRETTY_PRINT));
+  public function __construct($sessionManager, $input)
+  {
+    $this->sessionManager = $sessionManager;
+    $this->input = $input;
+    $this->triggers = [
+      'hotel' => [
+        'hotel',
+        'hotels',
+        'accommodation',
+        'stay',
+        'booking',
+        'lodging',
+        'inn',
+        'motel',
+        'resort',
+        'hostel',
+        'place to stay',
+        'where to stay',
+        'book hotel',
+        'cheap hotel',
+        'budget hotel',
+        'affordable stay',
+        'room',
+        'rooms',
+        'vacation stay'
+      ],
+      'reservation' => [
+        'book',
+        'reserve',
+        'reservation',
+        'booking',
+        'make reservation',
+        'i want to book',
+        'i want to reserve',
+        'make booking',
+        'reserve room',
+        'book room',
+        'confirm booking'
+      ],
+      'reset' => [
+        'hello',
+        'hi',
+        'hey',
+        'start',
+        'new',
+        'restart',
+        'again',
+        'another',
+        'help',
+        'menu',
+        'options'
+      ]
+    ];
+  }
 
-  echo json_encode([
-    'response' => trim($direct_response),
-    'hotels_matched' => $hotel_matched,
-    'reservation_matched' => $reservation_matched,
-    'reservation_in_progress' => $reservation_in_progress,
-    'session_id' => $session_id
-  ]);
-  exit;
-}
+  public function process()
+  {
+    $message = $this->input['message'];
+    $latitude = $this->input['latitude'];
+    $longitude = $this->input['longitude'];
 
-// ============================================
-// GEMINI API CALL (Only for non-reservation messages)
-// ============================================
+    // Check if we should reset completed reservation
+    $this->checkResetReservation($message);
 
-$final_prompt = buildFinalPrompt(
-  $message,
-  $hotel_matched,
-  $reservation_matched,
-  $reservation_in_progress,
-  $hotel_data,
-  $hotels_available,
-  $available_hotels,
-  $session_data,
-  $latitude,
-  $longitude
-);
+    $hotelMatched = $this->checkTriggers($message, 'hotel');
+    $reservationMatched = $this->checkTriggers($message, 'reservation');
+    $reservationInProgress = $this->sessionManager->getData('reservation_step') !== null;
 
-$payload = [
-  'contents' => [
-    [
-      'parts' => [
+    // Handle reservation flow FIRST
+    $directResponse = '';
+    if ($reservationInProgress) {
+      $directResponse = $this->handleReservationFlow($message);
+    } elseif ($reservationMatched && !$reservationInProgress) {
+      $directResponse = $this->startNewReservation();
+    }
+
+    // If we have a direct response from reservation flow, use it
+    if (!empty($directResponse)) {
+      return [
+        'response' => trim($directResponse),
+        'hotels_matched' => $hotelMatched,
+        'reservation_matched' => $reservationMatched,
+        'reservation_in_progress' => $reservationInProgress,
+        'session_id' => $this->input['session_id']
+      ];
+    }
+
+    // Process through Gemini API for non-reservation messages
+    return $this->processWithGemini($message, $hotelMatched, $reservationMatched, $reservationInProgress, $latitude, $longitude);
+  }
+
+  private function checkResetReservation($message)
+  {
+    $currentStep = $this->sessionManager->getData('reservation_step');
+
+    // Reset completed reservation if user starts a new conversation
+    if ($currentStep === 'completed') {
+      $lowerMessage = strtolower($message);
+
+      // Check for reset keywords
+      foreach ($this->triggers['reset'] as $keyword) {
+        if (strpos($lowerMessage, $keyword) !== false) {
+          $this->sessionManager->clearReservation();
+          return;
+        }
+      }
+
+      // Check for hotel/reservation keywords
+      if ($this->checkTriggers($message, 'hotel') || $this->checkTriggers($message, 'reservation')) {
+        $this->sessionManager->clearReservation();
+        return;
+      }
+
+      // Also reset if it's clearly a new topic (not simple acknowledgments)
+      if (!$this->isSimpleAcknowledgment($message)) {
+        $this->sessionManager->clearReservation();
+      }
+    }
+
+    // Reset error state on new intent
+    if ($currentStep === 'error' && ($this->checkTriggers($message, 'hotel') || $this->checkTriggers($message, 'reservation'))) {
+      $this->sessionManager->clearReservation();
+    }
+  }
+
+  private function isSimpleAcknowledgment($message)
+  {
+    $acknowledgments = [
+      'thanks',
+      'thank you',
+      'ok',
+      'okay',
+      'got it',
+      'understood',
+      'cool',
+      'great',
+      'awesome',
+      'perfect',
+      'nice',
+      'good'
+    ];
+
+    $lowerMessage = strtolower(trim($message));
+    return in_array($lowerMessage, $acknowledgments);
+  }
+
+  private function checkTriggers($message, $type)
+  {
+    $lowerMessage = strtolower($message);
+    foreach ($this->triggers[$type] as $trigger) {
+      if (strpos($lowerMessage, $trigger) !== false) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private function startNewReservation()
+  {
+    $hotelData = HotelService::fetchHotels();
+
+    if ($hotelData['available']) {
+      $this->sessionManager->setData('reservation_step', 'ask_hotel_selection');
+      $this->sessionManager->setData('reservation_data', []);
+      $this->sessionManager->setData('available_hotels', $hotelData['hotels']);
+
+      return "Great! I'd be happy to help you make a reservation. Here are our available budget hotels:\n\n" .
+        $hotelData['data'] .
+        "\n\nPlease select a hotel by number (1, 2, etc.):";
+    } else {
+      return "I'd love to help you make a reservation, but currently no hotels are available under ₱3000. Please check back later!";
+    }
+  }
+
+  private function handleReservationFlow($message)
+  {
+    $step = $this->sessionManager->getData('reservation_step');
+    $reservationData = $this->sessionManager->getData('reservation_data') ?? [];
+    $availableHotels = $this->sessionManager->getData('available_hotels') ?? [];
+
+    switch ($step) {
+      case 'ask_hotel_selection':
+        if (is_numeric($message) && isset($availableHotels[$message - 1])) {
+          $this->sessionManager->setData('reservation_data', array_merge($reservationData, [
+            'selected_hotel' => $availableHotels[$message - 1]
+          ]));
+          $this->sessionManager->setData('reservation_step', 'ask_name');
+
+          $selectedHotel = $availableHotels[$message - 1];
+          return "Great choice! You selected: **" . ($selectedHotel['display_title'] ?? 'Unknown Hotel') .
+            "**\n\nPlease provide your full name:";
+        } else {
+          return "Please select a valid hotel number (1, 2, 3, etc.) from the list above:";
+        }
+
+      case 'ask_name':
+        if (empty(trim($message))) {
+          return "Please provide your full name:";
+        }
+        $this->sessionManager->setData('reservation_data', array_merge($reservationData, [
+          'name' => trim($message)
+        ]));
+        $this->sessionManager->setData('reservation_step', 'ask_phone');
+        return "Thank you, " . trim($message) . "! Now please provide your phone number:";
+
+      case 'ask_phone':
+        if (empty(trim($message))) {
+          return "Please provide your phone number:";
+        }
+        $this->sessionManager->setData('reservation_data', array_merge($reservationData, [
+          'phoneno' => trim($message)
+        ]));
+        $this->sessionManager->setData('reservation_step', 'ask_duration');
+        return "Perfect! How many nights would you like to stay?";
+
+      case 'ask_duration':
+        if (!is_numeric($message) || $message <= 0) {
+          return "Please enter a valid number of nights (e.g., 1, 2, 3):";
+        }
+        $this->sessionManager->setData('reservation_data', array_merge($reservationData, [
+          'duration' => intval($message)
+        ]));
+        $this->sessionManager->setData('reservation_step', 'ask_description');
+        return "Any special requests or notes for your stay? (Type 'none' if no special requests)";
+
+      case 'ask_description':
+        $description = empty(trim($message)) || strtolower(trim($message)) === 'none' ? 'No special requests' : trim($message);
+        $this->sessionManager->setData('reservation_data', array_merge($reservationData, [
+          'description' => $description
+        ]));
+
+        // Process the reservation
+        $result = ReservationHandler::process($this->sessionManager->getData('reservation_data'));
+
+        if ($result['success']) {
+          $this->sessionManager->setData('reservation_step', 'completed');
+          $this->sessionManager->setData('reservation_data', []);
+          $this->sessionManager->setData('last_reservation_time', time());
+          return "✅ " . $result['message'];
+        } else {
+          $this->sessionManager->setData('reservation_step', 'error');
+          return "❌ " . $result['message'] . "\n\nSay 'book' to try again or ask about hotels.";
+        }
+
+      case 'completed':
+        // Check if user wants to start over
+        if ($this->checkTriggers($message, 'reservation') || $this->checkTriggers($message, 'hotel')) {
+          return $this->startNewReservation();
+        }
+
+        // If it's a simple acknowledgment, stay in completed state
+        if ($this->isSimpleAcknowledgment($message)) {
+          return "You're welcome! Is there anything else I can help you with today?";
+        }
+
+        // Otherwise, offer options
+        return "Your previous reservation was completed successfully. Would you like to:\n" .
+          "• Make another reservation\n" .
+          "• Browse available hotels\n" .
+          "• Ask something else?";
+
+      case 'error':
+        // Allow retry from error state
+        if ($this->checkTriggers($message, 'reservation') || strtolower($message) === 'retry' || strtolower($message) === 'try again') {
+          return $this->startNewReservation();
+        }
+
+        if ($this->checkTriggers($message, 'hotel')) {
+          $hotelData = HotelService::fetchHotels();
+          if ($hotelData['available']) {
+            return "Here are our available hotels:\n\n" . $hotelData['data'] .
+              "\n\nWould you like to book any of these?";
+          } else {
+            return "Currently no hotels are available. Please check back later!";
+          }
+        }
+
+        return "There was an error with your previous reservation. You can:\n" .
+          "• Say 'book' to try again\n" .
+          "• Say 'hotels' to see available options\n" .
+          "• Ask for help";
+    }
+
+    return "";
+  }
+
+  private function processWithGemini($message, $hotelMatched, $reservationMatched, $reservationInProgress, $latitude, $longitude)
+  {
+    // Build prompt for Gemini API
+    $prompt = $this->buildPrompt($message, $hotelMatched, $reservationMatched, $reservationInProgress, $latitude, $longitude);
+
+    // Call Gemini API
+    $response = $this->callGeminiAPI($prompt);
+
+    return [
+      'response' => trim($response),
+      'hotels_matched' => $hotelMatched,
+      'reservation_matched' => $reservationMatched,
+      'reservation_in_progress' => $reservationInProgress,
+      'session_id' => $this->input['session_id']
+    ];
+  }
+
+  private function buildPrompt($message, $hotelMatched, $reservationMatched, $reservationInProgress, $latitude, $longitude)
+  {
+    $locationContext = $latitude && $longitude ? "User location: $latitude, $longitude\n\n" : "";
+
+    // If we're in reservation flow but ended up here, provide context-aware response
+    if ($reservationInProgress) {
+      $currentStep = $this->sessionManager->getData('reservation_step');
+      return $locationContext .
+        "You are a travel assistant currently in a reservation process. " .
+        "Current step: $currentStep. " .
+        "The user said: \"$message\". " .
+        "Provide helpful, concise assistance related to completing the reservation.";
+    }
+
+    // Handle hotel inquiries
+    if ($hotelMatched) {
+      $hotelData = HotelService::fetchHotels();
+      if ($hotelData['available']) {
+        return $locationContext .
+          "You are a helpful travel assistant. The user is looking for budget hotels under ₱3000.\n\n" .
+          "Available Hotels:\n" . $hotelData['data'] . "\n\n" .
+          "Present the options clearly and ask if they'd like to make a reservation. " .
+          "Be friendly and helpful. If the user seems interested in booking, suggest they say 'book' or 'reserve'.";
+      } else {
+        return $locationContext .
+          "You are a helpful travel assistant. The user asked about hotels but none are currently available under ₱3000. " .
+          "Apologize politely and suggest they check back later. Offer alternative help.";
+      }
+    }
+
+    // General conversation with context awareness
+    $sessionContext = "";
+    $lastReservationTime = $this->sessionManager->getData('last_reservation_time');
+    if ($lastReservationTime && (time() - $lastReservationTime) < 300) { // 5 minutes
+      $sessionContext = "Note: The user recently completed a reservation. ";
+    }
+
+    return $locationContext . $sessionContext .
+      "You are a friendly travel assistant. Respond helpfully to: \"$message\"";
+  }
+
+  private function callGeminiAPI($prompt)
+  {
+    $api_key = Config::API_KEY;
+
+    $payload = [
+      'contents' => [
         [
-          'text' => $final_prompt
+          'parts' => [
+            ['text' => $prompt]
+          ]
+        ]
+      ],
+      'generationConfig' => [
+        'temperature' => 0.7,
+        'maxOutputTokens' => 1000,
+        'candidateCount' => 1
+      ],
+      'safetySettings' => [
+        [
+          'category' => 'HARM_CATEGORY_HARASSMENT',
+          'threshold' => 'BLOCK_MEDIUM_AND_ABOVE'
+        ],
+        [
+          'category' => 'HARM_CATEGORY_HATE_SPEECH',
+          'threshold' => 'BLOCK_MEDIUM_AND_ABOVE'
         ]
       ]
-    ]
-  ],
-  'generationConfig' => [
-    'temperature' => 0.7,
-    'maxOutputTokens' => 1000,
-    'candidateCount' => 1
-  ],
-  'safetySettings' => [
-    [
-      'category' => 'HARM_CATEGORY_HARASSMENT',
-      'threshold' => 'BLOCK_MEDIUM_AND_ABOVE'
-    ],
-    [
-      'category' => 'HARM_CATEGORY_HATE_SPEECH',
-      'threshold' => 'BLOCK_MEDIUM_AND_ABOVE'
-    ]
-  ]
-];
-
-$ch = curl_init("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=$api_key");
-curl_setopt($ch, CURLOPT_HTTPHEADER, ["Content-Type: application/json"]);
-curl_setopt($ch, CURLOPT_POST, 1);
-curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-
-$response = curl_exec($ch);
-$http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-curl_close($ch);
-
-if ($response === false) {
-  echo json_encode(['error' => 'Failed to connect to Gemini API']);
-  exit;
-}
-
-$response_data = json_decode($response, true);
-$text = $response_data['candidates'][0]['content']['parts'][0]['text'] ?? null;
-
-// Fallback response if Gemini fails
-if (!$text) {
-  $text = generateFallbackResponse($message, $hotel_matched, $reservation_matched, $reservation_in_progress, $hotel_data, $hotels_available);
-}
-
-// Save session
-file_put_contents($session_file, json_encode($session_data, JSON_PRETTY_PRINT));
-
-// Return to frontend
-echo json_encode([
-  'response' => trim($text),
-  'hotels_matched' => $hotel_matched,
-  'reservation_matched' => $reservation_matched,
-  'reservation_in_progress' => $reservation_in_progress,
-  'session_id' => $session_id
-]);
-
-// ============================================
-// HELPER FUNCTIONS
-// ============================================
-
-function fetchHotelData()
-{
-  $backend_url = "http://localhost/AI-Gemini/backend.php";
-  $ch = curl_init();
-  curl_setopt_array($ch, [
-    CURLOPT_URL => $backend_url,
-    CURLOPT_RETURNTRANSFER => true,
-    CURLOPT_TIMEOUT => 15,
-  ]);
-  $backend_response = curl_exec($ch);
-  curl_close($ch);
-
-  // DEBUG: Log the actual response from backend
-  file_put_contents(
-    __DIR__ . '/debug_backend_response.log',
-    date('Y-m-d H:i:s') . " - Backend Response: " . $backend_response . "\n",
-    FILE_APPEND
-  );
-
-  $result = [
-    'data' => '',
-    'available' => false,
-    'count' => 0,
-    'hotels' => []
-  ];
-
-  if ($backend_response !== false) {
-    $data = json_decode($backend_response, true);
-
-    // DEBUG: Log the parsed data structure
-    file_put_contents(
-      __DIR__ . '/debug_hotel_structure.log',
-      date('Y-m-d H:i:s') . " - Hotel Data Structure: " . print_r($data, true) . "\n",
-      FILE_APPEND
-    );
-
-    if (!empty($data['hotels']) && is_array($data['hotels'])) {
-      $result['available'] = true;
-      $result['count'] = count($data['hotels']);
-      $result['hotels'] = $data['hotels'];
-
-      $hotel_data = "";
-      foreach ($data['hotels'] as $index => $hotel) {
-        // Check what fields are actually available
-        $title = $hotel['title'] ?? $hotel['name'] ?? 'Unknown Hotel';
-        $description = $hotel['description'] ?? 'No description available';
-        $price = isset($hotel['price_per_night']) ? '₱' . number_format($hotel['price_per_night'], 0) : 'Price not available';
-        $address = $hotel['address'] ?? $hotel['location'] ?? 'Address not specified';
-
-        // Try to find the actual property ID field
-        $property_id = $hotel['property_id'] ?? $hotel['id'] ?? $hotel['title'] ?? 'unknown';
-
-        // Store all available data for reservation
-        $result['hotels'][$index] = $hotel; // Keep original data
-        $result['hotels'][$index]['property_id'] = $property_id;
-        $result['hotels'][$index]['display_title'] = $title;
-
-        $hotel_data .= ($index + 1) . ". **$title**\n";
-        $hotel_data .= "   📍 $address\n";
-        $hotel_data .= "   💰 $price per night\n";
-        $hotel_data .= "   📝 $description\n\n";
-      }
-      $result['data'] = $hotel_data;
-    } else {
-      $result['data'] = "Currently no hotels available under ₱3000.";
-    }
-  } else {
-    $result['data'] = "Unable to fetch hotel data at the moment.";
-  }
-
-  return $result;
-}
-
-function handleReservationFlow($message, &$session_data)
-{
-  $step = $session_data['reservation_step'];
-  $reservation_data = $session_data['reservation_data'] ?? [];
-
-  switch ($step) {
-    case 'ask_hotel_selection':
-      if (is_numeric($message) && isset($session_data['available_hotels'][$message - 1])) {
-        $session_data['reservation_data']['selected_hotel'] = $session_data['available_hotels'][$message - 1];
-        $session_data['reservation_step'] = 'ask_name';
-        $selected_hotel = $session_data['available_hotels'][$message - 1];
-        return "Great choice! You selected: **" . ($selected_hotel['title'] ?? 'Unknown') .
-          "**\n\nPlease provide your full name:";
-      }
-      return "Please select a hotel by number (1, 2, 3, etc.) from the available options.";
-
-    case 'ask_name':
-      $session_data['reservation_data']['name'] = $message;
-      $session_data['reservation_step'] = 'ask_phone';
-      $selected_hotel = $reservation_data['selected_hotel'] ?? [];
-      return "Thank you, " . $message . "! Now please provide your phone number:";
-
-    case 'ask_phone':
-      $session_data['reservation_data']['phoneno'] = $message;
-      $session_data['reservation_step'] = 'ask_duration';
-      return "Perfect! How many nights would you like to stay?";
-
-    case 'ask_duration':
-      $session_data['reservation_data']['duration'] = $message;
-      $session_data['reservation_step'] = 'ask_description';
-      return "Any special requests or notes for your stay? (Type 'none' if no special requests)";
-
-    case 'ask_description':
-      $session_data['reservation_data']['description'] = $message;
-
-      // Process the reservation
-      $result = processReservation($session_data['reservation_data']);
-
-      if ($result['success']) {
-        $session_data['reservation_step'] = 'completed';
-        $session_data['reservation_data'] = [];
-        return "✅ " . $result['message'];
-      } else {
-        $session_data['reservation_step'] = 'error';
-        return "❌ " . $result['message'];
-      }
-
-    case 'completed':
-      return "Your reservation is already completed. How else can I help you?";
-  }
-
-  return "";
-}
-
-function processReservation($reservation_data)
-{
-  // Your actual reservation API endpoint
-  $reservation_url = "http://localhost/booking-sys/src/pages/ai/backend/reservation-endpoint.php";
-
-  $selected_hotel = $reservation_data['selected_hotel'] ?? [];
-
-  // DEBUG: Log what we're sending to reservation
-  file_put_contents(
-    __DIR__ . '/debug_reservation_data.log',
-    date('Y-m-d H:i:s') . " - Reservation Data: " . print_r($reservation_data, true) . "\n",
-    FILE_APPEND
-  );
-
-  // Extract the actual property_id from the hotel data
-  $property_id = $selected_hotel['property_id'] ??
-    $selected_hotel['id'] ??
-    $selected_hotel['title'] ??
-    '';
-
-  $post_data = [
-    'unit' => $property_id, // This should be the actual database ID
-    'name' => $reservation_data['name'] ?? '',
-    'phoneno' => $reservation_data['phoneno'] ?? '',
-    'stay-duration' => $reservation_data['duration'] ?? '',
-    'description' => $reservation_data['description'] ?? ''
-  ];
-
-  $ch = curl_init();
-  curl_setopt_array($ch, [
-    CURLOPT_URL => $reservation_url,
-    CURLOPT_RETURNTRANSFER => true,
-    CURLOPT_POST => true,
-    CURLOPT_POSTFIELDS => http_build_query($post_data),
-    CURLOPT_TIMEOUT => 15,
-  ]);
-
-  $response = curl_exec($ch);
-  $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-  curl_close($ch);
-
-  // Debug the reservation attempt
-  file_put_contents(
-    __DIR__ . '/debug_reservation.log',
-    date('Y-m-d H:i:s') . " - Response: " . $response . " - HTTP Code: " . $http_code . "\n",
-    FILE_APPEND
-  );
-
-  if ($response === false) {
-    return [
-      'success' => false,
-      'message' => "Sorry, we encountered a connection issue. Please try again or contact support."
     ];
-  }
 
-  $result = json_decode($response, true);
+    $ch = curl_init("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=$api_key");
+    curl_setopt_array($ch, [
+      CURLOPT_HTTPHEADER => ["Content-Type: application/json"],
+      CURLOPT_POST => 1,
+      CURLOPT_POSTFIELDS => json_encode($payload),
+      CURLOPT_RETURNTRANSFER => true,
+      CURLOPT_TIMEOUT => 30
+    ]);
 
-  if ($result && isset($result['error']) && !$result['error']) {
-    $hotel_name = $selected_hotel['title'] ?? $selected_hotel['display_title'] ?? 'selected hotel';
+    $response = curl_exec($ch);
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
 
-    return [
-      'success' => true,
-      'message' => "✅ Booking confirmed for **" . $hotel_name .
-        "**!\n\n📋 Booking Details:\n" .
-        "• Name: " . ($reservation_data['name'] ?? '') . "\n" .
-        "• Phone: " . ($reservation_data['phoneno'] ?? '') . "\n" .
-        "• Duration: " . ($reservation_data['duration'] ?? '') . " nights\n" .
-        "• Special Requests: " . ($reservation_data['description'] ?? 'None') . "\n\n" .
-        "Thank you for your booking! " . ($result['message'] ?? 'We will contact you shortly.')
-    ];
-  } else {
-    $error_msg = $result['message'] ?? 'Reservation failed. Please try again.';
-
-    // Handle field-specific errors
-    if (!empty($result['fields'])) {
-      $error_msg .= "\n\nPlease check:\n";
-      foreach ($result['fields'] as $field => $error) {
-        $error_msg .= "• " . $error . "\n";
-      }
+    if ($response === false) {
+      return "I apologize, but I'm having trouble processing your request right now. Please try again in a moment.";
     }
 
-    return [
-      'success' => false,
-      'message' => "❌ " . $error_msg
-    ];
+    $responseData = json_decode($response, true);
+
+    if (isset($responseData['candidates'][0]['content']['parts'][0]['text'])) {
+      return $responseData['candidates'][0]['content']['parts'][0]['text'];
+    }
+
+    if (isset($responseData['error'])) {
+      error_log("Gemini API error: " . $responseData['error']['message']);
+    }
+
+    return "Thanks for your message! I'm here to help you with hotel bookings and travel assistance. How can I help you today?";
   }
 }
 
-function buildFinalPrompt(
-  $message,
-  $hotel_matched,
-  $reservation_matched,
-  $reservation_in_progress,
-  $hotel_data,
-  $hotels_available,
-  $available_hotels,
-  $session_data,
-  $latitude,
-  $longitude
-) {
-
-  $location_context = $latitude && $longitude ? "User location: $latitude, $longitude\n\n" : "";
-
-  // Regular hotel inquiry
-  if ($hotel_matched && $hotels_available) {
-    return $location_context .
-      "You are a helpful travel assistant. The user is looking for budget hotels under ₱3000.\n\n" .
-      "Available Hotels:\n" . $hotel_data . "\n\n" .
-      "Present the options clearly and ask if they'd like to make a reservation.";
+// Main execution
+try {
+  // Get and validate input
+  $rawInput = file_get_contents('php://input');
+  if (empty($rawInput)) {
+    throw new InvalidArgumentException('No input received');
   }
 
-  if ($hotel_matched && !$hotels_available) {
-    return $location_context .
-      "The user asked about hotels but no hotels are currently available. Apologize politely.";
+  $input = json_decode($rawInput, true);
+
+  if (json_last_error() !== JSON_ERROR_NONE) {
+    throw new InvalidArgumentException('Invalid JSON input: ' . json_last_error_msg());
   }
 
-  // General conversation
-  return $location_context . $message;
-}
+  $validatedInput = InputValidator::validateInput($input);
 
-function generateFallbackResponse($message, $hotel_matched, $reservation_matched, $reservation_in_progress, $hotel_data, $hotels_available)
-{
-  if ($reservation_in_progress) {
-    return "I'm here to help with your reservation! Please continue with the booking process.";
-  }
+  // Initialize session
+  $sessionManager = new SessionManager($validatedInput['session_id']);
 
-  if ($reservation_matched) {
-    return "I'd be happy to help you make a reservation! Let me show you our available hotels.";
-  }
+  // Process through enhanced chatbot
+  $chatbot = new EnhancedChatbot($sessionManager, $validatedInput);
+  $response = $chatbot->process();
 
-  if ($hotel_matched && $hotels_available) {
-    return "I found some great budget hotels for you! " . $hotel_data . " Would you like to book any of these?";
-  }
+  // Save session state
+  $sessionManager->saveSession();
 
-  if ($hotel_matched) {
-    return "I'm sorry, but no hotels are currently available under ₱3000. Please check back later!";
-  }
-
-  return "Thanks for your message! How can I assist you with your travel plans today?";
+  // Return response
+  echo json_encode($response);
+} catch (InvalidArgumentException $e) {
+  error_log("Input validation error: " . $e->getMessage());
+  http_response_code(400);
+  echo json_encode([
+    'error' => 'Invalid input',
+    'response' => 'Please provide a valid message.'
+  ]);
+} catch (Exception $e) {
+  error_log("Chatbot system error: " . $e->getMessage());
+  http_response_code(500);
+  echo json_encode([
+    'error' => 'System error',
+    'response' => 'I apologize, but I encountered a system error. Please try again in a moment.'
+  ]);
 }
