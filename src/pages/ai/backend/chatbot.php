@@ -12,7 +12,7 @@ class Config
   const API_KEY = 'AIzaSyAVTtWzjt2vP3pfDkNoabV3Dr7txtwlqRM';
   const SESSIONS_DIR = __DIR__ . '/sessions';
   const MAX_MESSAGE_LENGTH = 1000;
-  const SESSION_TIMEOUT = 3600; // 1 hour
+  const SESSION_TIMEOUT = 3600;
 }
 
 // Input validation and sanitization
@@ -146,7 +146,7 @@ class SessionManager
   }
 }
 
-// Hotel service with better error handling
+//get hotel data from database
 class HotelService
 {
   private const BACKEND_URL = "http://localhost/AI-Gemini/backend.php";
@@ -186,7 +186,7 @@ class HotelService
   {
     if (empty($data['hotels']) || !is_array($data['hotels'])) {
       return [
-        'data' => "Currently no hotels available under ₱3000.",
+        'data' => "Currently no hotels available",
         'available' => false,
         'count' => 0,
         'hotels' => []
@@ -209,10 +209,10 @@ class HotelService
         'original_data' => $hotel
       ];
 
-      $hotelData .= ($index + 1) . ". **$title**\n";
-      $hotelData .= "   📍 $address\n";
-      $hotelData .= "   💰 $price per night\n";
-      $hotelData .= "   📝 $description\n\n";
+      $hotelData .= ($index + 1) . "<strong> . $title . </strong>\n";
+      $hotelData .= "Located at " . $address . "\n";
+      $hotelData .= " $price per night\n";
+      $hotelData .= " $description\n\n";
     }
 
     return [
@@ -302,8 +302,8 @@ class ReservationHandler
     if ($result && isset($result['error']) && !$result['error']) {
       $hotelName = $reservationData['selected_hotel']['display_title'] ?? 'selected hotel';
 
-      $confirmationMessage = "✅ Booking confirmed for **" . $hotelName . "**!\n\n" .
-        "📋 Booking Details:\n" .
+      $confirmationMessage = " Booking confirmed for **" . $hotelName . "**!\n\n" .
+        "Booking Details:\n" .
         "• Name: " . ($reservationData['name'] ?? '') . "\n" .
         "• Phone: " . ($reservationData['phoneno'] ?? '') . "\n" .
         "• Duration: " . ($reservationData['duration'] ?? '') . " nights\n" .
@@ -513,7 +513,7 @@ class EnhancedChatbot
         $hotelData['data'] .
         "\n\nPlease select a hotel by number (1, 2, etc.):";
     } else {
-      return "I'd love to help you make a reservation, but currently no hotels are available under ₱3000. Please check back later!";
+      return "I'd love to help you make a reservation, but currently no hotels are available. Please check back later!";
     }
   }
 
@@ -581,10 +581,10 @@ class EnhancedChatbot
           $this->sessionManager->setData('reservation_step', 'completed');
           $this->sessionManager->setData('reservation_data', []);
           $this->sessionManager->setData('last_reservation_time', time());
-          return "✅ " . $result['message'];
+          return $result['message'];
         } else {
           $this->sessionManager->setData('reservation_step', 'error');
-          return "❌ " . $result['message'] . "\n\nSay 'book' to try again or ask about hotels.";
+          return $result['message'] . "\n\nSay 'book' to try again or ask about hotels.";
         }
 
       case 'completed':
@@ -631,7 +631,6 @@ class EnhancedChatbot
 
   private function processWithGemini($message, $hotelMatched, $reservationMatched, $reservationInProgress, $latitude, $longitude)
   {
-    // Build prompt for Gemini API
     $prompt = $this->buildPrompt($message, $hotelMatched, $reservationMatched, $reservationInProgress, $latitude, $longitude);
 
     // Call Gemini API
@@ -654,10 +653,12 @@ class EnhancedChatbot
     if ($reservationInProgress) {
       $currentStep = $this->sessionManager->getData('reservation_step');
       return $locationContext .
-        "You are a travel assistant currently in a reservation process. " .
-        "Current step: $currentStep. " .
-        "The user said: \"$message\". " .
-        "Provide helpful, concise assistance related to completing the reservation.";
+        "You are Smart, a concise travel assistant currently guiding a user through hotel reservation.\n\n" .
+        "CURRENT STEP: $currentStep\n" .
+        "USER MESSAGE: \"$message\"\n\n" .
+        "Provide brief, clear guidance to move the reservation forward. \n" .
+        "Keep responses under 2 sentences. Be direct and helpful.\n" .
+        "Focus only on completing the current step.";
     }
 
     // Handle hotel inquiries
@@ -665,26 +666,46 @@ class EnhancedChatbot
       $hotelData = HotelService::fetchHotels();
       if ($hotelData['available']) {
         return $locationContext .
-          "You are a helpful travel assistant. The user is looking for budget hotels under ₱3000.\n\n" .
-          "Available Hotels:\n" . $hotelData['data'] . "\n\n" .
-          "Present the options clearly and ask if they'd like to make a reservation. " .
-          "Be friendly and helpful. If the user seems interested in booking, suggest they say 'book' or 'reserve'.";
+          "You are Smart - a direct, efficient travel assistant.\n\n" .
+          "USER REQUEST: Looking for hotels \n\n" .
+          "AVAILABLE HOTELS:\n" . $hotelData['data'] . "\n" .
+          "Respond in this exact format:\n\n" .
+          "I found " . $hotelData['count'] . " budget hotels for you:\n\n" .
+          $hotelData['data'] . "\n" .
+          "Ready to book any of these? Just say 'book' or tell me which number.\n" .
+          "Keep it brief - no extra fluff.";
       } else {
         return $locationContext .
-          "You are a helpful travel assistant. The user asked about hotels but none are currently available under ₱3000. " .
-          "Apologize politely and suggest they check back later. Offer alternative help.";
+          "You are Smart - a straightforward travel assistant.\n\n" .
+          "USER REQUEST: Hotels\n\n" .
+          "RESPONSE GUIDELINES:\n" .
+          "- Apologize briefly\n" .
+          "- State no hotels available\n" .
+          "- Suggest checking back\n" .
+          "- Offer alternative help\n" .
+          "- Keep response under 3 lines\n\n" .
+          "Current status: No hotels available.";
       }
     }
 
     // General conversation with context awareness
     $sessionContext = "";
     $lastReservationTime = $this->sessionManager->getData('last_reservation_time');
-    if ($lastReservationTime && (time() - $lastReservationTime) < 300) { // 5 minutes
-      $sessionContext = "Note: The user recently completed a reservation. ";
+    if ($lastReservationTime && (time() - $lastReservationTime) < 300) {
+      $sessionContext = "CONTEXT: User recently completed a reservation. ";
     }
 
     return $locationContext . $sessionContext .
-      "You are a friendly travel assistant. Respond helpfully to: \"$message\"";
+      "You are Smart - a concise travel assistant.\n\n" .
+      "RESPONSE RULES:\n" .
+      "- Be brief and direct\n" .
+      "- Maximum 3 sentences\n" .
+      "- Focus on travel/hotel assistance\n" .
+      "- Use clear, simple language\n" .
+      "- No lengthy explanations\n" .
+      "- Get straight to the point\n\n" .
+      "USER MESSAGE: \"$message\"\n\n" .
+      "Provide a short, helpful response.";
   }
 
   private function callGeminiAPI($prompt)
@@ -700,8 +721,10 @@ class EnhancedChatbot
         ]
       ],
       'generationConfig' => [
-        'temperature' => 0.7,
-        'maxOutputTokens' => 1000,
+        'temperature' => 0.3, // Lower temperature for more consistent, concise responses
+        'maxOutputTokens' => 500, // Reduced for shorter responses
+        'topK' => 40,
+        'topP' => 0.8,
         'candidateCount' => 1
       ],
       'safetySettings' => [
@@ -730,20 +753,41 @@ class EnhancedChatbot
     curl_close($ch);
 
     if ($response === false) {
-      return "I apologize, but I'm having trouble processing your request right now. Please try again in a moment.";
+      return "Temporarily unavailable. Please try again.";
     }
 
     $responseData = json_decode($response, true);
 
     if (isset($responseData['candidates'][0]['content']['parts'][0]['text'])) {
-      return $responseData['candidates'][0]['content']['parts'][0]['text'];
+      $rawResponse = $responseData['candidates'][0]['content']['parts'][0]['text'];
+      return $this->formatResponse($rawResponse);
     }
 
     if (isset($responseData['error'])) {
       error_log("Gemini API error: " . $responseData['error']['message']);
     }
 
-    return "Thanks for your message! I'm here to help you with hotel bookings and travel assistance. How can I help you today?";
+    return "I help with hotel bookings and travel questions. What do you need?";
+  }
+
+  private function formatResponse($response)
+  {
+    // Clean up the response for better readability
+    $response = trim($response);
+
+    // Remove excessive line breaks but keep paragraph structure
+    $response = preg_replace('/\n\s*\n\s*\n+/', "\n\n", $response);
+
+    // Ensure the response starts cleanly (remove any "Smart:" prefixes if they appear)
+    $response = preg_replace('/^(Smart|Assistant|AI):\s*/i', '', $response);
+
+    // Limit response length (approximate sentence count)
+    $sentences = preg_split('/(?<=[.!?])\s+/', $response);
+    if (count($sentences) > 3) {
+      $response = implode(' ', array_slice($sentences, 0, 3));
+    }
+
+    return $response;
   }
 }
 
