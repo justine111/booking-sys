@@ -81,9 +81,27 @@ require_once __DIR__ . '/components/header.php';
         ?>
           <div class="group relative overflow-hidden rounded-2xl bg-white shadow-md hover:shadow-lg transition-all duration-300">
             <div class="absolute top-3 left-3 z-10">
-              <span class="inline-flex items-center rounded-full <?= $room['status'] == 5 ? 'bg-green-500' : 'bg-gray-500' ?> px-3 py-1 text-xs font-semibold text-white shadow">
-                <?= htmlentities($room['status'] == 5 ? 'Available' : 'Booked') ?>
-              </span>
+              <?php
+              $status = $room['status'];
+              $statusText = '';
+              $statusColorClass = '';
+
+              if ($status >= 1 && $status <= 5) {
+                $statusText = 'Available';
+                $statusColorClass = 'bg-green-500';
+              } elseif ($status == 6) {
+                $statusText = 'Booked';
+                $statusColorClass = 'bg-gray-500';
+              }
+
+              if (!empty($statusText)) {
+              ?>
+                <span class="inline-flex items-center rounded-full <?= $statusColorClass ?> px-3 py-1 text-xs font-semibold text-white shadow">
+                  <?= htmlentities($statusText) ?>
+                </span>
+              <?php
+              }
+              ?>
             </div>
 
             <a href="details.php?id=<?= $room['property_id'] ?>" class="block overflow-hidden">

@@ -16,8 +16,11 @@
       </div>
       <!-- Modal body -->
       <form action="#" method="post" id="update-booking-form">
+        <input type="hidden" name="booking_id" value="<?= htmlspecialchars($row['booking_id']) ?>">
+        <input type="hidden" name="property_id" value="<?= htmlspecialchars($row['property_id']) ?>">
+
         <div class="grid gap-4 grid-cols-2 py-4 p-4">
-          <div class="col-span-2 sm:col-span-1">
+          <div class="col-span-2">
             <label for="title" class="block mb-2 text-sm font-medium text-heading">Unit name</label>
             <input
               type="text"
@@ -25,7 +28,7 @@
               id="title"
               value="<?= htmlspecialchars($row['title']) ?>"
               class="bg-white border text-sm rounded-lg focus:ring-brand focus:border-brand block w-full px-3 py-2.5 shadow-xs placeholder:text-body"
-              placeholder="">
+              readonly>
           </div>
 
           <div class="col-span-2 sm:col-span-1">
@@ -36,7 +39,7 @@
               id="client_name"
               value="<?= htmlspecialchars($row['client_name']) ?>"
               class="bg-white border text-sm rounded-lg focus:ring-brand focus:border-brand block w-full px-3 py-2.5 shadow-xs placeholder:text-body"
-              placeholder="">
+              readonly>
           </div>
 
           <div class="col-span-2 sm:col-span-1">
@@ -47,7 +50,7 @@
               id="contact_no"
               value="<?= htmlspecialchars($row['contact_no']) ?>"
               class="bg-white border text-sm rounded-lg focus:ring-brand focus:border-brand block w-full px-3 py-2.5 shadow-xs placeholder:text-body"
-              placeholder="">
+              readonly>
           </div>
 
           <div class="col-span-2 sm:col-span-1">
@@ -58,7 +61,17 @@
               id="duration"
               value="<?= htmlspecialchars($row['duration']) ?>"
               class="bg-white border text-sm rounded-lg focus:ring-brand focus:border-brand block w-full px-3 py-2.5 shadow-xs placeholder:text-body"
-              placeholder="">
+              readonly>
+          </div>
+
+          <div class="col-span-2 sm:col-span-1">
+            <label for="payment" class="block mb-2 text-sm font-medium text-heading">Payment</label>
+            <input
+              type="number"
+              name="payment"
+              id="payment"
+              value="<?= number_format($row['total_amount'], 2) ?>"
+              class="bg-white border text-sm rounded-lg focus:ring-brand focus:border-brand block w-full px-3 py-2.5 shadow-xs placeholder:text-body">
           </div>
 
           <div class="col-span-2 sm:col-span-1">
@@ -78,7 +91,7 @@
               id="request_date"
               value="<?= date('M j, Y', strtotime($row['created_at'])) ?>"
               class="bg-white border text-sm rounded-lg focus:ring-brand focus:border-brand block w-full px-3 py-2.5 shadow-xs placeholder:text-body"
-              placeholder="">
+              readonly>
           </div>
 
           <div class="col-span-2 sm:col-span-1">
@@ -87,6 +100,7 @@
               type="datetime-local"
               name="check_in_date"
               id="check_in_date"
+              value="<?= htmlspecialchars($row['check_in_date'] ?? '') ?>"
               class="bg-white border text-sm rounded-lg focus:ring-brand focus:border-brand block w-full px-3 py-2.5 shadow-xs placeholder:text-body"
               placeholder="">
           </div>
@@ -97,6 +111,7 @@
               type="datetime-local"
               name="check_out_date"
               id="check_out_date"
+              value="<?= htmlspecialchars($row['check_out_date'] ?? '') ?>"
               class="bg-white border text-sm rounded-lg focus:ring-brand focus:border-brand block w-full px-3 py-2.5 shadow-xs placeholder:text-body"
               placeholder="">
           </div>
@@ -115,3 +130,10 @@
     </div>
   </div>
 </div>
+
+<script>
+  <?php
+  require_once __DIR__ . '/../../../../assets/js/utils.js';
+  require_once __DIR__ . '/../js/script.js';
+  ?>
+</script>

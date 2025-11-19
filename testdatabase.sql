@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 16, 2025 at 02:24 PM
+-- Generation Time: Nov 19, 2025 at 03:16 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -31,14 +31,14 @@ CREATE TABLE `bookings` (
   `booking_id` int(11) NOT NULL,
   `property_id` int(11) NOT NULL,
   `name` varchar(100) NOT NULL,
-  `contact_no` varchar(12) NOT NULL,
+  `contact_no` varchar(12) DEFAULT NULL,
   `duration` varchar(100) NOT NULL,
-  `message` varchar(255) DEFAULT NULL,
-  `check_in_date` date NOT NULL,
-  `check_out_date` date NOT NULL,
+  `message` varchar(255) NOT NULL,
+  `check_in_date` datetime DEFAULT NULL,
+  `check_out_date` datetime DEFAULT NULL,
   `total_amount` decimal(10,2) NOT NULL,
-  `booking_status` int(11) NOT NULL DEFAULT 0,
-  `created_at` datetime DEFAULT current_timestamp()
+  `booking_status` int(11) NOT NULL DEFAULT 1,
+  `created_at` date NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -46,7 +46,7 @@ CREATE TABLE `bookings` (
 --
 
 INSERT INTO `bookings` (`booking_id`, `property_id`, `name`, `contact_no`, `duration`, `message`, `check_in_date`, `check_out_date`, `total_amount`, `booking_status`, `created_at`) VALUES
-(9, 6, 'Joshua Hernandez', '0931231231', '2 Days 1 Night', '', '0000-00-00', '0000-00-00', 0.00, 1, '2025-11-16 20:30:40');
+(1, 18, 'Justine', '09184830422', '2 days and 1 nights', '', '2025-11-19 21:21:00', '2025-11-19 21:21:00', 2500.00, 6, '2025-11-19');
 
 -- --------------------------------------------------------
 
@@ -127,7 +127,7 @@ CREATE TABLE `properties` (
 --
 
 INSERT INTO `properties` (`property_id`, `host_id`, `title`, `description`, `address`, `city`, `price_per_night`, `amenities`, `img1`, `img2`, `status`, `created_at`, `img3`, `img4`) VALUES
-(18, 1, 'Joshua house', 'Fresn and clean with high mountain view,', 'Brgy Naga-asan', 'Babatngon', 2500.00, '', 'hotel_img_6919cf7d0e10f.jpg', 'hotel_img_6919cf7d0e262.jpg', 5, '2025-11-16 21:19:57', 'hotel_img_6919cf7d0e3ad.jpg', 'hotel_img_6919cf7d0e4d4.jpg');
+(18, 1, 'Joshua house', 'Fresn and clean with high mountain view,', 'Brgy Naga-asan', 'Babatngon', 2500.00, '', 'hotel_img_6919cf7d0e10f.jpg', 'hotel_img_6919cf7d0e262.jpg', 6, '2025-11-16 21:19:57', 'hotel_img_6919cf7d0e3ad.jpg', 'hotel_img_6919cf7d0e4d4.jpg');
 
 -- --------------------------------------------------------
 
@@ -242,7 +242,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `bookings`
 --
 ALTER TABLE `bookings`
-  MODIFY `booking_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `booking_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `booking_status`
@@ -285,22 +285,45 @@ ALTER TABLE `users`
 --
 
 --
--- Constraints for table `bookings`
---
-ALTER TABLE `bookings`
-  ADD CONSTRAINT `fk_bookings_property` FOREIGN KEY (`property_id`) REFERENCES `properties` (`property_id`);
-
---
 -- Constraints for table `payments`
 --
 ALTER TABLE `payments`
   ADD CONSTRAINT `fk_payments_booking` FOREIGN KEY (`booking_id`) REFERENCES `bookings` (`booking_id`);
 
 --
+-- Constraints for table `properties`
+--
+ALTER TABLE `properties`
+  ADD CONSTRAINT `fk_properties_host` FOREIGN KEY (`host_id`) REFERENCES `users` (`user_id`);
+
+--
 -- Constraints for table `reviews`
 --
 ALTER TABLE `reviews`
   ADD CONSTRAINT `fk_reviews_booking` FOREIGN KEY (`booking_id`) REFERENCES `bookings` (`booking_id`);
+
+DELIMITER $$
+--
+-- Events
+--
+CREATE DEFINER=`root`@`localhost` EVENT `update_expired_bookings` ON SCHEDULE EVERY 1 DAY STARTS '2025-11-20 01:00:00' ON COMPLETION PRESERVE ENABLE DO BEGIN
+    -- 1. Update the booking_status to 5 for expired bookings
+    UPDATE bookings
+    SET booking_status = 5
+    WHERE check_out_date < CURDATE() 
+    AND booking_status <> 5; -- The MariaDB engine processes this semicolon correctly
+
+    -- 2. Update the property status to 5 for the properties corresponding to the newly expired bookings
+    UPDATE properties AS p
+    INNER JOIN bookings AS b
+    ON p.property_id = b.property_id
+    SET p.status = 5
+    WHERE b.check_out_date < CURDATE()
+    AND b.booking_status = 5
+    AND p.status <> 5;
+END$$
+
+DELIMITER ;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

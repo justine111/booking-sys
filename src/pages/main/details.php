@@ -74,7 +74,7 @@ $roomDetails = $roomController->getHotelById($roomId);
             data-modal-target="rate-modal"
             data-modal-toggle="rate-modal"
             class="px-6 py-2.5 text-white text-sm rounded-lg shadow <?php echo ($roomDetails['status'] == 6) ? 'bg-gray-400 cursor-not-allowed' : 'bg-orange-500'; ?>" <?php echo ($roomDetails['status'] == 6) ? 'disabled' : ''; ?>>
-            <i class="fa-regular fa-star pr-1"></i> Apply for Reservation
+            <i class="fa-regular fa-star pr-1"></i> <?php echo ($roomDetails['status'] == 6) ? 'Fully Booked' : 'Apply for Reservation'; ?>
           </button>
 
 

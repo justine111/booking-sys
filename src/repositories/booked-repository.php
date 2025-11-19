@@ -44,12 +44,16 @@ class booking_repository extends base_repository
   {
     $sql = "SELECT 
 	            a.booking_id,
+              a.property_id,
               b.title,
 	            a.name as client_name,
 	            a.contact_no,
  	            a.duration,
 	            a.message,
 	            c.description as status,
+              a.check_in_date,
+              a.check_out_date,
+              a.total_amount,
 	            a.created_at
             FROM bookings a
             LEFT JOIN properties b
@@ -74,5 +78,23 @@ class booking_repository extends base_repository
     $stmt->execute();
 
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
+  }
+
+  public function updateBooking($bookingId, $propertyId, $status, $payment, $checkInDate, $checkOutDate)
+  {
+    $sql = "UPDATE bookings SET booking_status = :status, total_amount = :payment, check_in_date = :checkInDate, check_out_date = :checkOutDate WHERE booking_id = :bookingId";
+    $stmt = $this->db->prepare($sql);
+    $stmt->bindParam(':bookingId', $bookingId);
+    $stmt->bindParam(':status', $status);
+    $stmt->bindParam(':payment', $payment);
+    $stmt->bindParam(':checkInDate', $checkInDate);
+    $stmt->bindParam(':checkOutDate', $checkOutDate);
+    $stmt->execute();
+
+    $sql = "UPDATE properties SET status = :status WHERE property_id = :propertyId";
+    $stmt = $this->db->prepare($sql);
+    $stmt->bindParam(':propertyId', $propertyId);
+    $stmt->bindParam(':status', $status);
+    $stmt->execute();
   }
 }

@@ -75,4 +75,51 @@ class booking_controller extends base_controller
       return $this->handleException($e);
     }
   }
+
+  public function updateBooking()
+  {
+    try {
+      $this->repository->startTransaction();
+
+      $bookingId = $_POST['booking_id'] ?? '';
+      $propertyId = $_POST['property_id'] ?? '';
+      $status = $_POST['status'] ?? '';
+      $payment = $_POST['payment'] ?? '';
+      $checkInDate = $_POST['check_in_date'] ?? '';
+      $checkOutDate = $_POST['check_out_date'] ?? '';
+
+      $errors = [];
+
+      if (empty($status)) {
+        $errors['status'] = '*Booking status is required';
+      }
+
+      if (empty($checkInDate)) {
+        $errors['check_in_date'] = '*Check-in date is required';
+      }
+
+      if (empty($checkOutDate)) {
+        $errors['check_out_date'] = '*Check-out date is required';
+      }
+
+      if (!empty($errors)) {
+        return [
+          'error' => true,
+          'message' => 'Some fields are required.',
+          'fields' => $errors
+        ];
+      }
+      $result = $this->repository->updateBooking($bookingId, $propertyId, $status, $payment, $checkInDate, $checkOutDate);
+      $this->repository->commitTransaction();
+
+      return $this->response([
+        'error' => false,
+        'data' => $result,
+        'message' => 'Booking has been updated successfully.'
+      ]);
+    } catch (Exception $e) {
+      $this->repository->rollbackTransaction();
+      return $this->handleException($e);
+    }
+  }
 }
