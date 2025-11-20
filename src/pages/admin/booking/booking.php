@@ -23,12 +23,14 @@ $totalPages = ceil($count / $pageSize);
         <div class="flex items-center justify-between w-full">
           <div>
             <button type="button"
-              data-modal-show="addHotelModal"
-              data-modal-target="addHotelModal"
-              class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg text-sm px-3 py-2 text-center">
+              data-modal-show="create-booking-modal"
+              data-modal-target="create-booking-modal"
+              class="flex items-center text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg text-sm px-3 py-2 text-center">
+              <i data-lucide="notebook-pen" class="w-[16px] mr-1"></i>
               Create Reservation
             </button>
           </div>
+          <?php require_once __DIR__ . '/./modal/create-booking-modal.php'; ?>
 
           <div class="relative">
             <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">

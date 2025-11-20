@@ -1,4 +1,4 @@
-<div id="addHotelModal" tabindex="-1" aria-hidden="true" class="fixed inset-0 z-50 items-center justify-center hidden w-full p-4 overflow-x-hidden overflow-y-auto bg-gray-900/80">
+<div id="addHotelModal" tabindex="-1" aria-hidden="true" class="fixed inset-0 z-50 items-center justify-center hidden w-full p-4 overflow-x-hidden overflow-y-auto">
   <div class="relative w-full max-w-4xl max-h-full bg-white rounded-lg overflow-hidden shadow-2xl modal-enter">
 
     <div class="p-6 border-b border-gray-100 bg-gradient-to-r from-blue-50 to-indigo-50">

@@ -24,7 +24,16 @@ foreach ($getHotel as $index => $row) :
       <?= htmlspecialchars($row['address']) ?>
     </td>
     <td class="px-6 py-3 text-gray-900 dark:text-gray-100">
-      <?= htmlspecialchars($row['description'] ?? 'N/A') ?>
+      <?php
+      $description = $row['description'] ?? 'N/A';
+      if ($description !== 'N/A') {
+          $words = explode(' ', $description);
+          if (count($words) > 60) {
+              $description = implode(' ', array_slice($words, 0, 60)) . '...';
+          }
+      }
+      echo htmlspecialchars($description);
+      ?>
     </td>
     <td class="px-6 py-3 text-gray-900 dark:text-gray-100">
       <?= htmlspecialchars($row['amenities'] ?? 'N/A') ?>

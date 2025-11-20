@@ -13,6 +13,10 @@ $totalPages = ceil($count / $pageSize);
 
 <main class="content-wrapper">
   <div class="content">
+    <div class="mb-4">
+      <h2 class="uppercase font-bold text-blue-900 text-lg">Room Management</h2>
+      <p class="text-gray-500 text-sm">Manage all rooms, including their details, availability, and pricing.</p>
+    </div>
 
     <div class="relative">
       <div class="flex flex-col gap-4 pb-2">
@@ -21,7 +25,8 @@ $totalPages = ceil($count / $pageSize);
             <button type="button"
               data-modal-show="addHotelModal"
               data-modal-target="addHotelModal"
-              class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg text-sm px-3 py-2 text-center">
+              class="flex items-center text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg text-sm px-3 py-2 text-center">
+              <i data-lucide="house-plus" class="w-[16px] mr-1"></i>
               Add New Hotel
             </button>
           </div>
