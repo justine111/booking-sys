@@ -149,7 +149,7 @@ class SessionManager
 //get hotel data from database
 class HotelService
 {
-  private const BACKEND_URL = "http://localhost/AI-Gemini/backend.php";
+  private const BACKEND_URL = "http://localhost/booking-sys/src/controller/ai-controller.php";
   private const TIMEOUT = 15;
 
   public static function fetchHotels()
