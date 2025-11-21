@@ -1,0 +1,19 @@
+{
+    "timestamp": 1763725030,
+    "reservation_step": "completed",
+    "reservation_data": [],
+    "available_hotels": [
+        {
+            "property_id": 18,
+            "display_title": "Joshua house",
+            "original_data": {
+                "property_id": 18,
+                "title": "Joshua house",
+                "description": "Fresn and clean with high mountain view,",
+                "price_per_night": "2500.00",
+                "address": "Brgy Naga-asan"
+            }
+        }
+    ],
+    "last_reservation_time": 1763725030
+}

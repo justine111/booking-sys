@@ -36,7 +36,7 @@ foreach ($users as $index => $row) :
     </td>
     <td class="px-6 py-3 text-gray-900 dark:text-gray-100">
       <div class="flex items-end justify-end">
-        <button data-modal-target="booking-details-modal-<?= htmlspecialchars($row['user_id']); ?>" data-modal-toggle="booking-details-modal-<?= htmlspecialchars($row['booking_id']); ?>" type="button" class="rounded-md text-sm px-2">
+        <button data-modal-target="booking-details-modal-<?= htmlspecialchars($row['user_id']); ?>" data-modal-toggle="booking-details-modal-<?= htmlspecialchars($row['user_id']); ?>" type="button" class="rounded-md text-sm px-2">
           <i data-lucide="ellipsis" class="w-[18px] text-gray-900 dark:text-gray-200"></i>
         </button>
       </div>
