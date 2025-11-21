@@ -122,4 +122,69 @@ class booking_controller extends base_controller
       return $this->handleException($e);
     }
   }
+
+  public function caterBooking()
+  {
+    try {
+      $this->repository->startTransaction();
+
+      $propertyId = $_POST['title'] ?? '';
+      $clientName = $_POST['client_name'] ?? '';
+      $status = $_POST['status'] ?? '';
+      $contactNo = $_POST['contact_no'] ?? '';
+      $payment = $_POST['payment'] ?? '';
+      $duration = $_POST['duration'] ?? '';
+      $checkInDate = $_POST['check_in_date'] ?? '';
+      $checkOutDate = $_POST['check_out_date'] ?? '';
+
+      $errors = [];
+
+      if (empty($propertyId)) {
+        $errors['title'] = '*Unit name is required';
+      }
+
+      if (empty($clientName)) {
+        $errors['client_name'] = '*Client name is required';
+      }
+
+      if (empty($status)) {
+        $errors['status'] = '*Booking status is required';
+      }
+
+      if (empty($contactNo)) {
+        $errors['contact_no'] = '*Contact no. is required';
+      }
+
+      if (empty($payment)) {
+        $errors['payment'] = '*Payment is required';
+      }
+
+      if (empty($checkInDate)) {
+        $errors['check_in_date'] = '*Check-in date is required';
+      }
+
+      if (empty($checkOutDate)) {
+        $errors['check_out_date'] = '*Check-out date is required';
+      }
+
+      if (!empty($errors)) {
+        return [
+          'error' => true,
+          'message' => 'Some fields are required.',
+          'fields' => $errors
+        ];
+      }
+      $result = $this->repository->caterBooking($propertyId, $clientName, $status, $contactNo, $payment, $duration, $checkInDate, $checkOutDate);
+      $this->repository->commitTransaction();
+
+      return $this->response([
+        'error' => false,
+        'data' => $result,
+        'message' => 'Booking has been created successfully.'
+      ]);
+    } catch (Exception $e) {
+      $this->repository->rollbackTransaction();
+      return $this->handleException($e);
+    }
+  }
 }

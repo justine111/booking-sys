@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
   const forms = [
     { id: '#update-booking-form', action: 'update-booking-action.php' },
+    { id: '#create-booking-form', action: 'create-booking-action.php' },
   ];
 
   forms.forEach(({ id, action }) => {

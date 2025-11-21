@@ -79,6 +79,15 @@ class RoomsRepository extends base_repository
     return $stmt->fetch(PDO::FETCH_ASSOC);
   }
 
+  public function getHotelListAvailable()
+  {
+    $sql ="SELECT property_id, title FROM `properties` WHERE status = 5";
+    $stmt = $this->db->prepare($sql);
+    $stmt->execute();
+
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+  }
+
   public function addHotel($hotelName, $address, $city, $price, $host, $description, $amenities, $img1, $img2, $img3, $img4)
   {
     $allowed_types = ['image/jpeg', 'image/png', 'image/gif', 'image/jpg'];

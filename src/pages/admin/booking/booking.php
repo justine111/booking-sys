@@ -10,7 +10,6 @@ $offset = ($page - 1) * $pageSize;
 $count = $bookingManage->countAllBookings($searchQuery);
 $totalPages = ceil($count / $pageSize);
 ?>
-
 <main class="content-wrapper">
   <div class="content">
     <div class="mb-4">

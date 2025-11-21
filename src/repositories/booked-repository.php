@@ -6,7 +6,7 @@ class booking_repository extends base_repository
   public function reservation($unitId, $name, $phoneno, $duration, $description)
   {
     $query = "INSERT INTO bookings (property_id, name, contact_no, duration, message, booking_status)
-                VALUES (:unitid, :name, :phoneno, :duration, :description, 1)";
+              VALUES (:unitid, :name, :phoneno, :duration, :description, 1)";
     $stmt = $this->db->prepare($query);
     $stmt->bindParam(':unitid', $unitId);
     $stmt->bindParam(':name', $name);
@@ -24,7 +24,9 @@ class booking_repository extends base_repository
             LEFT JOIN properties b
             ON a.property_id = b.property_id
             LEFT JOIN booking_status c
-            ON a.booking_status = c.id";
+            ON a.booking_status = c.id
+            WHERE a.booking_id IS NOT NULL
+            AND a.booking_status IN (1, 6)";
 
     if (!empty($searchQuery)) {
       $sql .= " AND b.title LIKE :searchQuery
@@ -60,7 +62,8 @@ class booking_repository extends base_repository
             ON a.property_id = b.property_id
             LEFT JOIN booking_status c
             ON a.booking_status = c.id
-            WHERE a.booking_id IS NOT NULL";
+            WHERE a.booking_id IS NOT NULL
+            AND a.booking_status IN (1, 6)";
 
     if (!empty($searchQuery)) {
       $sql .= " AND b.title LIKE :searchQuery
@@ -95,6 +98,33 @@ class booking_repository extends base_repository
     $stmt = $this->db->prepare($sql);
     $stmt->bindParam(':propertyId', $propertyId);
     $stmt->bindParam(':status', $status);
+    $stmt->execute();
+  }
+
+  public function caterBooking($propertyId, $clientName, $status, $contactNo, $payment, $duration, $checkInDate, $checkOutDate, $paymentMethod = 'Cash')
+  {
+    $sql = "INSERT INTO bookings (property_id, name, contact_no, total_amount, duration, check_in_date, check_out_date, booking_status)
+            VALUES (:propertyId, :clientName, :contact_no, :payment, :duration, :checkInDate, :checkOutDate, :status)";
+    $stmt = $this->db->prepare($sql);
+    $stmt->bindParam(':propertyId', $propertyId);
+    $stmt->bindParam(':clientName', $clientName);
+    $stmt->bindParam(':contact_no', $contactNo);
+    $stmt->bindParam(':payment', $payment);
+    $stmt->bindParam(':duration', $duration);
+    $stmt->bindParam(':checkInDate', $checkInDate);
+    $stmt->bindParam(':checkOutDate', $checkOutDate);
+    $stmt->bindParam(':status', $status);
+    $stmt->execute();
+
+    $bookingId = $this->db->lastInsertId();
+
+    $sql = "INSERT INTO payments (booking_id, payment_method, amount_paid, status)
+            VALUES (:bookingId, :paymentMethod, :amountPaid, :paymentStatus)";
+    $stmt = $this->db->prepare($sql);
+    $stmt->bindParam(':bookingId', $bookingId, PDO::PARAM_INT);
+    $stmt->bindParam(':paymentMethod', $paymentMethod);
+    $stmt->bindParam(':amountPaid', $payment);
+    $stmt->bindParam(':paymentStatus', $status);
     $stmt->execute();
   }
 }

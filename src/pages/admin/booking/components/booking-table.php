@@ -71,28 +71,28 @@ foreach ($getBooking as $index => $row) :
       <div class="flex flex-col items-center justify-center space-y-4">
         <div class="relative">
           <div class="w-20 h-20 bg-gradient-to-r from-gray-100 to-gray-200 rounded-2xl flex items-center justify-center">
-            <i data-lucide="user-search" class="w-10 h-10 text-gray-400"></i>
+            <i data-lucide="house-plus" class="w-10 h-10 text-gray-400"></i>
           </div>
           <div class="absolute -top-1 -right-1 w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center animate-pulse">
             <i data-lucide="search" class="w-3 h-3 text-white"></i>
           </div>
-        </div>
+        </div>z`
         <div class="text-center">
-          <h3 class="text-lg font-semibold text-gray-700 mb-1">No member found</h3>
+          <h3 class="text-lg font-semibold text-gray-700 mb-1">No booking found</h3>
           <p class="text-sm text-gray-500 max-w-sm">
             <?php if ($searchQuery): ?>
-              No member match your search criteria "<?= htmlspecialchars($searchQuery) ?>"
+              No booking match your search criteria "<?= htmlspecialchars($searchQuery) ?>"
             <?php else: ?>
-              No member found in the system. Start by adding your first.
+              No booking found in the system. Start by adding your first.
             <?php endif; ?>
           </p>
         </div>
         <button
-          data-modal-target="add-member-modal"
-          data-modal-toggle="add-member-modal"
+          data-modal-target="create-booking-modal"
+          data-modal-toggle="create-booking-modal"
           class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors duration-200">
           <i data-lucide="plus" class="w-4 h-4"></i>
-          Add First Member
+          Add Booking
         </button>
       </div>
     </td>

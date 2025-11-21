@@ -38,6 +38,15 @@ class room_controller extends base_controller
     }
   }
 
+  public function getHotelListAvailable()
+  {
+    try {
+      return $this->repository->getHotelListAvailable();
+    } catch (Exception $e) {
+      return $this->handleException($e);
+    }
+  }
+
   public function addHotel()
   {
     try {

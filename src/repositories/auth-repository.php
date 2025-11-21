@@ -21,7 +21,7 @@ class auth_repository extends base_repository
     $stmt->bindParam(':username', $username);
     $stmt->bindParam(':password', $hashedPassword);
     $stmt->execute();
-    
+
     return $stmt->fetch(PDO::FETCH_ASSOC);
   }
 }
