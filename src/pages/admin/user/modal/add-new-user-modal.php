@@ -57,12 +57,13 @@
           </div>
 
           <div class="col-span-2">
-            <label for="duration" class="block mb-2 text-sm font-medium text-heading">Password <span class="text-gray-600 text-xs">(required)</span></label>
+            <label for="password" class="block mb-2 text-sm font-medium text-heading">Password <span class="text-gray-600 text-xs">(required)</span></label>
             <input
               type="password"
               name="password"
               id="password"
               class="bg-white border text-sm rounded-lg focus:ring-brand focus:border-brand block w-full px-3 py-2.5 shadow-xs placeholder:text-body">
+            <p id="password-error" class="mt-1 text-sm text-red-600 hidden"></p>
           </div>
         </div>
 
@@ -78,3 +79,10 @@
     </div>
   </div>
 </div>
+
+<script>
+  <?php
+  require_once __DIR__ . '/../../../../assets/js/utils.js';
+  require_once __DIR__ . '/../js/script.js';
+  ?>
+</script>

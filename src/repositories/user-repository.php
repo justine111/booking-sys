@@ -59,4 +59,20 @@ class user_repository extends base_repository
 
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
   }
+
+  public function addNewUser($name, $role, $email, $contact_no, $password)
+  {
+    $hashPassword = hash('sha512', $password);
+
+    $sql = "INSERT INTO users (name, user_type, email, phone_number, password) VALUES (:name, :role, :email, :contact_no, :password)";
+    $stmt = $this->db->prepare($sql);
+    $stmt->bindParam(':name', $name);
+    $stmt->bindParam(':role', $role);
+    $stmt->bindParam(':email', $email);
+    $stmt->bindParam(':contact_no', $contact_no);
+    $stmt->bindParam(':password', $hashPassword);
+    $stmt->execute();
+
+    return $stmt->rowCount();
+  }
 }
