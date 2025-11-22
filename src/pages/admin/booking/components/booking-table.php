@@ -76,7 +76,7 @@ foreach ($getBooking as $index => $row) :
           <div class="absolute -top-1 -right-1 w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center animate-pulse">
             <i data-lucide="search" class="w-3 h-3 text-white"></i>
           </div>
-        </div>z`
+        </div>
         <div class="text-center">
           <h3 class="text-lg font-semibold text-gray-700 mb-1">No booking found</h3>
           <p class="text-sm text-gray-500 max-w-sm">

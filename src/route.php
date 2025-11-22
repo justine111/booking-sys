@@ -10,8 +10,8 @@ switch ($page) {
   case 'booking':
     require_once 'src/pages/admin/booking/booking.php';
     break;
-  case 'hotel':
-    require_once 'src/pages/admin/hotel/hotel.php';
+  case 'payments':
+    require_once 'src/pages/admin/payments/payments.php';
     break;
   case 'user':
     require_once 'src/pages/admin/user/user.php';

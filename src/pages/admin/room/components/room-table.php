@@ -27,10 +27,10 @@ foreach ($getHotel as $index => $row) :
       <?php
       $description = $row['description'] ?? 'N/A';
       if ($description !== 'N/A') {
-          $words = explode(' ', $description);
-          if (count($words) > 60) {
-              $description = implode(' ', array_slice($words, 0, 60)) . '...';
-          }
+        $words = explode(' ', $description);
+        if (count($words) > 60) {
+          $description = implode(' ', array_slice($words, 0, 60)) . '...';
+        }
       }
       echo htmlspecialchars($description);
       ?>
@@ -47,8 +47,33 @@ foreach ($getHotel as $index => $row) :
     <td class="px-6 py-3 text-gray-900 dark:text-gray-100">
       <?= htmlspecialchars($row['name'] ?? 'N/A') ?>
     </td>
-    <td class="px-6 py-3 text-gray-900 dark:text-gray-100">
-      <?= htmlspecialchars($row['status'] ?? 'N/A') ?>
+    <td class="px-6 py-3">
+      <?php
+      $status = $row['status'] ?? 'N/A';
+      $badgeClass = '';
+      switch ($status) {
+        case 'pending':
+          $badgeClass = 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300';
+          break;
+        case 'confirmed':
+        case 'complete':
+        case 'available':
+          $badgeClass = 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300';
+          break;
+        case 'cancelled':
+          $badgeClass = 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300';
+          break;
+        case 'booked':
+          $badgeClass = 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300';
+          break;
+        default:
+          $badgeClass = 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300';
+          break;
+      }
+      ?>
+      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium <?= $badgeClass; ?>">
+        <?= htmlspecialchars(ucfirst($status)); ?>
+      </span>
     </td>
     <td class="px-6 py-3 text-gray-900 dark:text-gray-100">
       <div class="flex items-end justify-end">

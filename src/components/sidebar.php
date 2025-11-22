@@ -76,7 +76,7 @@
         </a>
       </li>
       <li>
-        <a href="<?= $basePath ?>/payment" class="sidebar-link flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+        <a href="<?= $basePath ?>/payments" class="sidebar-link flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
           <i data-lucide="coins" class="w-[18px] mr-1"></i>
           <span class="flex-1 ms-2 whitespace-nowrap">Payments</span>
         </a>

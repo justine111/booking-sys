@@ -15,68 +15,69 @@
         </button>
       </div>
       <!-- Modal body -->
-      <form action="#" method="post" id="update-booking-form">
+      <form action="#" method="post" id="update-booking-form-<?= htmlspecialchars($row['booking_id']); ?>" class="update-booking-form">
         <input type="hidden" name="booking_id" value="<?= htmlspecialchars($row['booking_id']) ?>">
         <input type="hidden" name="property_id" value="<?= htmlspecialchars($row['property_id']) ?>">
+        <input type="hidden" name="client_token" value="<?= htmlspecialchars($row['client_token']) ?>">
 
         <div class="grid gap-4 grid-cols-2 py-4 p-4">
           <div class="col-span-2">
-            <label for="title" class="block mb-2 text-sm font-medium text-heading">Unit name</label>
+            <label for="title-<?= $row['booking_id'] ?>" class="block mb-2 text-sm font-medium text-heading">Unit name</label>
             <input
               type="text"
               name="title"
-              id="title"
+              id="title-<?= $row['booking_id'] ?>"
               value="<?= htmlspecialchars($row['title']) ?>"
               class="bg-white border text-sm rounded-lg focus:ring-brand focus:border-brand block w-full px-3 py-2.5 shadow-xs placeholder:text-body"
               readonly>
           </div>
 
           <div class="col-span-2 sm:col-span-1">
-            <label for="client_name" class="block mb-2 text-sm font-medium text-heading">Client name</label>
+            <label for="client_name-<?= $row['booking_id'] ?>" class="block mb-2 text-sm font-medium text-heading">Client name</label>
             <input
               type="text"
               name="client_name"
-              id="client_name"
+              id="client_name-<?= $row['booking_id'] ?>"
               value="<?= htmlspecialchars($row['client_name']) ?>"
               class="bg-white border text-sm rounded-lg focus:ring-brand focus:border-brand block w-full px-3 py-2.5 shadow-xs placeholder:text-body"
               readonly>
           </div>
 
           <div class="col-span-2 sm:col-span-1">
-            <label for="contact_no" class="block mb-2 text-sm font-medium text-heading">Contact no</label>
+            <label for="contact_no-<?= $row['booking_id'] ?>" class="block mb-2 text-sm font-medium text-heading">Contact no</label>
             <input
               type="number"
               name="contact_no"
-              id="contact_no"
+              id="contact_no-<?= $row['booking_id'] ?>"
               value="<?= htmlspecialchars($row['contact_no']) ?>"
               class="bg-white border text-sm rounded-lg focus:ring-brand focus:border-brand block w-full px-3 py-2.5 shadow-xs placeholder:text-body"
               readonly>
           </div>
 
           <div class="col-span-2 sm:col-span-1">
-            <label for="duration" class="block mb-2 text-sm font-medium text-heading">Duration</label>
+            <label for="duration-<?= $row['booking_id'] ?>" class="block mb-2 text-sm font-medium text-heading">Duration</label>
             <input
               type="text"
               name="duration"
-              id="duration"
+              id="duration-<?= $row['booking_id'] ?>"
               value="<?= htmlspecialchars($row['duration']) ?>"
               class="bg-white border text-sm rounded-lg focus:ring-brand focus:border-brand block w-full px-3 py-2.5 shadow-xs placeholder:text-body"
               readonly>
           </div>
 
           <div class="col-span-2 sm:col-span-1">
-            <label for="payment" class="block mb-2 text-sm font-medium text-heading">Payment</label>
+            <label for="payment-<?= $row['booking_id'] ?>" class="block mb-2 text-sm font-medium text-heading">Payment</label>
             <input
-              type="number"
+              type="text"
               name="payment"
-              id="payment"
-              value="<?= number_format($row['total_amount'], 2) ?>"
+              id="payment-<?= $row['booking_id'] ?>"
+              value="<?= $row['total_amount'] ?>"
               class="bg-white border text-sm rounded-lg focus:ring-brand focus:border-brand block w-full px-3 py-2.5 shadow-xs placeholder:text-body">
           </div>
 
           <div class="col-span-2 sm:col-span-1">
-            <label for="status" class="block mb-2 text-sm font-medium text-heading">Status</label>
-            <select name="status" id="status" class="bg-white border text-sm rounded-lg focus:ring-brand focus:border-brand block w-full px-3 py-2.5 shadow-xs placeholder:text-body">
+            <label for="status-<?= $row['booking_id'] ?>" class="block mb-2 text-sm font-medium text-heading">Status</label>
+            <select name="status" id="status-<?= $row['booking_id'] ?>" class="bg-white border text-sm rounded-lg focus:ring-brand focus:border-brand block w-full px-3 py-2.5 shadow-xs placeholder:text-body">
               <option value="1" <?= $row['status'] === 'pending' ? 'selected' : '' ?>>Pending</option>
               <option value="5" <?= $row['status'] === 'available' ? 'selected' : '' ?>>Available</option>
               <option value="6" <?= $row['status'] === 'booked' ? 'selected' : '' ?>>Booked</option>
@@ -84,33 +85,33 @@
           </div>
 
           <div class="col-span-2 sm:col-span-1">
-            <label for="request_date" class="block mb-2 text-sm font-medium text-heading">Request date</label>
+            <label for="request_date-<?= $row['booking_id'] ?>" class="block mb-2 text-sm font-medium text-heading">Request date</label>
             <input
               type="text"
               name="request_date"
-              id="request_date"
+              id="request_date-<?= $row['booking_id'] ?>"
               value="<?= date('M j, Y', strtotime($row['created_at'])) ?>"
               class="bg-white border text-sm rounded-lg focus:ring-brand focus:border-brand block w-full px-3 py-2.5 shadow-xs placeholder:text-body"
               readonly>
           </div>
 
           <div class="col-span-2 sm:col-span-1">
-            <label for="check_in_date" class="block mb-2 text-sm font-medium text-heading">Check In Date <span class="text-gray-600 text-xs">(required)</span></label>
+            <label for="check_in_date-<?= $row['booking_id'] ?>" class="block mb-2 text-sm font-medium text-heading">Check In Date <span class="text-gray-600 text-xs">(required)</span></label>
             <input
               type="datetime-local"
               name="check_in_date"
-              id="check_in_date"
+              id="check_in_date-<?= $row['booking_id'] ?>"
               value="<?= htmlspecialchars($row['check_in_date'] ?? '') ?>"
               class="bg-white border text-sm rounded-lg focus:ring-brand focus:border-brand block w-full px-3 py-2.5 shadow-xs placeholder:text-body"
               placeholder="">
           </div>
 
           <div class="col-span-2 sm:col-span-1">
-            <label for="check_out_date" class="block mb-2 text-sm font-medium text-heading">Check Out Date <span class="text-gray-600 text-xs">(required)</span></label>
+            <label for="check_out_date-<?= $row['booking_id'] ?>" class="block mb-2 text-sm font-medium text-heading">Check Out Date <span class="text-gray-600 text-xs">(required)</span></label>
             <input
               type="datetime-local"
               name="check_out_date"
-              id="check_out_date"
+              id="check_out_date-<?= $row['booking_id'] ?>"
               value="<?= htmlspecialchars($row['check_out_date'] ?? '') ?>"
               class="bg-white border text-sm rounded-lg focus:ring-brand focus:border-brand block w-full px-3 py-2.5 shadow-xs placeholder:text-body"
               placeholder="">

@@ -81,8 +81,11 @@ class booking_controller extends base_controller
     try {
       $this->repository->startTransaction();
 
-      $bookingId = $_POST['booking_id'] ?? '';
+      $clientToken = $_POST['client_token'] ?? '';
       $propertyId = $_POST['property_id'] ?? '';
+      $clientName = $_POST['client_name'] ?? '';
+      $contactNo = $_POST['contact_no'] ?? '';
+      $duration = $_POST['duration'] ?? '';
       $status = $_POST['status'] ?? '';
       $payment = $_POST['payment'] ?? '';
       $checkInDate = $_POST['check_in_date'] ?? '';
@@ -109,7 +112,7 @@ class booking_controller extends base_controller
           'fields' => $errors
         ];
       }
-      $result = $this->repository->updateBooking($bookingId, $propertyId, $status, $payment, $checkInDate, $checkOutDate);
+      $result = $this->repository->updateBooking($clientToken, $propertyId, $clientName, $contactNo, $duration, $status, $payment, $checkInDate, $checkOutDate);
       $this->repository->commitTransaction();
 
       return $this->response([

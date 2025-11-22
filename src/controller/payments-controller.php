@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/../repositories/payment-repository.php';
+require_once __DIR__ . '/../repositories/payments-repository.php';
 require_once __DIR__ . '/./base-controller.php';
 
 class payments_controller extends base_controller
@@ -8,22 +8,22 @@ class payments_controller extends base_controller
 
   public function __construct()
   {
-    $this->repository = new payments_controller();
+    $this->repository = new payments_repository();
   }
 
-  public function countAllPayments()
+  public function countAllPayments($searchQuery)
   {
     try {
-      return $this->repository->countAllPayments();
+      return $this->repository->countAllPayments($searchQuery);
     } catch (Exception $e) {
       return $this->handleException($e);
     }
   }
 
-  public function getAllPayments()
+  public function getAllPayments($searchQuery, $pageSize, $offset)
   {
     try {
-      return $this->repository->getAllPayments();
+      return $this->repository->getAllPayments($searchQuery, $pageSize, $offset);
     } catch (Exception $e) {
       return $this->handleException($e);
     }

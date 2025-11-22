@@ -26,26 +26,15 @@ foreach ($bookingsTrend as $trend) {
 
 <div class="p-4 mt-14 sm:ml-64">
   <div class="flex justify-between items-center mb-6">
-    <div>
-      <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Dashboard Overview</h1>
-      <p class="text-gray-500 dark:text-gray-400">Welcome back! Here's what's happening today.</p>
-    </div>
-    <div class="flex items-center space-x-4">
-      <div class="relative">
-        <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-          <i class="fas fa-search text-gray-500"></i>
-        </div>
-        <input type="text" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full pl-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" placeholder="Search...">
-      </div>
-      <button id="theme-toggle" class="p-2.5 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm">
-        <i class="fas fa-moon text-gray-500 dark:text-yellow-400"></i>
-      </button>
+    <div class="mb-4">
+      <h2 class="uppercase font-bold text-blue-900 text-lg">Dashboard Overview</h2>
+      <p class="text-gray-500 text-sm">Welcome back! Here's what's happening today.</p>
     </div>
   </div>
 
   <!-- Stats Cards -->
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 border-l-4 border-blue-500">
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 border-l-4 border-blue-500">
       <div class="flex justify-between items-start">
         <div>
           <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Total Bookings</p>
@@ -58,7 +47,7 @@ foreach ($bookingsTrend as $trend) {
       </div>
     </div>
 
-    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 border-l-4 border-green-500">
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 border-l-4 border-green-500">
       <div class="flex justify-between items-start">
         <div>
           <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Total Hotels</p>
@@ -71,7 +60,7 @@ foreach ($bookingsTrend as $trend) {
       </div>
     </div>
 
-    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 border-l-4 border-yellow-500">
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 border-l-4 border-yellow-500">
       <div class="flex justify-between items-start">
         <div>
           <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Total Users</p>
@@ -84,7 +73,7 @@ foreach ($bookingsTrend as $trend) {
       </div>
     </div>
 
-    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 border-l-4 border-red-500">
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 border-l-4 border-red-500">
       <div class="flex justify-between items-start">
         <div>
           <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Occupancy Rate</p>
@@ -101,7 +90,7 @@ foreach ($bookingsTrend as $trend) {
   <!-- Charts Section -->
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
     <!-- Bookings Trend Chart -->
-    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6">
+    <div class="bg-white dark:bg-gray-800 rounded-xl border shadow-sm p-6">
       <div class="flex justify-between items-center mb-6">
         <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Bookings Trend</h2>
         <div class="flex space-x-2">
@@ -113,7 +102,7 @@ foreach ($bookingsTrend as $trend) {
     </div>
 
     <!-- Revenue Chart -->
-    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6">
+    <!-- <div class="bg-white dark:bg-gray-800 rounded-xl border shadow-md p-6">
       <div class="flex justify-between items-center mb-6">
         <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Revenue Overview</h2>
         <div class="flex space-x-2">
@@ -122,13 +111,39 @@ foreach ($bookingsTrend as $trend) {
         </div>
       </div>
       <div id="revenueChart"></div>
+    </div> -->
+
+    <div class="bg-white dark:bg-gray-800 rounded-xl border shadow-md p-6">
+      <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-6">Top Performing Hotels</h2>
+      <div class="space-y-4">
+        <?php if (count($topHotels) > 0): ?>
+          <?php
+          $colors = ['blue', 'green', 'yellow', 'purple'];
+          foreach ($topHotels as $index => $hotel):
+            $color = $colors[$index % count($colors)];
+          ?>
+            <div class="flex items-center">
+              <div class="w-10 h-10 rounded-lg bg-<?= $color ?>-100 dark:bg-<?= $color ?>-900/30 flex items-center justify-center mr-3">
+                <i class="fas fa-hotel text-<?= $color ?>-500"></i>
+              </div>
+              <div class="flex-1">
+                <p class="font-medium text-gray-900 dark:text-white"><?= htmlspecialchars($hotel['hotel_name']) ?></p>
+                <p class="text-xs text-gray-500 dark:text-gray-400"><?= $hotel['bookings_count'] ?> bookings this year</p>
+              </div>
+              <span class="bg-<?= $color ?>-100 text-<?= $color ?>-800 text-xs font-medium px-2.5 py-0.5 rounded-full dark:bg-<?= $color ?>-900 dark:text-<?= $color ?>-300">&#8369; <?= number_format($hotel['total_revenue'], 0) ?></span>
+            </div>
+          <?php endforeach; ?>
+        <?php else: ?>
+          <p class="text-sm text-gray-500 dark:text-gray-400 text-center py-4">No data available</p>
+        <?php endif; ?>
+      </div>
     </div>
   </div>
 
   <!-- Additional Info Section -->
   <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
     <!-- Recent Bookings -->
-    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 lg:col-span-2">
+    <div class="bg-white dark:bg-gray-800 rounded-xl border shadow-md p-6 lg:col-span-2">
       <div class="flex justify-between items-center mb-6">
         <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Recent Bookings</h2>
         <a href="#" class="text-sm text-primary-600 dark:text-primary-400 font-medium">View All</a>
@@ -178,49 +193,22 @@ foreach ($bookingsTrend as $trend) {
         </table>
       </div>
     </div>
-
-    <!-- Top Hotels -->
-    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6">
-      <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-6">Top Performing Hotels</h2>
-      <div class="space-y-4">
-        <?php if (count($topHotels) > 0): ?>
-          <?php
-          $colors = ['blue', 'green', 'yellow', 'purple'];
-          foreach ($topHotels as $index => $hotel):
-            $color = $colors[$index % count($colors)];
-          ?>
-            <div class="flex items-center">
-              <div class="w-10 h-10 rounded-lg bg-<?= $color ?>-100 dark:bg-<?= $color ?>-900/30 flex items-center justify-center mr-3">
-                <i class="fas fa-hotel text-<?= $color ?>-500"></i>
-              </div>
-              <div class="flex-1">
-                <p class="font-medium text-gray-900 dark:text-white"><?= htmlspecialchars($hotel['hotel_name']) ?></p>
-                <p class="text-xs text-gray-500 dark:text-gray-400"><?= $hotel['bookings_count'] ?> bookings this year</p>
-              </div>
-              <span class="bg-<?= $color ?>-100 text-<?= $color ?>-800 text-xs font-medium px-2.5 py-0.5 rounded-full dark:bg-<?= $color ?>-900 dark:text-<?= $color ?>-300">$<?= number_format($hotel['total_revenue'], 0) ?></span>
-            </div>
-          <?php endforeach; ?>
-        <?php else: ?>
-          <p class="text-sm text-gray-500 dark:text-gray-400 text-center py-4">No data available</p>
-        <?php endif; ?>
-      </div>
-    </div>
   </div>
 </div>
 
 <script>
   // Theme toggle functionality
-  document.getElementById('theme-toggle').addEventListener('click', function() {
-    document.documentElement.classList.toggle('dark');
-    const icon = this.querySelector('i');
-    if (document.documentElement.classList.contains('dark')) {
-      icon.classList.remove('fa-moon');
-      icon.classList.add('fa-sun');
-    } else {
-      icon.classList.remove('fa-sun');
-      icon.classList.add('fa-moon');
-    }
-  });
+  // document.getElementById('theme-toggle').addEventListener('click', function() {
+  //   document.documentElement.classList.toggle('dark');
+  //   const icon = this.querySelector('i');
+  //   if (document.documentElement.classList.contains('dark')) {
+  //     icon.classList.remove('fa-moon');
+  //     icon.classList.add('fa-sun');
+  //   } else {
+  //     icon.classList.remove('fa-sun');
+  //     icon.classList.add('fa-moon');
+  //   }
+  // });
 
   // Prepare PHP data for JavaScript
   const bookingsChartData = <?= json_encode($bookingsChartData) ?>;
@@ -319,18 +307,18 @@ foreach ($bookingsTrend as $trend) {
   revenueChart.render();
 
   // Update charts on theme change
-  document.getElementById('theme-toggle').addEventListener('click', function() {
-    setTimeout(() => {
-      bookingsChart.updateOptions({
-        tooltip: {
-          theme: document.documentElement.classList.contains('dark') ? 'dark' : 'light'
-        }
-      });
-      revenueChart.updateOptions({
-        tooltip: {
-          theme: document.documentElement.classList.contains('dark') ? 'dark' : 'light'
-        }
-      });
-    }, 100);
-  });
+  // document.getElementById('theme-toggle').addEventListener('click', function() {
+  //   setTimeout(() => {
+  //     bookingsChart.updateOptions({
+  //       tooltip: {
+  //         theme: document.documentElement.classList.contains('dark') ? 'dark' : 'light'
+  //       }
+  //     });
+  //     revenueChart.updateOptions({
+  //       tooltip: {
+  //         theme: document.documentElement.classList.contains('dark') ? 'dark' : 'light'
+  //       }
+  //     });
+  //   }, 100);
+  // });
 </script>
