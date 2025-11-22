@@ -2,11 +2,11 @@
 (function () {
   'use strict';
 
-  document.addEventListener('keydown', (event) => {
-    if (event.key === 'Enter' && event.target.tagName !== 'TEXTAREA') {
-      event.preventDefault();
-    }
-  });
+  // document.addEventListener('keydown', (event) => {
+  //   if (event.key === 'Enter' && event.target.tagName !== 'TEXTAREA') {
+  //     event.preventDefault();
+  //   }
+  // });
 
   window.showToast = function (message, type = 'success', reloadAfter = false) {
     const icons = {

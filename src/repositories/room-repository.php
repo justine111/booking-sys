@@ -81,7 +81,7 @@ class RoomsRepository extends base_repository
 
   public function getHotelListAvailable()
   {
-    $sql ="SELECT property_id, title FROM `properties` WHERE status = 5";
+    $sql = "SELECT property_id, title FROM `properties` WHERE status = 5";
     $stmt = $this->db->prepare($sql);
     $stmt->execute();
 

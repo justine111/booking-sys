@@ -1,0 +1,19 @@
+{
+    "timestamp": 1763816923,
+    "last_reservation_time": 1763815928,
+    "reservation_step": "ask_hotel_selection",
+    "reservation_data": [],
+    "available_hotels": [
+        {
+            "property_id": 20,
+            "display_title": "test hotel",
+            "original_data": {
+                "property_id": 20,
+                "title": "test hotel",
+                "description": "test description",
+                "price_per_night": "2500.00",
+                "address": "Tacloban city"
+            }
+        }
+    ]
+}

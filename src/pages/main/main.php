@@ -86,10 +86,10 @@ require_once __DIR__ . '/components/header.php';
               $statusText = '';
               $statusColorClass = '';
 
-              if ($status >= 1 && $status <= 5) {
+              if ($status == 5) {
                 $statusText = 'Available';
                 $statusColorClass = 'bg-green-500';
-              } elseif ($status == 6) {
+              } else {
                 $statusText = 'Booked';
                 $statusColorClass = 'bg-gray-500';
               }

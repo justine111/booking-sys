@@ -38,10 +38,13 @@ class ReservationAPI
     }
 
     try {
-      $query = "INSERT INTO bookings (property_id, name, contact_no, duration, message, booking_status)
-                      VALUES (:unitid, :name, :phoneno, :duration, :description, 1)";
+      $clientToken = bin2hex(random_bytes(16));
+
+      $query = "INSERT INTO bookings (property_id, client_token, name, contact_no, duration, message, booking_status)
+                      VALUES (:unitid, :clientToken, :name, :phoneno, :duration, :description, 1)";
       $stmt = $this->db->prepare($query);
       $stmt->bindParam(':unitid', $unitId);
+      $stmt->bindParam(':clientToken', $clientToken);
       $stmt->bindParam(':name', $name);
       $stmt->bindParam(':phoneno', $phoneno);
       $stmt->bindParam(':duration', $duration);

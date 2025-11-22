@@ -242,7 +242,7 @@
 
 <script>
   <?php
-  require_once __DIR__ . '/./js/script.js';
+  require_once __DIR__ . '/./js/script.js'; //for images
 
   require_once __DIR__ . '/../../../../assets/js/utils.js';
   require_once __DIR__ . '/../js/script.js';
