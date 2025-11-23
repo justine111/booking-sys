@@ -38,6 +38,33 @@ class room_controller extends base_controller
     }
   }
 
+  public function getAllCategories()
+  {
+    try {
+      return $this->repository->getAllCategories();
+    } catch (Exception $e) {
+      return $this->handleException($e);
+    }
+  }
+
+  public function countHotelsByCategory($categoryId, $searchQuery)
+  {
+    try {
+      return $this->repository->countHotelsByCategory($categoryId, $searchQuery);
+    } catch (Exception $e) {
+      return $this->handleException($e);
+    }
+  }
+
+  public function getHotelsByCategory($categoryId, $searchQuery, $limit, $offset)
+  {
+    try {
+      return $this->repository->getHotelsByCategory($categoryId, $searchQuery, $limit, $offset);
+    } catch (Exception $e) {
+      return $this->handleException($e);
+    }
+  }
+
   public function getHotelListAvailable()
   {
     try {

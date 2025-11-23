@@ -3,6 +3,15 @@ require_once __DIR__ . '/base-repository.php';
 
 class RoomsRepository extends base_repository
 {
+  public function getAllCategories()
+  {
+    $sql = "SELECT category_id, name FROM category ORDER BY category_id ASC";
+    $stmt = $this->db->prepare($sql);
+    $stmt->execute();
+
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+  }
+
   public function countHotels($searchQuery = null)
   {
     $query = "SELECT COUNT(property_id) as total FROM properties WHERE status IS NOT NULL";
@@ -12,6 +21,25 @@ class RoomsRepository extends base_repository
           OR address LIKE :searchQuery";
     }
     $stmt = $this->db->prepare($query);
+    if (!empty($searchQuery)) {
+      $searchQuery = "%$searchQuery%";
+      $stmt->bindParam(':searchQuery', $searchQuery);
+    }
+    $stmt->execute();
+
+    return $stmt->fetchColumn();
+  }
+
+  public function countHotelsByCategory($categoryId, $searchQuery = null)
+  {
+    $query = "SELECT COUNT(property_id) as total FROM properties WHERE status IS NOT NULL AND category_id = :categoryId";
+    if (!empty($searchQuery)) {
+      $query .= " AND (title LIKE :searchQuery
+          OR price_per_night LIKE :searchQuery
+          OR address LIKE :searchQuery)";
+    }
+    $stmt = $this->db->prepare($query);
+    $stmt->bindParam(':categoryId', $categoryId, PDO::PARAM_INT);
     if (!empty($searchQuery)) {
       $searchQuery = "%$searchQuery%";
       $stmt->bindParam(':searchQuery', $searchQuery);
@@ -44,6 +72,42 @@ class RoomsRepository extends base_repository
     }
     $sql .= " ORDER BY a.property_id DESC LIMIT :limit OFFSET :offset";
     $stmt = $this->db->prepare($sql);
+
+    if (!empty($searchQuery)) {
+      $searchQuery = "%$searchQuery%";
+      $stmt->bindParam(':searchQuery', $searchQuery);
+    }
+    $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
+    $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
+    $stmt->execute();
+
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+  }
+
+  public function getHotelsByCategory($categoryId, $searchQuery = null, $limit, $offset)
+  {
+    $sql = "SELECT 
+	            a.property_id, 
+              a.title, 
+              a.description, 
+              a.address,
+              a.price_per_night, 
+              a.address, 
+              a.img1, 
+              a.status
+            FROM properties a
+            LEFT JOIN booking_status b
+            ON a.status = b.id
+            WHERE a.property_id IS NOT NULL AND a.category_id = :categoryId";
+
+    if (!empty($searchQuery)) {
+      $sql .= " AND (a.title LIKE :searchQuery
+        OR a.price_per_night LIKE :searchQuery
+        OR a.address LIKE :searchQuery)";
+    }
+    $sql .= " ORDER BY a.property_id DESC LIMIT :limit OFFSET :offset";
+    $stmt = $this->db->prepare($sql);
+    $stmt->bindParam(':categoryId', $categoryId, PDO::PARAM_INT);
 
     if (!empty($searchQuery)) {
       $searchQuery = "%$searchQuery%";
