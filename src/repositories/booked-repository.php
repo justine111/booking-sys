@@ -56,8 +56,10 @@ class booking_repository extends base_repository
     return $stmt->fetchColumn();
   }
 
-  public function getAllBookings($searchQuery = null, $limit, $offset)
+  public function getAllBookings($searchQuery = null, $limit, $offset, $userRole = null, $userId = null)
   {
+    require_once __DIR__ . '/../helpers/authorization-helper.php';
+
     $sql = "SELECT 
               latest.booking_id,
               latest.property_id,
@@ -71,7 +73,9 @@ class booking_repository extends base_repository
               latest.check_out_date,
               latest.total_amount,
               latest.created_at,
-              latest.client_token
+              latest.client_token,
+              latest.user_id,
+              latest.host_id
             FROM (
               SELECT 
                 a.booking_id,
@@ -88,6 +92,8 @@ class booking_repository extends base_repository
                 a.created_at,
                 a.client_token,
                 a.booking_status,
+                b.user_id,
+                b.host_id,
                 ROW_NUMBER() OVER(
                   PARTITION BY a.client_token 
                   ORDER BY a.created_at DESC
@@ -100,6 +106,11 @@ class booking_repository extends base_repository
             WHERE latest.rn = 1
             AND latest.booking_status IN (1, 6)";
 
+    // Filter for hosts - only show bookings for their properties
+    if ($userRole === AuthorizationHelper::ROLE_HOST) {
+      $sql .= " AND latest.host_id = :user_id";
+    }
+
     if (!empty($searchQuery)) {
       $sql .= " AND (latest.title LIKE :searchQuery
         OR latest.client_name LIKE :searchQuery)";
@@ -107,6 +118,10 @@ class booking_repository extends base_repository
     $sql .= " ORDER BY latest.created_at DESC 
               LIMIT :limit OFFSET :offset";
     $stmt = $this->db->prepare($sql);
+
+    if ($userRole === AuthorizationHelper::ROLE_HOST) {
+      $stmt->bindParam(':user_id', $userId);
+    }
 
     if (!empty($searchQuery)) {
       $searchQuery = "%$searchQuery%";

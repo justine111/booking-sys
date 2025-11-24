@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../helpers/authorization-helper.php';
 
 class base_controller
 {
@@ -9,19 +10,78 @@ class base_controller
       session_start();
     }
 
-    // if (!isset($_SESSION['admin_id'])) {
-    //   throw new Exception("User ID is not set in session");
-    // }
+    if (!isset($_SESSION['user_id'])) {
+      throw new Exception("User is not authenticated");
+    }
 
     return [
-      //'memberId'   => $_SESSION['member_id'],
-      //'username' => $_SESSION['username'],
-      'churchId' => 1,
-      //'roleId' => $_SESSION['role_id'],
-      //'adminId' => $_SESSION['admin_id'],
-      //'lincLeader' => $_SESSION['Linc_leader'],
+      'userId'   => $_SESSION['user_id'],
+      'name'     => $_SESSION['name'] ?? '',
+      'userRole' => $_SESSION['user_type'] ?? null,
     ];
   }
+
+  /**
+   * Get the current user's role ID
+   * @return int User's role ID
+   */
+  protected function getCurrentUserRole()
+  {
+    $session = $this->getUserSession();
+    return $session['userRole'];
+  }
+
+  /**
+   * Get the current user's ID
+   * @return int User's ID
+   */
+  protected function getCurrentUserId()
+  {
+    $session = $this->getUserSession();
+    return $session['userId'];
+  }
+
+  /**
+   * Check if current user can view a specific module
+   * @param string $module Module name to check
+   * @throws Exception if user doesn't have permission
+   */
+  protected function requireModuleAccess($module)
+  {
+    $userRole = $this->getCurrentUserRole();
+
+    if (!AuthorizationHelper::canViewModule($userRole, $module)) {
+      throw new Exception("Access denied. You don't have permission to view this module.", 403);
+    }
+  }
+
+  /**
+   * Check if current user has one of the required roles
+   * @param array $allowedRoles Array of allowed role IDs
+   * @throws Exception if user doesn't have required role
+   */
+  protected function requireRole($allowedRoles)
+  {
+    $userRole = $this->getCurrentUserRole();
+
+    if (!in_array($userRole, $allowedRoles)) {
+      throw new Exception("Access denied. Insufficient permissions.", 403);
+    }
+  }
+
+  /**
+   * Check if current user can manage a specific property
+   * @param int $propertyOwnerId The property owner's user ID
+   * @return bool True if user can manage the property
+   */
+  protected function canManageProperty($propertyOwnerId)
+  {
+    $userRole = $this->getCurrentUserRole();
+    $userId = $this->getCurrentUserId();
+
+    return AuthorizationHelper::canManageProperty($userRole, $userId, $propertyOwnerId);
+  }
+
 
   // protected function checkSession()
   // {

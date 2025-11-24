@@ -122,6 +122,11 @@ class room_controller extends base_controller
         ];
       }
 
+      // Get current user role and ID
+      $userRole = $this->getCurrentUserRole();
+      $userId = $this->getCurrentUserId();
+      $initialStatus = AuthorizationHelper::getInitialPropertyStatus($userRole);
+
       $result = $this->repository->addHotel(
         $hotelName,
         $address,
@@ -133,17 +138,71 @@ class room_controller extends base_controller
         $img1,
         $img2,
         $img3,
-        $img4
+        $img4,
+        $userId,
+        $initialStatus
       );
       $this->repository->commitTransaction();
+
+      $message = $initialStatus === 0
+        ? 'New Hotel room has been submitted for approval.'
+        : 'New Hotel room has been created successfully.';
 
       return $this->response([
         'error' => false,
         'data' => $result,
-        'message' => 'New Hotel room has been created successfully.'
+        'message' => $message
       ]);
     } catch (Exception $e) {
       $this->repository->rollbackTransaction();
+      return $this->handleException($e);
+    }
+  }
+
+  public function approveProperty()
+  {
+    try {
+      // Only admin and moderators can approve
+      $this->requireRole([AuthorizationHelper::ROLE_ADMIN, AuthorizationHelper::ROLE_MODERATOR]);
+
+      $propertyId = $_POST['property_id'] ?? null;
+
+      if (empty($propertyId)) {
+        throw new Exception('Property ID is required', 400);
+      }
+
+      $result = $this->repository->updatePropertyStatus($propertyId, 5); // 5 = available
+
+      return $this->response([
+        'error' => false,
+        'data' => $result,
+        'message' => 'Property has been approved successfully.'
+      ]);
+    } catch (Exception $e) {
+      return $this->handleException($e);
+    }
+  }
+
+  public function rejectProperty()
+  {
+    try {
+      // Only admin and moderators can reject
+      $this->requireRole([AuthorizationHelper::ROLE_ADMIN, AuthorizationHelper::ROLE_MODERATOR]);
+
+      $propertyId = $_POST['property_id'] ?? null;
+
+      if (empty($propertyId)) {
+        throw new Exception('Property ID is required', 400);
+      }
+
+      $result = $this->repository->updatePropertyStatus($propertyId, 1); // 1 = rejected
+
+      return $this->response([
+        'error' => false,
+        'data' => $result,
+        'message' => 'Property has been rejected.'
+      ]);
+    } catch (Exception $e) {
       return $this->handleException($e);
     }
   }
@@ -160,7 +219,10 @@ class room_controller extends base_controller
   public function getListOfHotels($searchQuery, $limit, $offset)
   {
     try {
-      return $this->repository->getListOfHotels($searchQuery, $limit, $offset);
+      $userRole = $this->getCurrentUserRole();
+      $userId = $this->getCurrentUserId();
+
+      return $this->repository->getListOfHotels($searchQuery, $limit, $offset, $userRole, $userId);
     } catch (Exception $e) {
       return $this->handleException($e);
     }

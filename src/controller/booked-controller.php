@@ -70,7 +70,10 @@ class booking_controller extends base_controller
   public function getAllBookings($searchQuery, $limit, $offset)
   {
     try {
-      return $this->repository->getAllBookings($searchQuery, $limit, $offset);
+      $userRole = $this->getCurrentUserRole();
+      $userId = $this->getCurrentUserId();
+
+      return $this->repository->getAllBookings($searchQuery, $limit, $offset, $userRole, $userId);
     } catch (Exception $e) {
       return $this->handleException($e);
     }

@@ -20,16 +20,31 @@ $totalPages = ceil($count / $pageSize);
     <div class="relative">
       <div class="flex flex-col gap-4 pb-2">
         <div class="flex items-center justify-between w-full">
-          <div>
-            <button type="button"
-              data-modal-show="create-booking-modal"
-              data-modal-target="create-booking-modal"
-              class="flex items-center text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg text-sm px-3 py-2 text-center">
-              <i data-lucide="notebook-pen" class="w-[16px] mr-1"></i>
-              Create Reservation
-            </button>
-          </div>
-          <?php require_once __DIR__ . '/./modal/create-booking-modal.php'; ?>
+          <?php
+          require_once __DIR__ . '/../../../helpers/authorization-helper.php';
+          $userRole = $_SESSION['user_type'] ?? null;
+
+          // Only show create button for admin and moderator, not for hosts
+          if ($userRole !== AuthorizationHelper::ROLE_HOST):
+          ?>
+            <div>
+              <button type="button"
+                data-modal-show="create-booking-modal"
+                data-modal-target="create-booking-modal"
+                class="flex items-center text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg text-sm px-3 py-2 text-center">
+                <i data-lucide="notebook-pen" class="w-[16px] mr-1"></i>
+                Create Reservation
+              </button>
+            </div>
+            <?php require_once __DIR__ . '/./modal/create-booking-modal.php'; ?>
+          <?php else: ?>
+            <div>
+              <p class="text-sm text-gray-600 dark:text-gray-400">
+                <i data-lucide="info" class="w-4 h-4 inline mr-1"></i>
+                View-only: Bookings for your properties
+              </p>
+            </div>
+          <?php endif; ?>
 
           <div class="relative">
             <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">

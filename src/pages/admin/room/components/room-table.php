@@ -5,7 +5,7 @@ foreach ($getHotel as $index => $row) :
 
   <tr class="bg-white dark:bg-gray-800">
     <td scope="row" class="px-6 py-3">
-      <?= $offset + $index + 1; ?>
+      <?= (int)$offset + $index + 1; ?>
     </td>
     <td class="px-6 py-3">
       <div class="flex items-center">
@@ -121,21 +121,21 @@ foreach ($getHotel as $index => $row) :
           </div>
         </div>
         <div class="text-center">
-          <h3 class="text-lg font-semibold text-gray-700 mb-1">No member found</h3>
+          <h3 class="text-lg font-semibold text-gray-700 mb-1">No properties found</h3>
           <p class="text-sm text-gray-500 max-w-sm">
             <?php if ($searchQuery): ?>
-              No member match your search criteria "<?= htmlspecialchars($searchQuery) ?>"
+              No properties match your search criteria "<?= htmlspecialchars($searchQuery) ?>"
             <?php else: ?>
-              No member found in the system. Start by adding your first.
+              No properties found in the system. Start by adding your first.
             <?php endif; ?>
           </p>
         </div>
         <button
-          data-modal-target="add-member-modal"
-          data-modal-toggle="add-member-modal"
+          data-modal-target="addHotelModal"
+          data-modal-toggle="addHotelModal"
           class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors duration-200">
           <i data-lucide="plus" class="w-4 h-4"></i>
-          Add First Member
+          Add First Property
         </button>
       </div>
     </td>

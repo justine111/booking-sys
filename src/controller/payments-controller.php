@@ -23,7 +23,10 @@ class payments_controller extends base_controller
   public function getAllPayments($searchQuery, $pageSize, $offset)
   {
     try {
-      return $this->repository->getAllPayments($searchQuery, $pageSize, $offset);
+      $userRole = $this->getCurrentUserRole();
+      $userId = $this->getCurrentUserId();
+
+      return $this->repository->getAllPayments($searchQuery, $pageSize, $offset, $userRole, $userId);
     } catch (Exception $e) {
       return $this->handleException($e);
     }

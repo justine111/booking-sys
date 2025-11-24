@@ -120,13 +120,39 @@
 
         <!-- Modal footer -->
         <div class="flex items-center px-4 py-4 border-t border-gray-200 rounded-b dark:border-gray-600">
-          <button
-            data-modal-hide="booking-details-modal-<?= htmlspecialchars($row['booking_id']); ?>"
-            type="submit"
-            class="py-2.5 px-5 text-sm font-medium text-white focus:outline-none bg-blue-600 rounded-xl border border-gray-200 focus:z-10 focus:ring-4 focus:ring-gray-100">
-            Update Reservation
-          </button>
+          <?php
+          require_once __DIR__ . '/../../../../helpers/authorization-helper.php';
+          $userRole = $_SESSION['user_type'] ?? null;
+
+          // Only show update button for admin and moderators
+          if ($userRole !== AuthorizationHelper::ROLE_HOST):
+          ?>
+            <button
+              data-modal-hide="booking-details-modal-<?= htmlspecialchars($row['booking_id']); ?>"
+              type="submit"
+              class="py-2.5 px-5 text-sm font-medium text-white focus:outline-none bg-blue-600 rounded-xl border border-gray-200 focus:z-10 focus:ring-4 focus:ring-gray-100">
+              Update Reservation
+            </button>
+          <?php else: ?>
+            <p class="text-sm text-gray-500">
+              <i data-lucide="lock" class="w-4 h-4 inline mr-1"></i>
+              View-only mode - contact admin to update
+            </p>
+          <?php endif; ?>
         </div>
+
+        <script>
+          // Disable all form fields for hosts
+          <?php if ($userRole === AuthorizationHelper::ROLE_HOST): ?>
+            const form = document.getElementById('update-booking-form-<?= htmlspecialchars($row['booking_id']); ?>');
+            if (form) {
+              form.querySelectorAll('input, select, textarea').forEach(el => {
+                el.setAttribute('disabled', 'disabled');
+                el.classList.add('opacity-60', 'cursor-not-allowed');
+              });
+            }
+          <?php endif; ?>
+        </script>
       </form>
     </div>
   </div>

@@ -32,8 +32,10 @@ class payments_repository extends base_repository
     return $stmt->fetchColumn();
   }
 
-  public function getAllPayments($searchQuery = null, $limit, $offset)
+  public function getAllPayments($searchQuery = null, $limit, $offset, $userRole = null, $userId = null)
   {
+    require_once __DIR__ . '/../helpers/authorization-helper.php';
+
     $sql = "SELECT 
               latest.payment_id,
               latest.title,
@@ -42,7 +44,9 @@ class payments_repository extends base_repository
               latest.payment_date,
               latest.check_in_date,
               latest.check_out_date,
-              latest.client_token
+              latest.client_token,
+              latest.user_id,
+              latest.host_id
             FROM (
               SELECT 
                 a.payment_id,
@@ -53,6 +57,8 @@ class payments_repository extends base_repository
                 b.check_in_date,
                 b.check_out_date,
                 a.client_token,
+                c.user_id,
+                c.host_id,
                 ROW_NUMBER() OVER(
                   PARTITION BY a.client_token 
                   ORDER BY a.payment_date DESC
@@ -64,6 +70,11 @@ class payments_repository extends base_repository
             ) as latest
             WHERE latest.rn = 1";
 
+    // Filter for hosts - only show payments for their properties
+    if ($userRole === AuthorizationHelper::ROLE_HOST) {
+      $sql .= " AND latest.host_id = :user_id";
+    }
+
     if (!empty($searchQuery)) {
       $sql .= " AND (latest.title LIKE :searchQuery
         OR latest.client_name LIKE :searchQuery)";
@@ -71,6 +82,10 @@ class payments_repository extends base_repository
     $sql .= " ORDER BY latest.payment_date DESC 
               LIMIT :limit OFFSET :offset";
     $stmt = $this->db->prepare($sql);
+
+    if ($userRole === AuthorizationHelper::ROLE_HOST) {
+      $stmt->bindParam(':user_id', $userId);
+    }
 
     if (!empty($searchQuery)) {
       $searchQuery = "%$searchQuery%";

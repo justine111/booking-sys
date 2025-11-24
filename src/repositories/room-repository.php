@@ -152,7 +152,7 @@ class RoomsRepository extends base_repository
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
   }
 
-  public function addHotel($hotelName, $address, $city, $price, $host, $description, $amenities, $img1, $img2, $img3, $img4)
+  public function addHotel($hotelName, $address, $city, $price, $host, $description, $amenities, $img1, $img2, $img3, $img4, $userId, $status = 5)
   {
     $allowed_types = ['image/jpeg', 'image/png', 'image/gif', 'image/jpg'];
     $upload_dir = $_SERVER['DOCUMENT_ROOT'] . '/booking-sys/src/repositories/uploads/';
@@ -193,6 +193,7 @@ class RoomsRepository extends base_repository
               city, 
               price_per_night, 
               host_id, 
+              user_id,
               description, 
               amenities, 
               img1, 
@@ -208,13 +209,14 @@ class RoomsRepository extends base_repository
               :city, 
               :price_per_night, 
               :host, 
+              :user_id,
               :description, 
               :amenities, 
               :image_1_filename, 
               :image_2_filename, 
               :image_3_filename, 
               :image_4_filename, 
-              5
+              :status
             )";
 
     $stmt = $this->db->prepare($sql);
@@ -223,13 +225,24 @@ class RoomsRepository extends base_repository
     $stmt->bindParam(':city', $city);
     $stmt->bindParam(':price_per_night', $price);
     $stmt->bindParam(':host', $host);
+    $stmt->bindParam(':user_id', $userId);
     $stmt->bindParam(':description', $description);
     $stmt->bindParam(':amenities', $amenities);
     $stmt->bindParam(':image_1_filename', $filename1);
     $stmt->bindParam(':image_2_filename', $filename2);
     $stmt->bindParam(':image_3_filename', $filename3);
     $stmt->bindParam(':image_4_filename', $filename4);
+    $stmt->bindParam(':status', $status);
 
+    return $stmt->execute();
+  }
+
+  public function updatePropertyStatus($propertyId, $status)
+  {
+    $sql = "UPDATE properties SET status = :status WHERE property_id = :property_id";
+    $stmt = $this->db->prepare($sql);
+    $stmt->bindParam(':status', $status);
+    $stmt->bindParam(':property_id', $propertyId);
     return $stmt->execute();
   }
 
@@ -260,8 +273,9 @@ class RoomsRepository extends base_repository
     return $stmt->fetchColumn();
   }
 
-  public function getListOfHotels($searchQuery = null, $limit, $offset)
+  public function getListOfHotels($searchQuery = null, $limit, $offset, $userRole = null, $userId = null)
   {
+    require_once __DIR__ . '/../helpers/authorization-helper.php';
     $searchQuery = trim($searchQuery);
 
     $sql = "SELECT
@@ -274,6 +288,7 @@ class RoomsRepository extends base_repository
               a.price_per_night,
               a.img1,
               a.created_at,
+              a.user_id,
               c.description as status,
               b.name  
             FROM properties a
@@ -283,15 +298,32 @@ class RoomsRepository extends base_repository
             ON a.status = c.id
             WHERE a.status IS NOT NULL";
 
+    // Filter based on user role
+    if ($userRole === AuthorizationHelper::ROLE_HOST) {
+      // Hosts only see their own properties
+      $sql .= " AND a.host_id = :user_id";
+    } elseif ($userRole === AuthorizationHelper::ROLE_MODERATOR) {
+      // Moderators see all properties or pending approvals
+      // No additional filter needed
+    } elseif ($userRole === AuthorizationHelper::ROLE_ADMIN) {
+      // Admins see everything  
+      // No additional filter needed
+    }
+
     if (!empty($searchQuery)) {
-      $sql .= " AND a.title LIKE :searchQuery
+      $sql .= " AND (a.title LIKE :searchQuery
           OR a.price_per_night LIKE :searchQuery
           OR a.address LIKE :searchQuery
           OR a.status LIKE :searchQuery
-          OR b.name LIKE :searchQuery";
+          OR b.name LIKE :searchQuery)";
     }
     $sql .= " ORDER BY a.property_id DESC LIMIT :limit OFFSET :offset";
     $stmt = $this->db->prepare($sql);
+
+    if ($userRole === AuthorizationHelper::ROLE_HOST) {
+      $stmt->bindParam(':user_id', $userId);
+    }
+
     if (!empty($searchQuery)) {
       $searchQuery = "%$searchQuery%";
       $stmt->bindParam(':searchQuery', $searchQuery);
