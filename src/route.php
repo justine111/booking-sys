@@ -13,6 +13,9 @@ switch ($page) {
   case 'payments':
     require_once 'src/pages/admin/payments/payments.php';
     break;
+  case 'host':
+    require_once 'src/pages/admin/host/host.php';
+    break;
   case 'user':
     require_once 'src/pages/admin/user/user.php';
     break;

@@ -82,6 +82,12 @@
         </a>
       </li>
       <li>
+        <a href="<?= $basePath ?>/host" class="sidebar-link flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+          <i data-lucide="venetian-mask" class="w-[18px] mr-1"></i>
+          <span class="flex-1 ms-3 whitespace-nowrap">Host</span>
+        </a>
+      </li>
+      <li>
         <a href="<?= $basePath ?>/user" class="sidebar-link flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
           <i data-lucide="users" class="w-[18px] mr-1"></i>
           <span class="flex-1 ms-3 whitespace-nowrap">Users</span>
