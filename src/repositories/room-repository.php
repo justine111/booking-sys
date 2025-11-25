@@ -128,7 +128,9 @@ class RoomsRepository extends base_repository
               description, 
               price_per_night, 
               amenities,
-              address, 
+              address,
+              city,
+              host_id,
               img1, 
               img2, 
               img3,
@@ -152,8 +154,62 @@ class RoomsRepository extends base_repository
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
   }
 
-  public function addHotel($hotelName, $address, $city, $price, $host, $description, $amenities, $img1, $img2, $img3, $img4, $userId, $status = 5)
+  public function updateHotel($propertyId, $hotelName, $address, $city, $price, $host, $description, $amenities, $img1 = null, $img2 = null, $img3 = null, $img4 = null)
   {
+    $allowed_types = ['image/jpeg', 'image/png', 'image/gif', 'image/jpg'];
+    $upload_dir = $_SERVER['DOCUMENT_ROOT'] . '/booking-sys/src/repositories/uploads/';
+
+    if (!is_dir($upload_dir)) mkdir($upload_dir, 0777, true);
+
+    $handleFileUpload = function ($file) use ($allowed_types, $upload_dir) {
+      if (!isset($file) || $file['error'] === UPLOAD_ERR_NO_FILE) return null;
+      if ($file['error'] !== UPLOAD_ERR_OK) throw new Exception("File upload error: Code " . $file['error']);
+      if (!in_array($file['type'], $allowed_types)) throw new Exception("Invalid file type");
+
+      $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
+      $unique_name = uniqid('hotel_img_') . '.' . $extension;
+      $destination = $upload_dir . $unique_name;
+
+      if (!move_uploaded_file($file['tmp_name'], $destination))
+        throw new Exception("Failed to move uploaded file");
+      return $unique_name;
+    };
+
+    $filename1 = $handleFileUpload($img1);
+    $filename2 = $handleFileUpload($img2);
+    $filename3 = $handleFileUpload($img3);
+    $filename4 = $handleFileUpload($img4);
+
+    $sql = "UPDATE properties SET title = :title, address = :address, city = :city, price_per_night = :price_per_night, host_id = :host, description = :description, amenities = :amenities";
+
+    if ($filename1) $sql .= ", img1 = :img1";
+    if ($filename2) $sql .= ", img2 = :img2";
+    if ($filename3) $sql .= ", img3 = :img3";
+    if ($filename4) $sql .= ", img4 = :img4";
+    $sql .= " WHERE property_id = :property_id";
+
+    $stmt = $this->db->prepare($sql);
+    $stmt->bindParam(':title', $hotelName);
+    $stmt->bindParam(':address', $address);
+    $stmt->bindParam(':city', $city);
+    $stmt->bindParam(':price_per_night', $price);
+    $stmt->bindParam(':host', $host);
+    $stmt->bindParam(':description', $description);
+    $stmt->bindParam(':amenities', $amenities);
+    $stmt->bindParam(':property_id', $propertyId, PDO::PARAM_INT);
+
+    if ($filename1) $stmt->bindParam(':img1', $filename1);
+    if ($filename2) $stmt->bindParam(':img2', $filename2);
+    if ($filename3) $stmt->bindParam(':img3', $filename3);
+    if ($filename4) $stmt->bindParam(':img4', $filename4);
+
+    return $stmt->execute();
+  }
+
+  public function addHotel($hotelName, $address, $city, $price, $host, $description, $amenities, $img1, $img2, $img3, $img4, $userId, $userRole, $status = 5)
+  {
+    require_once __DIR__ . '/../helpers/authorization-helper.php';
+
     $allowed_types = ['image/jpeg', 'image/png', 'image/gif', 'image/jpg'];
     $upload_dir = $_SERVER['DOCUMENT_ROOT'] . '/booking-sys/src/repositories/uploads/';
 
@@ -186,6 +242,11 @@ class RoomsRepository extends base_repository
     $filename3 = $handleFileUpload($img3);
     $filename4 = $handleFileUpload($img4);
 
+    // Determine is_active based on user role
+    // 0 = active (approved), 1 = not active (needs approval)
+    // Hosts need approval, Admin/Moderator are auto-approved
+    $is_active = ($userRole === AuthorizationHelper::ROLE_HOST) ? 1 : 0;
+
     $sql = "INSERT INTO properties 
             (
               title, 
@@ -200,7 +261,8 @@ class RoomsRepository extends base_repository
               img2, 
               img3, 
               img4, 
-              status
+              status,
+              is_active
             ) 
             VALUES 
             (
@@ -216,7 +278,8 @@ class RoomsRepository extends base_repository
               :image_2_filename, 
               :image_3_filename, 
               :image_4_filename, 
-              :status
+              :status,
+              :is_active
             )";
 
     $stmt = $this->db->prepare($sql);
@@ -233,6 +296,7 @@ class RoomsRepository extends base_repository
     $stmt->bindParam(':image_3_filename', $filename3);
     $stmt->bindParam(':image_4_filename', $filename4);
     $stmt->bindParam(':status', $status);
+    $stmt->bindParam(':is_active', $is_active, PDO::PARAM_INT);
 
     return $stmt->execute();
   }

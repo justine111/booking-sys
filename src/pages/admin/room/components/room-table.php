@@ -87,20 +87,15 @@ foreach ($getHotel as $index => $row) :
             <h3 class="font-semibold">Actions</h3>
           </div>
           <div class="flex flex-col gap-y-2 py-2">
+            <button onclick="editRoom(<?= $row['property_id'] ?>)" data-modal-target="edit-hotel-modal" data-modal-toggle="edit-hotel-modal" class="btn btn-ghost btn-sm px-3 flex items-center justify-start gap-x-1 py-1 text-gray-800 dark:text-white hover:text-gray-800 hover:bg-gray-200 dark:hover:bg-gray-600 transition-all">
+              <i data-lucide="edit" class="w-4"></i>
+              <span>Edit</span>
+            </button>
             <a class="btn btn-ghost btn-sm px-3 flex items-center justify-start gap-x-1 py-1 text-gray-800 dark:text-white hover:text-gray-800 hover:bg-gray-200 dark:hover:bg-gray-600 transition-all"
               href="<?= $basePath ?>/details?member_id=<?= $row['property_id'] ?>">
               <i data-lucide="eye" class="w-4"></i>
               <span>View Details</span>
             </a>
-            <!-- <form method="post" class="setInactiveForm">
-              <input type="hidden" name="memberid" value="<?= htmlspecialchars($row['property_id']) ?>">
-              <button
-                type="submit"
-                class="w-full px-3 flex items-center justify-start gap-x-2 py-1 text-gray-800 dark:text-white hover:text-gray-800 hover:bg-gray-200 dark:hover:bg-gray-600 transition-all">
-                <i data-lucide="ban" class="w-4"></i>
-                <?= ($member['inactive'] == 0) ? 'Set as Inactive' : 'Set as Active'; ?>
-              </button>
-            </form> -->
           </div>
         </div>
       </div>

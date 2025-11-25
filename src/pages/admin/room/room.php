@@ -31,6 +31,7 @@ $totalPages = ceil($count / $pageSize);
             </button>
           </div>
           <?php require_once __DIR__ . '/./modal/add-new-hotel.php'; ?>
+          <?php require_once __DIR__ . '/./modal/edit-hotel-modal.php'; ?>
 
           <div class="relative">
             <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
@@ -78,3 +79,12 @@ $totalPages = ceil($count / $pageSize);
     <?php require_once __DIR__ . '/../../../components/pagination.php'; ?>
   </div>
 </main>
+
+<script>
+  lucide.createIcons();
+
+  <?php
+  require_once __DIR__ . '/../../../assets/js/utils.js';
+  require_once __DIR__ . '/js/script.js';
+  ?>
+</script>

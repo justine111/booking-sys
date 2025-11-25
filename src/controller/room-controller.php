@@ -122,10 +122,9 @@ class room_controller extends base_controller
         ];
       }
 
-      // Get current user role and ID
-      $userRole = $this->getCurrentUserRole();
+      // Get current user ID and role
       $userId = $this->getCurrentUserId();
-      $initialStatus = AuthorizationHelper::getInitialPropertyStatus($userRole);
+      $userRole = $this->getCurrentUserRole();
 
       $result = $this->repository->addHotel(
         $hotelName,
@@ -140,18 +139,14 @@ class room_controller extends base_controller
         $img3,
         $img4,
         $userId,
-        $initialStatus
+        $userRole
       );
       $this->repository->commitTransaction();
-
-      $message = $initialStatus === 0
-        ? 'New Hotel room has been submitted for approval.'
-        : 'New Hotel room has been created successfully.';
 
       return $this->response([
         'error' => false,
         'data' => $result,
-        'message' => $message
+        'message' => 'New Hotel room has been created successfully.'
       ]);
     } catch (Exception $e) {
       $this->repository->rollbackTransaction();
@@ -159,50 +154,87 @@ class room_controller extends base_controller
     }
   }
 
-  public function approveProperty()
+  public function updateHotel()
   {
     try {
-      // Only admin and moderators can approve
-      $this->requireRole([AuthorizationHelper::ROLE_ADMIN, AuthorizationHelper::ROLE_MODERATOR]);
+      $this->repository->startTransaction();
 
-      $propertyId = $_POST['property_id'] ?? null;
+      $propertyId = $_POST['property-id'];
+      $hotelName = $_POST['hotel-name'];
+      $address = $_POST['address'];
+      $city = $_POST['city'];
+      $price = $_POST['price'];
+      $host = $_POST['host'];
+      $description = $_POST['description'];
+      $amenities = $_POST['amenities'];
+
+      // Get optional image uploads
+      $img1 = isset($_FILES['image_1']) ? $_FILES['image_1'] : null;
+      $img2 = isset($_FILES['image_2']) ? $_FILES['image_2'] : null;
+      $img3 = isset($_FILES['image_3']) ? $_FILES['image_3'] : null;
+      $img4 = isset($_FILES['image_4']) ? $_FILES['image_4'] : null;
+
+      $errors = [];
 
       if (empty($propertyId)) {
-        throw new Exception('Property ID is required', 400);
+        $errors['property-id'] = '*Property ID is required';
       }
 
-      $result = $this->repository->updatePropertyStatus($propertyId, 5); // 5 = available
+      if (empty($hotelName)) {
+        $errors['hotel-name'] = '*Please provide unit name';
+      }
+
+      if (empty($address)) {
+        $errors['address'] = '*Address is required';
+      }
+
+      if (empty($city)) {
+        $errors['city'] = '*City is required';
+      }
+
+      if (empty($price)) {
+        $errors['price'] = '*Price rate is required';
+      }
+
+      if (empty($host)) {
+        $errors['host'] = '*Unit host is required';
+      }
+
+      if (!empty($errors)) {
+        return [
+          'error' => true,
+          'message' => 'Some fields are required.',
+          'fields' => $errors
+        ];
+      }
+
+      // Get current user ID and check permissions
+      $userId = $this->getCurrentUserId();
+      $userRole = $this->getCurrentUserRole();
+
+      $result = $this->repository->updateHotel(
+        $propertyId,
+        $hotelName,
+        $address,
+        $city,
+        $price,
+        $host,
+        $description,
+        $amenities,
+        $img1,
+        $img2,
+        $img3,
+        $img4
+      );
+      $this->repository->commitTransaction();
 
       return $this->response([
         'error' => false,
         'data' => $result,
-        'message' => 'Property has been approved successfully.'
+        'message' => 'Hotel room has been updated successfully.'
       ]);
     } catch (Exception $e) {
-      return $this->handleException($e);
-    }
-  }
-
-  public function rejectProperty()
-  {
-    try {
-      // Only admin and moderators can reject
-      $this->requireRole([AuthorizationHelper::ROLE_ADMIN, AuthorizationHelper::ROLE_MODERATOR]);
-
-      $propertyId = $_POST['property_id'] ?? null;
-
-      if (empty($propertyId)) {
-        throw new Exception('Property ID is required', 400);
-      }
-
-      $result = $this->repository->updatePropertyStatus($propertyId, 1); // 1 = rejected
-
-      return $this->response([
-        'error' => false,
-        'data' => $result,
-        'message' => 'Property has been rejected.'
-      ]);
-    } catch (Exception $e) {
+      $this->repository->rollbackTransaction();
       return $this->handleException($e);
     }
   }
