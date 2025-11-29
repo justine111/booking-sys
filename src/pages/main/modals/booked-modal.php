@@ -59,6 +59,26 @@
             <p id="stay-duration-error" class="mt-1 text-sm text-red-600 hidden"></p>
           </div>
 
+          <div class="col-span-2 sm:col-span-1">
+            <label for="check-in-date" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Check-in Date <span class="text-gray-500 text-xs">(required)</span></label>
+            <input
+              type="date"
+              name="check_in_date"
+              id="check-in-date"
+              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
+            <p id="check-in-date-error" class="mt-1 text-sm text-red-600 hidden"></p>
+          </div>
+
+          <div class="col-span-2 sm:col-span-1">
+            <label for="check-out-date" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Check-out Date <span class="text-gray-500 text-xs">(required)</span></label>
+            <input
+              type="date"
+              name="check_out_date"
+              id="check-out-date"
+              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
+            <p id="check-out-date-error" class="mt-1 text-sm text-red-600 hidden"></p>
+          </div>
+
           <div class="col-span-2">
             <label for="description" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Message</label>
             <textarea

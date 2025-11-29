@@ -3,13 +3,13 @@ require_once __DIR__ . '/base-repository.php';
 
 class booking_repository extends base_repository
 {
-  public function reservation($unitId, $name, $phoneno, $duration, $description)
+  public function reservation($unitId, $name, $phoneno, $duration, $description, $checkInDate, $checkOutDate)
   {
     // Generate unique client token using PHP's built-in functions
     $clientToken = bin2hex(random_bytes(16));
 
-    $query = "INSERT INTO bookings (property_id, client_token, name, contact_no, duration, message, booking_status)
-              VALUES (:unitid, :clientToken, :name, :phoneno, :duration, :description, 1)";
+    $query = "INSERT INTO bookings (property_id, client_token, name, contact_no, duration, message, check_in_date, check_out_date, booking_status)
+              VALUES (:unitid, :clientToken, :name, :phoneno, :duration, :description, :checkInDate, :checkOutDate, 1)";
     $stmt = $this->db->prepare($query);
     $stmt->bindParam(':unitid', $unitId);
     $stmt->bindParam(':clientToken', $clientToken);
@@ -17,6 +17,8 @@ class booking_repository extends base_repository
     $stmt->bindParam(':phoneno', $phoneno);
     $stmt->bindParam(':duration', $duration);
     $stmt->bindParam(':description', $description);
+    $stmt->bindParam(':checkInDate', $checkInDate);
+    $stmt->bindParam(':checkOutDate', $checkOutDate);
     return $stmt->execute();
   }
 

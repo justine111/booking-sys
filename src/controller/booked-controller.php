@@ -21,6 +21,8 @@ class booking_controller extends base_controller
       $phoneno = $_POST['phoneno'] ?? '';
       $duration = $_POST['stay-duration'] ?? '';
       $description = $_POST['description'] ?? '';
+      $checkInDate = $_POST['check_in_date'] ?? '';
+      $checkOutDate = $_POST['check_out_date'] ?? '';
 
       $errors = [];
 
@@ -36,6 +38,14 @@ class booking_controller extends base_controller
         $errors['stay-duration'] = '*Stay duration is required';
       }
 
+      if (empty($checkInDate)) {
+        $errors['check_in_date'] = '*Check-in date is required';
+      }
+
+      if (empty($checkOutDate)) {
+        $errors['check_out_date'] = '*Check-out date is required';
+      }
+
       if (!empty($errors)) {
         return [
           'error' => true,
@@ -44,7 +54,7 @@ class booking_controller extends base_controller
         ];
       }
 
-      $result = $this->repository->reservation($unitId, $name, $phoneno, $duration, $description);
+      $result = $this->repository->reservation($unitId, $name, $phoneno, $duration, $description, $checkInDate, $checkOutDate);
       $this->repository->commitTransaction();
 
       return $this->response([
