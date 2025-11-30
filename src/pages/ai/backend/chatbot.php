@@ -9,7 +9,7 @@ header('X-XSS-Protection: 1; mode=block');
 // Environment-based configuration
 class Config
 {
-  const API_KEY = 'AIzaSyAVTtWzjt2vP3pfDkNoabV3Dr7txtwlqRM'; //api key
+  const API_KEY = 'AIzaSyAmJRrXujlt37gNlRU81-bxEL1Ehpz-bYc'; //api key
   const SESSIONS_DIR = __DIR__ . '/sessions';
   const MAX_MESSAGE_LENGTH = 1000;
   const SESSION_TIMEOUT = 3600;

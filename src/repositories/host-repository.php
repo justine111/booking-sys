@@ -58,4 +58,18 @@ class host_repository extends base_repository
 
     return $stmt->rowCount();
   }
+
+  public function getAllHostsForDropdown()
+  {
+    $sql = "SELECT 
+              host_id,
+              name
+            FROM `hosts`
+            WHERE host_id IS NOT NULL
+            ORDER BY name ASC";
+    $stmt = $this->db->prepare($sql);
+    $stmt->execute();
+
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+  }
 }

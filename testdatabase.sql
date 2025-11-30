@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 24, 2025 at 03:20 PM
+-- Generation Time: Nov 30, 2025 at 08:21 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -166,17 +166,18 @@ CREATE TABLE `properties` (
   `img4` varchar(100) DEFAULT NULL,
   `status` int(11) NOT NULL DEFAULT 0,
   `category_id` int(11) NOT NULL,
-  `created_at` datetime DEFAULT current_timestamp()
+  `created_at` datetime DEFAULT current_timestamp(),
+  `is_active` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `properties`
 --
 
-INSERT INTO `properties` (`property_id`, `host_id`, `user_id`, `title`, `description`, `address`, `city`, `price_per_night`, `amenities`, `img1`, `img2`, `img3`, `img4`, `status`, `category_id`, `created_at`) VALUES
-(18, 1, NULL, 'Joshua house', 'Fresn and clean with high mountain view,', 'Brgy Naga-asan', 'Babatngon', 2500.00, '', 'hotel_img_6919cf7d0e10f.jpg', 'hotel_img_6919cf7d0e262.jpg', 'hotel_img_6919cf7d0e3ad.jpg', 'hotel_img_6919cf7d0e4d4.jpg', 6, 1, '2025-11-16 21:19:57'),
-(19, 1, NULL, 'Hotel Ranelo', 'test description', 'Brgy 110 Utap Tacloban Cityy', 'Tacloban', 2000.00, 'WiFi', 'hotel_img_69214a130197a.png', 'hotel_img_69214a1301ba2.png', 'hotel_img_69214a1301d46.jpg', 'hotel_img_69214a1301ed0.jpg', 6, 2, '2025-11-22 13:28:51'),
-(20, 2, NULL, 'test hotel', 'test description', 'Tacloban city', 'asdas', 2500.00, 'Wifi', 'hotel_img_6921ae1909859.png', 'hotel_img_6921ae1909992.png', 'hotel_img_6921ae1909a9e.png', 'hotel_img_6921ae1909bb3.png', 5, 3, '2025-11-22 20:35:37');
+INSERT INTO `properties` (`property_id`, `host_id`, `user_id`, `title`, `description`, `address`, `city`, `price_per_night`, `amenities`, `img1`, `img2`, `img3`, `img4`, `status`, `category_id`, `created_at`, `is_active`) VALUES
+(18, 1, NULL, 'Joshua house', 'Fresn and clean with high mountain view,', 'Brgy Naga-asan', 'Babatngon', 2500.00, '', 'hotel_img_6919cf7d0e10f.jpg', 'hotel_img_6919cf7d0e262.jpg', 'hotel_img_6919cf7d0e3ad.jpg', 'hotel_img_6919cf7d0e4d4.jpg', 6, 1, '2025-11-16 21:19:57', 0),
+(19, 1, NULL, 'Hotel Ranelo', 'test description', 'Brgy 110 Utap Tacloban Cityy', 'Tacloban', 2000.00, 'WiFi', 'hotel_img_69214a130197a.png', 'hotel_img_69214a1301ba2.png', 'hotel_img_69214a1301d46.jpg', 'hotel_img_69214a1301ed0.jpg', 6, 2, '2025-11-22 13:28:51', 0),
+(20, 2, NULL, 'test hotel', 'test description', 'Tacloban city', 'asdas', 2500.00, 'Wifi', 'hotel_img_6921ae1909859.png', 'hotel_img_6921ae1909992.png', 'hotel_img_6921ae1909a9e.png', 'hotel_img_6921ae1909bb3.png', 5, 3, '2025-11-22 20:35:37', 0);
 
 -- --------------------------------------------------------
 

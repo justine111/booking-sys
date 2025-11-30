@@ -95,8 +95,15 @@
               </label>
               <select name="host" id="host"
                 class="w-full px-4 py-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-800 appearance-none cursor-pointer transition-all duration-200 form-input">
-                <option value="1" class="text-green-600">Available</option>
-                <option value="2" class="text-red-600">Unavailable</option>
+                <option value="">-- Select a Host --</option>
+                <?php
+                require_once __DIR__ . '/../../../../repositories/host-repository.php';
+                $hostRepo = new host_repository();
+                $hosts = $hostRepo->getAllHostsForDropdown();
+                foreach ($hosts as $host) {
+                  echo '<option value="' . htmlspecialchars($host['host_id']) . '">' . htmlspecialchars($host['name']) . '</option>';
+                }
+                ?>
               </select>
               <p id="host-error" class="mt-1 text-sm text-red-600 hidden"></p>
             </div>
