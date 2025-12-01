@@ -6,10 +6,50 @@ header('X-Content-Type-Options: nosniff');
 header('X-Frame-Options: DENY');
 header('X-XSS-Protection: 1; mode=block');
 
+// Load environment variables from .env file
+function loadEnv($path)
+{
+  if (!file_exists($path)) {
+    throw new Exception('.env file not found at: ' . $path);
+  }
+
+  $lines = file($path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+  foreach ($lines as $line) {
+    // Skip comments
+    if (strpos(trim($line), '#') === 0) {
+      continue;
+    }
+
+    // Parse KEY=VALUE format
+    if (strpos($line, '=') !== false) {
+      list($name, $value) = explode('=', $line, 2);
+      $name = trim($name);
+      $value = trim($value);
+
+      // Set as environment variable
+      if (!array_key_exists($name, $_ENV)) {
+        $_ENV[$name] = $value;
+        putenv("$name=$value");
+      }
+    }
+  }
+}
+
+// Load .env file from project root
+loadEnv(__DIR__ . '/../../../../.env');
+
 // Environment-based configuration
 class Config
 {
-  const API_KEY = 'AIzaSyAmJRrXujlt37gNlRU81-bxEL1Ehpz-bYc'; //api key
+  public static function getApiKey()
+  {
+    $apiKey = getenv('GEMINI_API_KEY');
+    if (empty($apiKey)) {
+      throw new Exception('GEMINI_API_KEY not found in environment variables');
+    }
+    return $apiKey;
+  }
+
   const SESSIONS_DIR = __DIR__ . '/sessions';
   const MAX_MESSAGE_LENGTH = 1000;
   const SESSION_TIMEOUT = 3600;
@@ -710,7 +750,7 @@ class EnhancedChatbot
 
   private function callGeminiAPI($prompt)
   {
-    $api_key = Config::API_KEY;
+    $api_key = Config::getApiKey();
 
     $payload = [
       'contents' => [
