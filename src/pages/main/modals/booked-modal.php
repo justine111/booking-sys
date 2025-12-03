@@ -1,5 +1,5 @@
 <div id="book-modal" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
-  <div class="relative p-4 w-full max-w-md max-h-full">
+  <div class="relative p-4 w-full max-w-2xl max-h-full">
     <div class="relative bg-white rounded-xl shadow-sm dark:bg-gray-700">
       <!-- Modal header -->
       <div class="flex items-start justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600 border-gray-200">
@@ -8,7 +8,7 @@
             <i data-lucide="house-plus" class="w-5 h-5 text-orange-600"></i>
             Ask for room reservation
           </h3>
-          <p class="text-gray-600 text-sm">Fill in the details to reserve a the room</p>
+          <p class="text-gray-600 text-sm">Fill in the details to reserve the room</p>
         </div>
         <button type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-toggle="book-modal">
           <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
@@ -90,11 +90,35 @@
           </div>
         </div>
 
-        <div class="flex items-center p-4 mb-4 text-sm text-blue-800 border border-blue-300 rounded-lg bg-blue-50 dark:bg-gray-800 dark:text-blue-400 dark:border-blue-800" role="alert">
-          <i data-lucide="info" class="mr-1"></i>
-          <span class="sr-only">Info</span>
-          <div>
-            <span class="font-medium">Note: </span> After receiving your reservation, our staff will contact you through your phone number to continue the booking process.
+        <!-- Terms and Conditions -->
+        <div class="mb-4 border border-gray-300 rounded-lg bg-gray-50 dark:bg-gray-800 dark:border-gray-600">
+          <div class="p-3 bg-blue-50 dark:bg-blue-900 border-b border-blue-200 dark:border-blue-800 rounded-t-lg">
+            <h4 class="text-sm font-semibold text-blue-800 dark:text-blue-200 flex items-center gap-2">
+              <i data-lucide="scroll-text" class="w-4 h-4"></i>
+              Terms and Conditions & User Agreement
+            </h4>
+          </div>
+          <div class="p-4 max-h-64 overflow-y-auto text-xs text-gray-700 dark:text-gray-300 space-y-3">
+            <p class="font-semibold text-sm text-gray-900 dark:text-white">StaySmart – AI Powered Smart Airbnb Management and Booking System</p>
+
+            <p>By accessing and using the StaySmart platform, both Hosts and Guests agree to the following terms and conditions. Guests acknowledge that the information they provide—such as their name, contact details, and booking preferences—must be accurate and truthful. They understand that submitting a booking request through the system does not automatically confirm their stay; instead, each request must be reviewed and approved by the Host. Guests also agree to respect the property rules provided in each listing and to communicate with Hosts in a polite, responsible, and cooperative manner.</p>
+
+            <p>Hosts agree to maintain the accuracy and integrity of their property listings. This includes providing updated information on availability, pricing, house rules, and other important details that may affect a Guest's booking decision. Hosts acknowledge their responsibility to review booking requests promptly and communicate clearly with Guests. They also understand that their listings must comply with local regulations related to rental operations, safety, and accommodation standards.</p>
+
+            <p>Both Hosts and Guests recognize that StaySmart includes an AI-powered chatbot designed to assist with common inquiries and to help facilitate communication. While this feature aims to improve the user experience, they understand that chatbot responses may not always be perfect and should not be treated as final or official advice. Users agree to use the platform responsibly, avoiding any actions that could mislead others, disrupt system operations, or violate applicable laws.</p>
+
+            <p>The system collects necessary information to support its functions, including booking management and communication between Hosts and Guests. Users acknowledge that this data will be handled with care and will only be used for system-related purposes. Although the developers implement reasonable security measures, users understand that no digital system can guarantee absolute protection from risks.</p>
+
+            <p class="font-semibold text-gray-900 dark:text-white">Property Damage Penalty:</p>
+            <p>In the event that a Guest causes damage to any part of the Host's property—whether intentionally or accidentally—the Guest agrees to take full responsibility for the cost of repair or replacement. The Host has the right to assess the extent of the damage and provide clear documentation, such as photos or written reports, to support the claim. Guests understand that damages may include, but are not limited to, broken furniture or appliances, stained or destroyed bedding, lost items, or any harm that affects the safety, cleanliness, or normal functioning of the property. Once the damage has been verified, the Guest must settle any corresponding charges within a reasonable period agreed upon by both parties. Failure to comply may result in additional penalties, refusal of future bookings, or a formal report to the platform administrators. Hosts agree to be fair, transparent, and professional when assessing damages and determining the appropriate penalty.</p>
+
+            <p>By continuing to use StaySmart, Hosts and Guests confirm that they have read, understood, and agreed to the terms of this agreement. They accept that the system is primarily developed for academic and functional demonstration purposes and that the developers are not responsible for disputes, inaccuracies in user-submitted information, or issues that may arise between Hosts and Guests. Ongoing use of the platform signifies acceptance of any future updates or changes to these terms.</p>
+          </div>
+          <div class="p-3 bg-gray-100 dark:bg-gray-700 border-t border-gray-200 dark:border-gray-600 rounded-b-lg">
+            <label class="flex items-center gap-2 text-xs cursor-pointer">
+              <input type="checkbox" id="accept-terms" required class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+              <span class="text-gray-700 dark:text-gray-300">I have read and agree to the Terms and Conditions</span>
+            </label>
           </div>
         </div>
 
