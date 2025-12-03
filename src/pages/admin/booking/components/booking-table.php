@@ -1,5 +1,5 @@
 <?php
-$getBooking = $bookingManage->getAllBookings($searchQuery, $pageSize, $offset);
+$getBooking = $bookingManage->getAllBookings($searchQuery, $pageSize, $offset, $userRole, $userId);
 foreach ($getBooking as $index => $row) :
 ?>
 

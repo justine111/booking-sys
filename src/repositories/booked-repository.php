@@ -22,7 +22,7 @@ class booking_repository extends base_repository
     return $stmt->execute();
   }
 
-  public function countAllBookings($searchQuery)
+  public function countAllBookings($searchQuery, $userRole = null, $userId = null)
   {
     $sql = "SELECT COUNT(*) as total
             FROM (
@@ -32,6 +32,7 @@ class booking_repository extends base_repository
                 a.booking_status,
                 b.title,
                 a.name,
+                b.host_id,
                 ROW_NUMBER() OVER(
                   PARTITION BY a.client_token 
                   ORDER BY a.created_at DESC
@@ -44,11 +45,20 @@ class booking_repository extends base_repository
             WHERE latest_bookings.rn = 1
             AND latest_bookings.booking_status IN (1, 6)";
 
+    if ($userRole == 3) {
+      $sql .= " AND latest_bookings.host_id = :user_id";
+    }
+
     if (!empty($searchQuery)) {
       $sql .= " AND (latest_bookings.title LIKE :searchQuery
           OR latest_bookings.name LIKE :searchQuery)";
     }
     $stmt = $this->db->prepare($sql);
+
+    if ($userRole == 3) {
+      $stmt->bindParam(':user_id', $userId);
+    }
+
     if (!empty($searchQuery)) {
       $searchQuery = "%$searchQuery%";
       $stmt->bindParam(':searchQuery', $searchQuery);
@@ -60,8 +70,6 @@ class booking_repository extends base_repository
 
   public function getAllBookings($searchQuery = null, $limit, $offset, $userRole = null, $userId = null)
   {
-    require_once __DIR__ . '/../helpers/authorization-helper.php';
-
     $sql = "SELECT 
               latest.booking_id,
               latest.property_id,
@@ -109,7 +117,7 @@ class booking_repository extends base_repository
             AND latest.booking_status IN (1, 6)";
 
     // Filter for hosts - only show bookings for their properties
-    if ($userRole === AuthorizationHelper::ROLE_HOST) {
+    if ($userRole == 3) {
       $sql .= " AND latest.host_id = :user_id";
     }
 
@@ -121,7 +129,7 @@ class booking_repository extends base_repository
               LIMIT :limit OFFSET :offset";
     $stmt = $this->db->prepare($sql);
 
-    if ($userRole === AuthorizationHelper::ROLE_HOST) {
+    if ($userRole == 3) {
       $stmt->bindParam(':user_id', $userId);
     }
 
@@ -202,6 +210,12 @@ class booking_repository extends base_repository
     $stmt->bindParam(':paymentMethod', $paymentMethod);
     $stmt->bindParam(':amountPaid', $payment);
     $stmt->bindParam(':paymentStatus', $status);
+    $stmt->execute();
+
+    $sql = "UPDATE properties SET status = :status WHERE property_id = :propertyId";
+    $stmt = $this->db->prepare($sql);
+    $stmt->bindParam(':propertyId', $propertyId);
+    $stmt->bindParam(':status', $status);
     $stmt->execute();
   }
 }

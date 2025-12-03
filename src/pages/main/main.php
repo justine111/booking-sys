@@ -1,7 +1,10 @@
 <?php
 require_once __DIR__ . '/../../controller/room-controller.php';
+require_once __DIR__ . '/../../controller/review-controller.php';
 
+$reviewController = new ReviewController();
 $roomController = new room_controller();
+
 $searchQuery = $_GET['search'] ?? null;
 $categoryFilter = $_GET['category'] ?? null;
 $pageSize = isset($_GET['pageSize']) && is_numeric($_GET['pageSize']) ? (int)$_GET['pageSize'] : 12;
@@ -29,7 +32,6 @@ require_once __DIR__ . '/components/header.php';
 
 <section class="py-10 mt-16 mb-16">
   <div class="mx-auto max-w-screen-2xl px-4 2xl:px-0">
-    <!-- Search -->
     <form class="max-w-lg mx-auto sticky top-4 z-20" method="GET">
       <div class="relative">
         <input
@@ -40,11 +42,8 @@ require_once __DIR__ . '/components/header.php';
           class="w-full rounded-full border border-gray-200 bg-white p-4 pe-12 text-sm shadow-sm focus:border-orange-400 focus:ring-2 focus:ring-orange-300 transition-all duration-200" />
         <button
           type="submit"
-          class="absolute bottom-2.5 end-2.5 rounded-full bg-orange-500 p-2 hover:bg-orange-600 focus:ring-4 focus:ring-orange-300 transition-all duration-200">
-          <svg class="w-5 h-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
-            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
-          </svg>
+          class="absolute bottom-2 end-2.5 rounded-full bg-orange-500 p-2 hover:bg-orange-600 focus:ring-4 focus:ring-orange-300 transition-all duration-200">
+          <i data-lucide="search" class="text-white"></i>
         </button>
       </div>
     </form>
@@ -122,9 +121,37 @@ require_once __DIR__ . '/components/header.php';
               <a href="details.php?id=<?= $room['property_id'] ?>" class="text-lg font-semibold text-orange-500 transition-colors duration-200">
                 <?= htmlspecialchars($room['title']); ?>
               </a>
-              <div class="flex items-center text-yellow-400">
-                <i data-lucide="star" class="w-[16px] mr-1"></i>
-                <span class="text-sm font-medium text-gray-600">4.8</span>
+              <div class="flex items-center gap-1 text-yellow-400">
+                <?php
+                $ratingStats = $reviewController->getPropertyRating($room['property_id']);
+                $avgRating = $ratingStats['average_rating'] ?? 0;
+                $totalReviews = $ratingStats['total_reviews'] ?? 0;
+                $fullStars = floor($avgRating);
+                $hasHalfStar = ($avgRating - $fullStars) >= 0.5;
+                $emptyStars = 5 - $fullStars - ($hasHalfStar ? 1 : 0);
+
+                // Full stars
+                for ($i = 0; $i < $fullStars; $i++):
+                ?>
+                  <i class="fa-solid fa-star text-sm"></i>
+                <?php endfor;
+
+                // Half star
+                if ($hasHalfStar): ?>
+                  <i class="fa-solid fa-star-half-stroke text-sm"></i>
+                <?php endif;
+
+                // Empty stars
+                for ($i = 0; $i < $emptyStars; $i++):
+                ?>
+                  <i class="fa-regular fa-star text-sm"></i>
+                <?php endfor; ?>
+                <span class="text-xs font-medium text-gray-600 ml-1">
+                  <?= $avgRating > 0 ? number_format($avgRating, 1) : 'New'; ?>
+                </span>
+                <?php if ($totalReviews > 0): ?>
+                  <span class="text-xs text-gray-400">(<?= $totalReviews ?>)</span>
+                <?php endif; ?>
               </div>
             </div>
 

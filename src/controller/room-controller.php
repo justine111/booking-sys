@@ -239,23 +239,63 @@ class room_controller extends base_controller
     }
   }
 
-  public function getCountOfHotels($searchQuery)
+  public function getCountOfHotels($searchQuery, $userRole, $userId)
   {
     try {
-      return $this->repository->getCountOfHotels($searchQuery);
+      return $this->repository->getCountOfHotels($searchQuery, $userRole, $userId);
     } catch (Exception $e) {
       return $this->handleException($e);
     }
   }
 
-  public function getListOfHotels($searchQuery, $limit, $offset)
+
+  public function getListOfHotels($searchQuery, $limit, $offset, $userRole, $userId)
   {
     try {
-      $userRole = $this->getCurrentUserRole();
-      $userId = $this->getCurrentUserId();
-
       return $this->repository->getListOfHotels($searchQuery, $limit, $offset, $userRole, $userId);
     } catch (Exception $e) {
+      return $this->handleException($e);
+    }
+  }
+
+  public function approveProperty($propertyId)
+  {
+    try {
+      $this->repository->startTransaction();
+
+      // Approve property: status = 5 (available), is_active = 0 (active)
+      $result = $this->repository->approveProperty($propertyId);
+
+      $this->repository->commitTransaction();
+
+      return $this->response([
+        'error' => false,
+        'message' => 'Property approved successfully!',
+        'data' => $result
+      ]);
+    } catch (Exception $e) {
+      $this->repository->rollbackTransaction();
+      return $this->handleException($e);
+    }
+  }
+
+  public function rejectProperty($propertyId)
+  {
+    try {
+      $this->repository->startTransaction();
+
+      // Reject property: status = 2 (cancelled), is_active = 1 (not active)
+      $result = $this->repository->rejectProperty($propertyId);
+
+      $this->repository->commitTransaction();
+
+      return $this->response([
+        'error' => false,
+        'message' => 'Property rejected successfully!',
+        'data' => $result
+      ]);
+    } catch (Exception $e) {
+      $this->repository->rollbackTransaction();
       return $this->handleException($e);
     }
   }

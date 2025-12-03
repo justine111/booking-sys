@@ -14,7 +14,7 @@ class RoomsRepository extends base_repository
 
   public function countHotels($searchQuery = null)
   {
-    $query = "SELECT COUNT(property_id) as total FROM properties WHERE status IS NOT NULL";
+    $query = "SELECT COUNT(property_id) as total FROM properties WHERE status IS NOT NULL AND is_active = 0";
     if (!empty($searchQuery)) {
       $query .= " AND title LIKE :searchQuery
           OR price_per_night LIKE :searchQuery
@@ -32,7 +32,7 @@ class RoomsRepository extends base_repository
 
   public function countHotelsByCategory($categoryId, $searchQuery = null)
   {
-    $query = "SELECT COUNT(property_id) as total FROM properties WHERE status IS NOT NULL AND category_id = :categoryId";
+    $query = "SELECT COUNT(property_id) as total FROM properties WHERE status IS NOT NULL AND category_id = :categoryId AND is_active = 0";
     if (!empty($searchQuery)) {
       $query .= " AND (title LIKE :searchQuery
           OR price_per_night LIKE :searchQuery
@@ -63,7 +63,7 @@ class RoomsRepository extends base_repository
             FROM properties a
             LEFT JOIN booking_status b
             ON a.status = b.id
-            WHERE a.property_id IS NOT NULL";
+            WHERE a.property_id IS NOT NULL AND a.is_active = 0";
 
     if (!empty($searchQuery)) {
       $sql .= " AND a.title LIKE :searchQuery
@@ -98,7 +98,7 @@ class RoomsRepository extends base_repository
             FROM properties a
             LEFT JOIN booking_status b
             ON a.status = b.id
-            WHERE a.property_id IS NOT NULL AND a.category_id = :categoryId";
+            WHERE a.property_id IS NOT NULL AND a.category_id = :categoryId AND a.is_active = 0";
 
     if (!empty($searchQuery)) {
       $sql .= " AND (a.title LIKE :searchQuery
@@ -206,10 +206,8 @@ class RoomsRepository extends base_repository
     return $stmt->execute();
   }
 
-  public function addHotel($hotelName, $address, $city, $price, $host, $description, $amenities, $img1, $img2, $img3, $img4, $userId, $userRole, $status = 5)
+  public function addHotel($hotelName, $address, $city, $price, $host, $description, $amenities, $img1, $img2, $img3, $img4, $userId, $userRole)
   {
-    require_once __DIR__ . '/../helpers/authorization-helper.php';
-
     $allowed_types = ['image/jpeg', 'image/png', 'image/gif', 'image/jpg'];
     $upload_dir = $_SERVER['DOCUMENT_ROOT'] . '/booking-sys/src/repositories/uploads/';
 
@@ -242,10 +240,8 @@ class RoomsRepository extends base_repository
     $filename3 = $handleFileUpload($img3);
     $filename4 = $handleFileUpload($img4);
 
-    // Determine is_active based on user role
-    // 0 = active (approved), 1 = not active (needs approval)
-    // Hosts need approval, Admin/Moderator are auto-approved
-    $is_active = ($userRole === AuthorizationHelper::ROLE_HOST) ? 1 : 0;
+    $is_active = $userRole == 3 ? 1 : 0;
+    $status = $userRole == 3 ? 0 : 5;
 
     $sql = "INSERT INTO properties 
             (
@@ -287,7 +283,7 @@ class RoomsRepository extends base_repository
     $stmt->bindParam(':address', $address);
     $stmt->bindParam(':city', $city);
     $stmt->bindParam(':price_per_night', $price);
-    $stmt->bindParam(':host', $host);
+    $stmt->bindParam(':host', $userId);
     $stmt->bindParam(':user_id', $userId);
     $stmt->bindParam(':description', $description);
     $stmt->bindParam(':amenities', $amenities);
@@ -310,7 +306,7 @@ class RoomsRepository extends base_repository
     return $stmt->execute();
   }
 
-  public function getCountOfHotels($searchQuery = null)
+  public function getCountOfHotels($searchQuery = null, $userRole, $userId)
   {
     $searchQuery = trim($searchQuery);
 
@@ -320,6 +316,10 @@ class RoomsRepository extends base_repository
             ON a.host_id = b.host_id
             WHERE a.status IS NOT NULL";
 
+    if ($userRole == 3) {
+      $sql .= " AND a.host_id = :user_id";
+    }
+
     if (!empty($searchQuery)) {
       $sql .= " AND a.title LIKE :searchQuery
           OR a.price_per_night LIKE :searchQuery
@@ -328,6 +328,10 @@ class RoomsRepository extends base_repository
           OR b.name LIKE :searchQuery";
     }
     $stmt = $this->db->prepare($sql);
+    if ($userRole == 3) {
+      $stmt->bindParam(':user_id', $userId);
+    }
+
     if (!empty($searchQuery)) {
       $searchQuery = "%$searchQuery%";
       $stmt->bindParam(':searchQuery', $searchQuery);
@@ -339,7 +343,6 @@ class RoomsRepository extends base_repository
 
   public function getListOfHotels($searchQuery = null, $limit, $offset, $userRole = null, $userId = null)
   {
-    require_once __DIR__ . '/../helpers/authorization-helper.php';
     $searchQuery = trim($searchQuery);
 
     $sql = "SELECT
@@ -353,6 +356,7 @@ class RoomsRepository extends base_repository
               a.img1,
               a.created_at,
               a.user_id,
+              a.is_active,
               c.description as status,
               b.name  
             FROM properties a
@@ -362,16 +366,8 @@ class RoomsRepository extends base_repository
             ON a.status = c.id
             WHERE a.status IS NOT NULL";
 
-    // Filter based on user role
-    if ($userRole === AuthorizationHelper::ROLE_HOST) {
-      // Hosts only see their own properties
+    if ($userRole == 3) {
       $sql .= " AND a.host_id = :user_id";
-    } elseif ($userRole === AuthorizationHelper::ROLE_MODERATOR) {
-      // Moderators see all properties or pending approvals
-      // No additional filter needed
-    } elseif ($userRole === AuthorizationHelper::ROLE_ADMIN) {
-      // Admins see everything  
-      // No additional filter needed
     }
 
     if (!empty($searchQuery)) {
@@ -384,7 +380,7 @@ class RoomsRepository extends base_repository
     $sql .= " ORDER BY a.property_id DESC LIMIT :limit OFFSET :offset";
     $stmt = $this->db->prepare($sql);
 
-    if ($userRole === AuthorizationHelper::ROLE_HOST) {
+    if ($userRole == 3) {
       $stmt->bindParam(':user_id', $userId);
     }
 
@@ -397,5 +393,27 @@ class RoomsRepository extends base_repository
     $stmt->execute();
 
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
+  }
+
+  public function approveProperty($propertyId)
+  {
+    $sql = "UPDATE properties 
+            SET status = 5, is_active = 0 
+            WHERE property_id = :property_id";
+
+    $stmt = $this->db->prepare($sql);
+    $stmt->bindParam(':property_id', $propertyId, PDO::PARAM_INT);
+    return $stmt->execute();
+  }
+
+  public function rejectProperty($propertyId)
+  {
+    $sql = "UPDATE properties 
+            SET status = 2, is_active = 1 
+            WHERE property_id = :property_id";
+
+    $stmt = $this->db->prepare($sql);
+    $stmt->bindParam(':property_id', $propertyId, PDO::PARAM_INT);
+    return $stmt->execute();
   }
 }

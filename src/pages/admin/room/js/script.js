@@ -43,4 +43,60 @@ document.addEventListener('DOMContentLoaded', () => {
       })
       .catch(error => console.error('Error:', error));
   };
+
+  // Handle Approve Property
+  window.approveProperty = function(propertyId) {
+    if (!confirm('Are you sure you want to approve this property? It will be visible on the public website.')) {
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('property_id', propertyId);
+
+    fetch('/booking-sys/src/pages/admin/room/action/approve-property-action.php', {
+      method: 'POST',
+      body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.error) {
+        alert('Error: ' + data.message);
+      } else {
+        alert(data.message);
+        location.reload();
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      alert('An error occurred while approving the property.');
+    });
+  };
+
+  // Handle Reject Property
+  window.rejectProperty = function(propertyId) {
+    if (!confirm('Are you sure you want to reject this property? It will remain hidden from the public website.')) {
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('property_id', propertyId);
+
+    fetch('/booking-sys/src/pages/admin/room/action/reject-property-action.php', {
+      method: 'POST',
+      body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.error) {
+        alert('Error: ' + data.message);
+      } else {
+        alert(data.message);
+        location.reload();
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      alert('An error occurred while rejecting the property.');
+    });
+  };
 });

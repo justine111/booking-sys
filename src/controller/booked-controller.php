@@ -68,21 +68,18 @@ class booking_controller extends base_controller
     }
   }
 
-  public function countAllBookings($searchQuery)
+  public function countAllBookings($searchQuery, $userRole, $userId)
   {
     try {
-      return $this->repository->countAllBookings($searchQuery);
+      return $this->repository->countAllBookings($searchQuery, $userRole, $userId);
     } catch (Exception $e) {
       return $this->handleException($e);
     }
   }
 
-  public function getAllBookings($searchQuery, $limit, $offset)
+  public function getAllBookings($searchQuery, $limit, $offset, $userRole, $userId)
   {
     try {
-      $userRole = $this->getCurrentUserRole();
-      $userId = $this->getCurrentUserId();
-
       return $this->repository->getAllBookings($searchQuery, $limit, $offset, $userRole, $userId);
     } catch (Exception $e) {
       return $this->handleException($e);

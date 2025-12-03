@@ -1,5 +1,5 @@
 <?php
-$getPayment = $paymentManage->getAllPayments($searchQuery, $pageSize, $offset);
+$getPayment = $paymentManage->getAllPayments($searchQuery, $pageSize, $offset, $userRole, $userId);
 foreach ($getPayment as $index => $row) :
 ?>
 

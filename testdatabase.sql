@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.1
+-- version 5.2.0
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 30, 2025 at 08:21 AM
--- Server version: 10.4.32-MariaDB
--- PHP Version: 8.2.12
+-- Generation Time: Dec 03, 2025 at 09:22 AM
+-- Server version: 10.4.24-MariaDB
+-- PHP Version: 7.4.29
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -40,17 +40,15 @@ CREATE TABLE `bookings` (
   `total_amount` decimal(10,2) NOT NULL,
   `booking_status` int(11) NOT NULL DEFAULT 1,
   `created_at` datetime NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `bookings`
 --
 
 INSERT INTO `bookings` (`booking_id`, `property_id`, `client_token`, `name`, `contact_no`, `duration`, `message`, `check_in_date`, `check_out_date`, `total_amount`, `booking_status`, `created_at`) VALUES
-(1, 19, 'ccb41868b948426e492860489ec6eb11', 'Mark Justine Bengson', '09184830422', '3 Days 2 Nights', 'Please send us feed back for our reservation thank you', '2025-11-22 20:36:00', '2025-11-23 20:36:00', 2500.00, 5, '2025-11-22 20:32:57'),
-(2, 18, 'caef23bb6d0f03193ae4ab3ef46114a7', 'Joe Doe', '454234234', '3 days', '', '2025-11-22 20:42:00', '2025-11-23 20:42:00', 2500.00, 6, '2025-11-22 20:43:02'),
-(3, 20, '', 'Justine', '090123123112', '3', 'No special requests', '2025-11-22 21:14:00', '2025-11-23 21:14:00', 2500.00, 5, '2025-11-22 20:52:08'),
-(4, 20, 'efcf08ce611f05c52c2e4b505b1b4936', 'Crazy J', '12312312', '2 Days 1 Night', '', NULL, NULL, 0.00, 1, '2025-11-24 22:08:36');
+(1, 1, '2adcae73ad5e3e2293c1f93fd85e0618', 'Justine Bengson', '9879789', '3 days and 4 nights', '', '2025-12-03 15:56:00', '2025-12-05 15:56:00', '2500.00', 6, '2025-12-03 15:56:12'),
+(2, 2, '4188a68eaed57277559aad1e29ad259c', 'Joshua', '12321321', '3 days and 4 nights', '', '2025-12-03 15:56:00', '2025-12-05 15:56:00', '1000.00', 6, '2025-12-03 15:56:42');
 
 -- --------------------------------------------------------
 
@@ -62,7 +60,7 @@ CREATE TABLE `booking_status` (
   `id` int(11) NOT NULL,
   `description` varchar(100) NOT NULL,
   `date` datetime NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `booking_status`
@@ -85,7 +83,7 @@ INSERT INTO `booking_status` (`id`, `description`, `date`) VALUES
 CREATE TABLE `category` (
   `category_id` int(11) NOT NULL,
   `name` varchar(100) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `category`
@@ -107,14 +105,14 @@ CREATE TABLE `hosts` (
   `host_id` int(11) NOT NULL,
   `name` varchar(100) NOT NULL,
   `date_created` datetime NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `hosts`
 --
 
 INSERT INTO `hosts` (`host_id`, `name`, `date_created`) VALUES
-(0, 'Jorge Lang Sakalam', '2025-11-24 20:53:03');
+(1, 'Jorge Lang Sakalam', '2025-11-24 20:53:03');
 
 -- --------------------------------------------------------
 
@@ -130,19 +128,15 @@ CREATE TABLE `payments` (
   `amount_paid` decimal(10,2) DEFAULT NULL,
   `payment_date` datetime DEFAULT current_timestamp(),
   `status` enum('pending','paid','failed') DEFAULT 'pending'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `payments`
 --
 
 INSERT INTO `payments` (`payment_id`, `property_id`, `client_token`, `payment_method`, `amount_paid`, `payment_date`, `status`) VALUES
-(1, 19, 'ccb41868b948426e492860489ec6eb11', 'Cash', 2500.00, '2025-11-22 20:36:26', ''),
-(2, 19, 'ccb41868b948426e492860489ec6eb11', 'Cash', 2500.00, '2025-11-22 20:42:04', ''),
-(3, 18, 'caef23bb6d0f03193ae4ab3ef46114a7', 'Cash', 2500.00, '2025-11-22 20:43:03', 'pending'),
-(4, 18, 'caef23bb6d0f03193ae4ab3ef46114a7', 'Cash', 2500.00, '2025-11-22 20:44:41', ''),
-(5, 20, '', 'Cash', 2500.00, '2025-11-22 21:14:20', ''),
-(6, 20, '', 'Cash', 2500.00, '2025-11-24 22:08:00', '');
+(1, 1, '2adcae73ad5e3e2293c1f93fd85e0618', 'Cash', '2500.00', '2025-12-03 15:56:12', ''),
+(2, 2, '4188a68eaed57277559aad1e29ad259c', 'Cash', '1000.00', '2025-12-03 15:56:42', '');
 
 -- --------------------------------------------------------
 
@@ -168,16 +162,15 @@ CREATE TABLE `properties` (
   `category_id` int(11) NOT NULL,
   `created_at` datetime DEFAULT current_timestamp(),
   `is_active` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `properties`
 --
 
 INSERT INTO `properties` (`property_id`, `host_id`, `user_id`, `title`, `description`, `address`, `city`, `price_per_night`, `amenities`, `img1`, `img2`, `img3`, `img4`, `status`, `category_id`, `created_at`, `is_active`) VALUES
-(18, 1, NULL, 'Joshua house', 'Fresn and clean with high mountain view,', 'Brgy Naga-asan', 'Babatngon', 2500.00, '', 'hotel_img_6919cf7d0e10f.jpg', 'hotel_img_6919cf7d0e262.jpg', 'hotel_img_6919cf7d0e3ad.jpg', 'hotel_img_6919cf7d0e4d4.jpg', 6, 1, '2025-11-16 21:19:57', 0),
-(19, 1, NULL, 'Hotel Ranelo', 'test description', 'Brgy 110 Utap Tacloban Cityy', 'Tacloban', 2000.00, 'WiFi', 'hotel_img_69214a130197a.png', 'hotel_img_69214a1301ba2.png', 'hotel_img_69214a1301d46.jpg', 'hotel_img_69214a1301ed0.jpg', 6, 2, '2025-11-22 13:28:51', 0),
-(20, 2, NULL, 'test hotel', 'test description', 'Tacloban city', 'asdas', 2500.00, 'Wifi', 'hotel_img_6921ae1909859.png', 'hotel_img_6921ae1909992.png', 'hotel_img_6921ae1909a9e.png', 'hotel_img_6921ae1909bb3.png', 5, 3, '2025-11-22 20:35:37', 0);
+(1, 1, 1, 'Balay ni tatay', 'Wait a few minutes and refresh the page. If that still doesn\'t work, please contact the developer of this page for more information.', 'Brgy Pagsulhugon Babatngon, Leyte', 'Tacloban', '2500.00', 'WiFi, Smart TV and Queen size bed', 'hotel_img_692f9ec0e31c3.png', 'hotel_img_692f9ec0e339a.png', 'hotel_img_692f9ec0e351a.jpg', 'hotel_img_692f9ec0e37a8.jpg', 6, 0, '2025-12-03 10:21:52', 0),
+(2, 2, 2, 'Hotel Ranelo', 'teest', 'Brgy 110 Utap Tacloban City', 'Tacloban', '1000.00', 'WiFi', 'hotel_img_692fd69b14406.png', 'hotel_img_692fd69b145c4.png', 'hotel_img_692fd69b14753.png', 'hotel_img_692fd69b17e98.png', 6, 0, '2025-12-03 14:20:11', 0);
 
 -- --------------------------------------------------------
 
@@ -187,11 +180,19 @@ INSERT INTO `properties` (`property_id`, `host_id`, `user_id`, `title`, `descrip
 
 CREATE TABLE `reviews` (
   `review_id` int(11) NOT NULL,
-  `booking_id` int(11) NOT NULL,
-  `rating` int(11) DEFAULT NULL CHECK (`rating` >= 1 and `rating` <= 5),
-  `comment` text DEFAULT NULL,
-  `created_at` datetime DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `property_id` int(11) NOT NULL,
+  `client_name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT 'Anonymous',
+  `rating` int(1) NOT NULL CHECK (`rating` >= 1 and `rating` <= 5),
+  `comment` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `reviews`
+--
+
+INSERT INTO `reviews` (`review_id`, `property_id`, `client_name`, `rating`, `comment`, `created_at`) VALUES
+(1, 1, 'Joe Doe', 1, 'poor', '2025-12-03 05:43:25');
 
 -- --------------------------------------------------------
 
@@ -207,7 +208,7 @@ CREATE TABLE `users` (
   `user_type` int(11) NOT NULL,
   `phone_number` varchar(20) DEFAULT NULL,
   `created_at` datetime DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `users`
@@ -215,7 +216,8 @@ CREATE TABLE `users` (
 
 INSERT INTO `users` (`user_id`, `name`, `email`, `password`, `user_type`, `phone_number`, `created_at`) VALUES
 (1, 'James Doe', 'james@gmail.com', 'b109f3bbbc244eb82441917ed06d618b9008dd09b3befd1b5e07394c706a8bb980b1d7785e5976ec049b46df5f1326af5a2ea6d103fd07c95385ffab0cacbc86', 1, NULL, '2025-06-08 17:18:19'),
-(2, 'Jorge Lang Sakalam', 'jorge@gmail.com', 'b109f3bbbc244eb82441917ed06d618b9008dd09b3befd1b5e07394c706a8bb980b1d7785e5976ec049b46df5f1326af5a2ea6d103fd07c95385ffab0cacbc86', 3, '', '2025-11-24 21:52:58');
+(2, 'Jorge Lang Sakalam', 'jorge@gmail.com', 'b109f3bbbc244eb82441917ed06d618b9008dd09b3befd1b5e07394c706a8bb980b1d7785e5976ec049b46df5f1326af5a2ea6d103fd07c95385ffab0cacbc86', 3, '', '2025-11-24 21:52:58'),
+(3, 'Joshua Hernandez', 'joshua@gmail.com', 'b109f3bbbc244eb82441917ed06d618b9008dd09b3befd1b5e07394c706a8bb980b1d7785e5976ec049b46df5f1326af5a2ea6d103fd07c95385ffab0cacbc86', 2, '', '2025-11-25 08:54:05');
 
 -- --------------------------------------------------------
 
@@ -226,7 +228,7 @@ INSERT INTO `users` (`user_id`, `name`, `email`, `password`, `user_type`, `phone
 CREATE TABLE `user_roles` (
   `user_role_id` int(11) NOT NULL,
   `name` varchar(50) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `user_roles`
@@ -282,7 +284,8 @@ ALTER TABLE `properties`
 -- Indexes for table `reviews`
 --
 ALTER TABLE `reviews`
-  ADD PRIMARY KEY (`review_id`);
+  ADD PRIMARY KEY (`review_id`),
+  ADD KEY `property_id` (`property_id`);
 
 --
 -- Indexes for table `users`
@@ -305,7 +308,7 @@ ALTER TABLE `user_roles`
 -- AUTO_INCREMENT for table `bookings`
 --
 ALTER TABLE `bookings`
-  MODIFY `booking_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `booking_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `booking_status`
@@ -323,25 +326,73 @@ ALTER TABLE `category`
 -- AUTO_INCREMENT for table `payments`
 --
 ALTER TABLE `payments`
-  MODIFY `payment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `payment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `properties`
 --
 ALTER TABLE `properties`
-  MODIFY `property_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+  MODIFY `property_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `reviews`
 --
 ALTER TABLE `reviews`
-  MODIFY `review_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `review_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- Constraints for dumped tables
+--
+
+--
+-- Constraints for table `reviews`
+--
+ALTER TABLE `reviews`
+  ADD CONSTRAINT `fk_review_property` FOREIGN KEY (`property_id`) REFERENCES `properties` (`property_id`) ON DELETE CASCADE;
+
+DELIMITER $$
+--
+-- Events
+--
+CREATE DEFINER=`root`@`localhost` EVENT `update_expired_bookings` ON SCHEDULE EVERY 1 DAY STARTS '2025-12-03 16:17:21' ON COMPLETION NOT PRESERVE ENABLE DO BEGIN
+  -- Declare variables for tracking
+  DECLARE updated_bookings INT DEFAULT 0;
+  DECLARE updated_properties INT DEFAULT 0;
+
+  -- 1. Update bookings that have expired (check_out_date has passed)
+  -- Change booking_status to 6 (completed)
+  UPDATE bookings
+  SET booking_status = 6
+  WHERE check_out_date < CURDATE()
+    AND booking_status = 1  -- Only update confirmed bookings
+    AND booking_status != 6; -- Don't update already completed bookings
+  
+  SET updated_bookings = ROW_COUNT();
+
+  -- 2. Update properties to available (status = 5) 
+  -- when their current booking has expired
+  UPDATE properties p
+  INNER JOIN bookings b ON p.property_id = b.property_id
+  SET p.status = 5  -- Available
+  WHERE b.check_out_date < CURDATE()
+    AND b.booking_status = 6  -- Completed bookings
+    AND p.status = 6;  -- Currently booked/unavailable
+  
+  SET updated_properties = ROW_COUNT();
+
+  -- Optional: Log the update (create a log table if needed)
+  -- INSERT INTO booking_status_log (updated_at, bookings_updated, properties_updated)
+  -- VALUES (NOW(), updated_bookings, updated_properties);
+
+END$$
+
+DELIMITER ;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

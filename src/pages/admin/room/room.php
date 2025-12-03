@@ -7,7 +7,7 @@ $pageSize = isset($_GET['pageSize']) && is_numeric($_GET['pageSize']) ? (int)$_G
 $page = isset($_GET['page']) && is_numeric($_GET['page']) ? (int)$_GET['page'] : 1;
 $offset = ($page - 1) * $pageSize;
 
-$count = $roomManage->getCountOfHotels($searchQuery);
+$count = $roomManage->getCountOfHotels($searchQuery, $userRole, $userId);
 $totalPages = ceil($count / $pageSize);
 ?>
 

@@ -1,9 +1,13 @@
 <?php
 require_once __DIR__ . '/../../controller/room-controller.php';
+require_once __DIR__ . '/../../controller/review-controller.php';
+
 $roomController = new room_controller();
+$reviewController = new ReviewController();
 $roomId = $_GET['id'];
 
 $roomDetails = $roomController->getHotelById($roomId);
+$ratingStats = $reviewController->getPropertyRating($roomId);
 ?>
 
 <?php require_once __DIR__ . '/components/header.php'; ?>
@@ -53,31 +57,56 @@ $roomDetails = $roomController->getHotelById($roomId);
         <!-- Rating -->
         <div class="flex items-center gap-2 mt-3">
           <div class="flex gap-1 text-yellow-400">
-            <?php for ($i = 0; $i < 5; $i++): ?>
+            <?php
+            $avgRating = $ratingStats['average_rating'] ?? 0;
+            $fullStars = floor($avgRating);
+            $hasHalfStar = ($avgRating - $fullStars) >= 0.5;
+            $emptyStars = 5 - $fullStars - ($hasHalfStar ? 1 : 0);
+
+            // Full stars
+            for ($i = 0; $i < $fullStars; $i++):
+            ?>
               <i class="fa-solid fa-star text-lg"></i>
+            <?php endfor;
+
+            // Half star
+            if ($hasHalfStar): ?>
+              <i class="fa-solid fa-star-half-stroke text-lg"></i>
+            <?php endif;
+
+            // Empty stars
+            for ($i = 0; $i < $emptyStars; $i++):
+            ?>
+              <i class="fa-regular fa-star text-lg"></i>
             <?php endfor; ?>
           </div>
-          <p class="text-sm text-gray-500 dark:text-gray-400">(5.0)</p>
-          <a href="#" class="text-sm text-blue-600 hover:underline">345 Reviews</a>
+          <p class="text-sm text-gray-500 dark:text-gray-400">
+            (<?= number_format($avgRating, 1); ?>)
+          </p>
+          <a href="#reviews-section" class="text-sm text-blue-600 hover:underline">
+            <?= $ratingStats['total_reviews'] ?? 0; ?> Review<?= ($ratingStats['total_reviews'] ?? 0) != 1 ? 's' : ''; ?>
+          </a>
         </div>
 
         <!-- Buttons -->
         <div class="flex gap-4 mt-8">
           <button
+            data-modal-target="book-modal"
+            data-modal-toggle="book-modal"
             class="flex items-center justify-center py-2.5 px-5 text-sm font-medium 
             text-gray-900 bg-white border border-gray-300 rounded-lg 
             hover:bg-gray-200 transition">
-            <i class="fa-regular fa-heart pr-2"></i> Add to favorites
+            <i class="fa-regular fa-file pr-2"></i> Reserve Now
           </button>
 
           <button
             data-modal-target="rate-modal"
             data-modal-toggle="rate-modal"
-            class="px-6 py-2.5 text-white text-sm rounded-lg shadow <?php echo ($roomDetails['status'] == 6) ? 'bg-gray-400 cursor-not-allowed' : 'bg-orange-500'; ?>" <?php echo ($roomDetails['status'] == 6) ? 'disabled' : ''; ?>>
-            <i class="fa-regular fa-star pr-1"></i> <?php echo ($roomDetails['status'] == 6) ? 'Fully Booked' : 'Apply for Reservation'; ?>
+            class="px-6 py-2.5 text-white text-sm rounded-lg shadow bg-orange-500 hover:bg-orange-600 transition">
+            <i class="fa-regular fa-star pr-1"></i> Rate This Hotel
           </button>
 
-
+          <?php require_once __DIR__ . '/./modals/rate-modal.php'; ?>
           <?php require_once __DIR__ . '/./modals/booked-modal.php'; ?>
         </div>
 

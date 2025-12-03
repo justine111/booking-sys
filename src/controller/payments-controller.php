@@ -11,21 +11,18 @@ class payments_controller extends base_controller
     $this->repository = new payments_repository();
   }
 
-  public function countAllPayments($searchQuery)
+  public function countAllPayments($searchQuery, $userRole, $userId)
   {
     try {
-      return $this->repository->countAllPayments($searchQuery);
+      return $this->repository->countAllPayments($searchQuery, $userRole, $userId);
     } catch (Exception $e) {
       return $this->handleException($e);
     }
   }
 
-  public function getAllPayments($searchQuery, $pageSize, $offset)
+  public function getAllPayments($searchQuery, $pageSize, $offset, $userRole, $userId)
   {
     try {
-      $userRole = $this->getCurrentUserRole();
-      $userId = $this->getCurrentUserId();
-
       return $this->repository->getAllPayments($searchQuery, $pageSize, $offset, $userRole, $userId);
     } catch (Exception $e) {
       return $this->handleException($e);

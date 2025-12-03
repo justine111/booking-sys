@@ -1,5 +1,5 @@
 <?php
-$getHotel = $roomManage->getListOfHotels($searchQuery, $pageSize, $offset);
+$getHotel = $roomManage->getListOfHotels($searchQuery, $pageSize, $offset, $userRole, $userId);
 foreach ($getHotel as $index => $row) :
 ?>
 
@@ -87,6 +87,23 @@ foreach ($getHotel as $index => $row) :
             <h3 class="font-semibold">Actions</h3>
           </div>
           <div class="flex flex-col gap-y-2 py-2">
+            <?php if ($userRole == 1 || $userRole == 2): ?>
+              <?php if (isset($row['is_active']) && $row['is_active'] == 1): ?>
+                <!-- Approval Actions for Pending Properties -->
+                <button onclick="approveProperty(<?= $row['property_id'] ?>)"
+                  class="btn btn-ghost btn-sm px-3 flex items-center justify-start gap-x-1 py-1 text-green-600 dark:text-green-400 hover:text-white hover:bg-green-600 dark:hover:bg-green-600 transition-all">
+                  <i data-lucide="check-circle" class="w-4"></i>
+                  <span>Approve</span>
+                </button>
+                <button onclick="rejectProperty(<?= $row['property_id'] ?>)"
+                  class="btn btn-ghost btn-sm px-3 flex items-center justify-start gap-x-1 py-1 text-red-600 dark:text-red-400 hover:text-white hover:bg-red-600 dark:hover:bg-red-600 transition-all">
+                  <i data-lucide="x-circle" class="w-4"></i>
+                  <span>Reject</span>
+                </button>
+                <hr class="border-gray-200 dark:border-gray-600 my-1" />
+              <?php endif; ?>
+            <?php endif; ?>
+
             <button onclick="editRoom(<?= $row['property_id'] ?>)" data-modal-target="edit-hotel-modal" data-modal-toggle="edit-hotel-modal" class="btn btn-ghost btn-sm px-3 flex items-center justify-start gap-x-1 py-1 text-gray-800 dark:text-white hover:text-gray-800 hover:bg-gray-200 dark:hover:bg-gray-600 transition-all">
               <i data-lucide="edit" class="w-4"></i>
               <span>Edit</span>
