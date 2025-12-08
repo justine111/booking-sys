@@ -1,8 +1,16 @@
 <?php
 require_once __DIR__ . '/base-repository.php';
+require_once __DIR__ . '/../helpers/sms-helper.php';
 
 class booking_repository extends base_repository
 {
+  private $smsHelper;
+
+  public function __construct()
+  {
+    parent::__construct();
+    $this->smsHelper = new SMSHelper();
+  }
   public function reservation($unitId, $name, $phoneno, $duration, $description, $checkInDate, $checkOutDate)
   {
     // Generate unique client token using PHP's built-in functions
@@ -181,6 +189,42 @@ class booking_repository extends base_repository
     $stmt->bindParam(':propertyId', $propertyId);
     $stmt->bindParam(':status', $status);
     $stmt->execute();
+
+    // Send SMS notification if booking is approved (status = 2 = confirmed)
+    if ($status == 2 || $status == 6) {
+      try {
+        // Get property details for SMS
+        $sql = "SELECT title FROM properties WHERE property_id = :propertyId";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindParam(':propertyId', $propertyId);
+        $stmt->execute();
+        $property = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($property && !empty($contactNo)) {
+          $propertyTitle = $property['title'];
+
+          // Send SMS notification
+          $smsResult = $this->smsHelper->sendBookingApprovalSMS(
+            $contactNo,
+            $clientName,
+            $propertyTitle,
+            $checkInDate,
+            $checkOutDate,
+            $payment
+          );
+
+          // Log SMS result (optional)
+          if ($smsResult['success']) {
+            error_log("SMS sent successfully to $contactNo for booking approval");
+          } else {
+            error_log("Failed to send SMS to $contactNo: " . $smsResult['message']);
+          }
+        }
+      } catch (Exception $e) {
+        // Don't fail the booking update if SMS fails
+        error_log("Error sending SMS notification: " . $e->getMessage());
+      }
+    }
   }
 
   public function caterBooking($propertyId, $clientName, $status, $contactNo, $payment, $duration, $checkInDate, $checkOutDate, $paymentMethod = 'Cash')
@@ -217,5 +261,41 @@ class booking_repository extends base_repository
     $stmt->bindParam(':propertyId', $propertyId);
     $stmt->bindParam(':status', $status);
     $stmt->execute();
+
+    // Send SMS notification if booking is approved (status = 2 = confirmed or status = 6 = booked)
+    if ($status == 2 || $status == 6) {
+      try {
+        // Get property details for SMS
+        $sql = "SELECT title FROM properties WHERE property_id = :propertyId";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindParam(':propertyId', $propertyId);
+        $stmt->execute();
+        $property = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($property && !empty($contactNo)) {
+          $propertyTitle = $property['title'];
+
+          // Send SMS notification
+          $smsResult = $this->smsHelper->sendBookingApprovalSMS(
+            $contactNo,
+            $clientName,
+            $propertyTitle,
+            $checkInDate,
+            $checkOutDate,
+            $payment
+          );
+
+          // Log SMS result (optional)
+          if ($smsResult['success']) {
+            error_log("SMS sent successfully to $contactNo for new booking");
+          } else {
+            error_log("Failed to send SMS to $contactNo: " . $smsResult['message']);
+          }
+        }
+      } catch (Exception $e) {
+        // Don't fail the booking creation if SMS fails
+        error_log("Error sending SMS notification: " . $e->getMessage());
+      }
+    }
   }
 }
