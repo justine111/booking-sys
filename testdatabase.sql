@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Dec 03, 2025 at 09:22 AM
+-- Generation Time: Dec 10, 2025 at 08:48 AM
 -- Server version: 10.4.24-MariaDB
 -- PHP Version: 7.4.29
 
@@ -31,6 +31,7 @@ CREATE TABLE `bookings` (
   `booking_id` int(11) NOT NULL,
   `property_id` int(11) NOT NULL,
   `client_token` varchar(255) NOT NULL,
+  `email` varchar(200) DEFAULT NULL,
   `name` varchar(100) NOT NULL,
   `contact_no` varchar(12) DEFAULT NULL,
   `duration` varchar(100) NOT NULL,
@@ -41,14 +42,6 @@ CREATE TABLE `bookings` (
   `booking_status` int(11) NOT NULL DEFAULT 1,
   `created_at` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- Dumping data for table `bookings`
---
-
-INSERT INTO `bookings` (`booking_id`, `property_id`, `client_token`, `name`, `contact_no`, `duration`, `message`, `check_in_date`, `check_out_date`, `total_amount`, `booking_status`, `created_at`) VALUES
-(1, 1, '2adcae73ad5e3e2293c1f93fd85e0618', 'Justine Bengson', '9879789', '3 days and 4 nights', '', '2025-12-03 15:56:00', '2025-12-05 15:56:00', '2500.00', 6, '2025-12-03 15:56:12'),
-(2, 2, '4188a68eaed57277559aad1e29ad259c', 'Joshua', '12321321', '3 days and 4 nights', '', '2025-12-03 15:56:00', '2025-12-05 15:56:00', '1000.00', 6, '2025-12-03 15:56:42');
 
 -- --------------------------------------------------------
 
@@ -129,14 +122,6 @@ CREATE TABLE `payments` (
   `payment_date` datetime DEFAULT current_timestamp(),
   `status` enum('pending','paid','failed') DEFAULT 'pending'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- Dumping data for table `payments`
---
-
-INSERT INTO `payments` (`payment_id`, `property_id`, `client_token`, `payment_method`, `amount_paid`, `payment_date`, `status`) VALUES
-(1, 1, '2adcae73ad5e3e2293c1f93fd85e0618', 'Cash', '2500.00', '2025-12-03 15:56:12', ''),
-(2, 2, '4188a68eaed57277559aad1e29ad259c', 'Cash', '1000.00', '2025-12-03 15:56:42', '');
 
 -- --------------------------------------------------------
 
@@ -308,7 +293,7 @@ ALTER TABLE `user_roles`
 -- AUTO_INCREMENT for table `bookings`
 --
 ALTER TABLE `bookings`
-  MODIFY `booking_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `booking_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `booking_status`
@@ -326,7 +311,7 @@ ALTER TABLE `category`
 -- AUTO_INCREMENT for table `payments`
 --
 ALTER TABLE `payments`
-  MODIFY `payment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `payment_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `properties`

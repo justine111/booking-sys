@@ -3,8 +3,20 @@
 require_once __DIR__ . '/env-helper.php';
 
 /**
- * SMS Helper Class
- * Handles sending SMS notifications for booking approvals
+ * SMS Helper Class  
+ * Handles sending WhatsApp notifications for booking approvals via Twilio
+ * 
+ * CURRENT PROVIDER: Twilio WhatsApp API
+ * Configure in .env file:
+ *  - TWILIO_ACCOUNT_SID
+ *  - TWILIO_AUTH_TOKEN  
+ *  - TWILIO_WHATSAPP_FROM (optional, defaults to sandbox)
+ * 
+ * Benefits of WhatsApp:
+ *  - Works on trial accounts
+ *  - No geographic restrictions
+ *  - FREE to use
+ *  - Widely used in Philippines
  */
 class SMSHelper
 {
@@ -92,11 +104,16 @@ class SMSHelper
     // Log the message (for development/debugging)
     $this->logSMS($contactNo, $message);
 
-    // If API credentials are not configured, return mock success
-    if (empty($this->apiKey) || empty($this->apiUrl)) {
+    // Check if Twilio credentials are configured (since we're using Twilio now)
+    $twilioSid = EnvHelper::get('TWILIO_ACCOUNT_SID', '');
+    $twilioToken = EnvHelper::get('TWILIO_AUTH_TOKEN', '');
+    $twilioNumber = EnvHelper::get('TWILIO_FROM_NUMBER', '');
+
+    // If Twilio credentials are not configured, return mock success (development mode)
+    if (empty($twilioSid) || empty($twilioToken) || empty($twilioNumber)) {
       return [
         'success' => true,
-        'message' => 'SMS logged (API not configured)',
+        'message' => 'SMS logged (Twilio not configured - running in development mode)',
         'mode' => 'development'
       ];
     }
@@ -104,14 +121,19 @@ class SMSHelper
     // Clean phone number (remove spaces, dashes, etc.)
     $cleanedNumber = $this->cleanPhoneNumber($contactNo);
 
-    // Example implementation for different SMS providers
-    // Uncomment and modify based on your SMS provider
+    // ═══════════════════════════════════════════════════════════════
+    // ACTIVE SMS PROVIDER: TWILIO
+    // ═══════════════════════════════════════════════════════════════
+    // The line below sends SMS via Twilio API
+    // Credentials are loaded from .env file (TWILIO_*)
 
-    // SEMAPHORE SMS (Philippines)
-    return $this->sendViaSemaphore($cleanedNumber, $message);
+    return $this->sendViaTwilio($cleanedNumber, $message);
 
-    // TWILIO SMS (International)
-    // return $this->sendViaTwilio($cleanedNumber, $message);
+    // ═══════════════════════════════════════════════════════════════
+    // ALTERNATIVE PROVIDERS (currently disabled):
+    // ═══════════════════════════════════════════════════════════════
+    // SEMAPHORE SMS (Philippines) - Uncomment to use
+    // return $this->sendViaSemaphore($cleanedNumber, $message);
 
     // Generic REST API
     // return $this->sendViaGenericAPI($cleanedNumber, $message);
@@ -159,20 +181,25 @@ class SMSHelper
   }
 
   /**
-   * Send SMS via Twilio API (International)
-   * Docs: https://www.twilio.com/docs/sms
+   * Send WhatsApp message via Twilio API
+   * Docs: https://www.twilio.com/docs/whatsapp
+   * Works on trial accounts without geographic restrictions!
    */
   private function sendViaTwilio($phoneNumber, $message)
   {
     $accountSid = EnvHelper::get('TWILIO_ACCOUNT_SID');
     $authToken = EnvHelper::get('TWILIO_AUTH_TOKEN');
-    $fromNumber = EnvHelper::get('TWILIO_FROM_NUMBER');
+
+    // For WhatsApp, we use Twilio's sandbox number
+    // Get from: https://console.twilio.com/us1/develop/sms/try-it-out/whatsapp-learn
+    $fromWhatsApp = EnvHelper::get('TWILIO_WHATSAPP_FROM', 'whatsapp:+14155238886');
 
     $url = "https://api.twilio.com/2010-04-01/Accounts/$accountSid/Messages.json";
 
+    // Format numbers for WhatsApp (must have 'whatsapp:' prefix)
     $data = [
-      'From' => $fromNumber,
-      'To' => $phoneNumber,
+      'From' => $fromWhatsApp,  // WhatsApp sandbox number
+      'To' => 'whatsapp:' . $phoneNumber,  // Recipient's WhatsApp
       'Body' => $message
     ];
 
@@ -189,13 +216,13 @@ class SMSHelper
     if ($httpCode >= 200 && $httpCode < 300) {
       return [
         'success' => true,
-        'message' => 'SMS sent successfully via Twilio',
+        'message' => 'WhatsApp message sent successfully via Twilio',
         'response' => json_decode($response, true)
       ];
     } else {
       return [
         'success' => false,
-        'message' => 'Failed to send SMS via Twilio',
+        'message' => 'Failed to send WhatsApp message via Twilio',
         'response' => $response,
         'http_code' => $httpCode
       ];
@@ -204,18 +231,28 @@ class SMSHelper
 
   /**
    * Clean phone number format
+   * Converts to E.164 format required by Twilio (+639xxxxxxxxx)
+   * Philippine format: 09171234567 → +639171234567
    */
   private function cleanPhoneNumber($phoneNumber)
   {
     // Remove all non-numeric characters
     $cleaned = preg_replace('/[^0-9]/', '', $phoneNumber);
 
-    // Add country code if not present (Philippines example)
-    if (substr($cleaned, 0, 2) !== '63' && strlen($cleaned) == 10) {
-      $cleaned = '63' . $cleaned;
+    // Handle Philippine mobile numbers
+    // Remove leading 0 (e.g., 09171234567 → 9171234567)
+    if (substr($cleaned, 0, 1) === '0' && strlen($cleaned) == 11) {
+      $cleaned = substr($cleaned, 1); // Now it's 10 digits: 9171234567
     }
 
-    return $cleaned;
+    // Add country code if not present
+    // Philippine numbers after removing leading 0 should be 10 digits starting with 9
+    if (substr($cleaned, 0, 2) !== '63' && strlen($cleaned) == 10) {
+      $cleaned = '63' . $cleaned; // Now: 639171234567
+    }
+
+    // Return in E.164 format with + prefix
+    return '+' . $cleaned; // Final: +639171234567
   }
 
   /**

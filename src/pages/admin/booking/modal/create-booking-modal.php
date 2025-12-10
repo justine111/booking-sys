@@ -116,6 +116,17 @@ $hotels = $roomController->getHotelListAvailable();
               placeholder="">
             <p id="check_out_date-error" class="mt-1 text-sm text-red-600 hidden"></p>
           </div>
+
+          <div class="col-span-2">
+            <label for="emailAcc" class="block mb-2 text-sm font-medium text-heading">Email Account <span class="text-gray-600 text-xs">(required)</span></label>
+            <input
+              type="email"
+              name="emailAcc"
+              id="emailAcc"
+              class="bg-white border text-sm rounded-lg focus:ring-brand focus:border-brand block w-full px-3 py-2.5 shadow-xs placeholder:text-body"
+              placeholder="">
+            <p id="emailAcc-error" class="mt-1 text-sm text-red-600 hidden"></p>
+          </div>
         </div>
 
         <!-- Modal footer -->
