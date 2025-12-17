@@ -283,7 +283,7 @@ class RoomsRepository extends base_repository
     $stmt->bindParam(':address', $address);
     $stmt->bindParam(':city', $city);
     $stmt->bindParam(':price_per_night', $price);
-    $stmt->bindParam(':host', $userId);
+    $stmt->bindParam(':host', $host);
     $stmt->bindParam(':user_id', $userId);
     $stmt->bindParam(':description', $description);
     $stmt->bindParam(':amenities', $amenities);
@@ -312,8 +312,8 @@ class RoomsRepository extends base_repository
 
     $sql = "SELECT count(a.property_id)as total
             FROM properties a
-            LEFT JOIN hosts b
-            ON a.host_id = b.host_id
+            LEFT JOIN users b
+            ON a.host_id = b.user_id
             WHERE a.status IS NOT NULL";
 
     if ($userRole == 3) {
@@ -360,8 +360,8 @@ class RoomsRepository extends base_repository
               c.description as status,
               b.name  
             FROM properties a
-            LEFT JOIN hosts b
-            ON a.host_id = b.host_id
+            LEFT JOIN users b
+            ON a.host_id = b.user_id
             LEFT JOIN booking_status c
             ON a.status = c.id
             WHERE a.status IS NOT NULL";

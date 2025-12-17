@@ -50,6 +50,7 @@
               <option value="" disabled selected class="text-gray-400">Select your role</option>
               <option value="1">Administrator</option>
               <option value="2">Moderator</option>
+              <option value="3">Host</option>
             </select>
           </div>
         </div>

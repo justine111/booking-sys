@@ -75,4 +75,17 @@ class user_repository extends base_repository
 
     return $stmt->rowCount();
   }
+  public function getAllHostsForDropdown()
+  {
+    $sql = "SELECT 
+              user_id,
+              name
+            FROM `users`
+            WHERE user_type = 3
+            ORDER BY name ASC";
+    $stmt = $this->db->prepare($sql);
+    $stmt->execute();
+
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+  }
 }

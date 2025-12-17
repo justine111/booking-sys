@@ -24,4 +24,20 @@ class auth_repository extends base_repository
 
     return $stmt->fetch(PDO::FETCH_ASSOC);
   }
+
+  public function register($data)
+  {
+    $hashedPassword = hash('sha512', $data['password']);
+    $sql = "INSERT INTO users (name, email, password, user_type, phone_number) 
+            VALUES (:name, :email, :password, :user_type, :phone_number)";
+    
+    $stmt = $this->db->prepare($sql);
+    $stmt->bindParam(':name', $data['name']);
+    $stmt->bindParam(':email', $data['email']);
+    $stmt->bindParam(':password', $hashedPassword);
+    $stmt->bindParam(':user_type', $data['user_type']);
+    $stmt->bindParam(':phone_number', $data['phone_number']);
+    
+    return $stmt->execute();
+  }
 }

@@ -1,18 +1,18 @@
-(function() {
-  'use strict';
-    
-  const formErrorBox = document.querySelector('#form-error');
-  const formErrorMessage = document.querySelector('#error-message');
-  
-  const passwordInput = document.querySelector('#password');
-  const togglePassword = document.querySelector('#toggle-password');
-  
+(function () {
+  "use strict";
+
+  const formErrorBox = document.querySelector("#form-error");
+  const formErrorMessage = document.querySelector("#error-message");
+
+  const passwordInput = document.querySelector("#password");
+  const togglePassword = document.querySelector("#toggle-password");
+
   const initPasswordToggle = () => {
     if (!passwordInput || !togglePassword) return;
-    
-    togglePassword.addEventListener('click', () => {
-      const isHidden = passwordInput.getAttribute('type') === 'password';
-      passwordInput.setAttribute('type', isHidden ? 'text' : 'password');
+
+    togglePassword.addEventListener("click", () => {
+      const isHidden = passwordInput.getAttribute("type") === "password";
+      passwordInput.setAttribute("type", isHidden ? "text" : "password");
       togglePassword.innerHTML = isHidden
         ? `<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -27,20 +27,20 @@
 
   //Show and hide main form error box
   const showFormError = (message) => {
-    formErrorMessage.textContent = message || 'Login failed.';
-    formErrorBox.classList.remove('hidden');
+    formErrorMessage.textContent = message || "Login failed.";
+    formErrorBox.classList.remove("hidden");
   };
 
   const hideFormError = () => {
-    formErrorMessage.textContent = '';
-    formErrorBox.classList.add('hidden');
+    formErrorMessage.textContent = "";
+    formErrorBox.classList.add("hidden");
   };
-  
+
   const sendRequest = async (url, formData) => {
     const response = await fetch(url, {
-      credentials: 'include',
-      method: 'POST',
-      body: formData
+      credentials: "include",
+      method: "POST",
+      body: formData,
     });
     const result = await response.json();
 
@@ -49,10 +49,11 @@
 
       if (result.fields) {
         setInputError(result.fields);
-        const message = result.fields.username || result.fields.password || result.message;
+        const message =
+          result.fields.username || result.fields.password || result.message;
         showFormError(message);
       } else {
-        showFormError(result.message || 'Login failed.');
+        showFormError(result.message || "Login failed.");
       }
     } else {
       hideFormError();
@@ -60,23 +61,79 @@
     }
     return result;
   };
-  
+
   const handleLogin = async (event) => {
     event.preventDefault();
     hideFormError();
-    
+
     const formData = new FormData(event.target);
     try {
-      const result = await sendRequest('/booking-sys/src/pages/main/action/login-action.php', formData);
+      const result = await sendRequest(
+        "/booking-sys/src/pages/main/action/login-action.php",
+        formData
+      );
       console.log(result);
     } catch (error) {
       console.error(error);
-      showFormError('An unexpected error occurred. Please try again.');
+      showFormError("An unexpected error occurred. Please try again.");
     }
   };
-    
-  document.addEventListener('DOMContentLoaded', function() {
-    document.querySelector('#login-form')?.addEventListener('submit', handleLogin);
+
+  // Registration Form Handling
+  const registerFormErrorBox = document.querySelector("#register-form-error");
+  const registerFormErrorMessage = document.querySelector(
+    "#register-error-message"
+  );
+
+  const showRegisterError = (message) => {
+    if (registerFormErrorMessage && registerFormErrorBox) {
+      registerFormErrorMessage.textContent = message || "Registration failed.";
+      registerFormErrorBox.classList.remove("hidden");
+    }
+  };
+
+  const hideRegisterError = () => {
+    if (registerFormErrorMessage && registerFormErrorBox) {
+      registerFormErrorMessage.textContent = "";
+      registerFormErrorBox.classList.add("hidden");
+    }
+  };
+
+  const handleRegister = async (event) => {
+    event.preventDefault();
+    hideRegisterError();
+
+    const formData = new FormData(event.target);
+    try {
+      const response = await fetch(
+        "/booking-sys/src/pages/main/action/register-action.php",
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+      const result = await response.json();
+
+      if (result.error) {
+        showRegisterError(result.message);
+      } else {
+        // Success - maybe show a success message or redirect to login
+        alert(result.message);
+        window.location.reload(); // Reload to clear form or maybe open login modal
+      }
+    } catch (error) {
+      console.error(error);
+      showRegisterError("An unexpected error occurred. Please try again.");
+    }
+  };
+
+  document.addEventListener("DOMContentLoaded", function () {
+    document
+      .querySelector("#login-form")
+      ?.addEventListener("submit", handleLogin);
+    document
+      .querySelector("#register-form")
+      ?.addEventListener("submit", handleRegister);
     initPasswordToggle();
   });
 })();

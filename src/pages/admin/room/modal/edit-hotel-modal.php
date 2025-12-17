@@ -46,11 +46,11 @@
             <select id="edit-host" name="host" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
               <option value="">Select host</option>
               <?php
-              require_once __DIR__ . '/../../../../controller/host-controller.php';
-              $hostController = new host_controller();
-              $hosts = $hostController->getAllHosts('', 1000, 0);
+              require_once __DIR__ . '/../../../../repositories/user-repository.php';
+              $userRepo = new user_repository();
+              $hosts = $userRepo->getAllHostsForDropdown();
               foreach ($hosts as $host) {
-                echo '<option value="' . htmlspecialchars($host['host_id']) . '">' . htmlspecialchars($host['name']) . '</option>';
+                echo '<option value="' . htmlspecialchars($host['user_id']) . '">' . htmlspecialchars($host['name']) . '</option>';
               }
               ?>
             </select>

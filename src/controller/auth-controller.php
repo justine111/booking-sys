@@ -62,6 +62,51 @@ class auth_controller extends base_controller
     }
   }
 
+  public function register()
+  {
+    try {
+      $name = trim($_POST['name'] ?? '');
+      $email = trim($_POST['email'] ?? '');
+      $password = trim($_POST['password'] ?? '');
+      $phone = trim($_POST['phone'] ?? '');
+      $user_type = trim($_POST['user_type'] ?? '3'); // Default to Host (3) if not specified, or maybe 1? Let's assume 3 for this task.
+
+      if (empty($name) || empty($email) || empty($password)) {
+        return $this->response([
+          'error' => true,
+          'message' => 'Name, Email and Password are required.'
+        ]);
+      }
+
+      $data = [
+        'name' => $name,
+        'email' => $email,
+        'password' => $password,
+        'phone_number' => $phone,
+        'user_type' => $user_type
+      ];
+
+      $result = $this->authRepository->register($data);
+
+      if ($result) {
+        return [
+          'error' => false,
+          'message' => 'Registration successful! Please login.'
+        ];
+      } else {
+        return [
+          'error' => true,
+          'message' => 'Registration failed. Email might already be in use.'
+        ];
+      }
+    } catch (Exception $e) {
+      return [
+        'error' => true,
+        'message' => 'Registration error: ' . $e->getMessage()
+      ];
+    }
+  }
+
   public function logout($navigate = true)
   {
     session_unset();

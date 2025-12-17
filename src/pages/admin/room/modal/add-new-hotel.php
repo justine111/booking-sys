@@ -95,13 +95,13 @@
               </label>
               <select name="host" id="host"
                 class="w-full px-4 py-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-800 appearance-none cursor-pointer transition-all duration-200 form-input">
-                <option value="">-- Select a Host --</option>
+                <option value="">--  Host --</option>
                 <?php
-                require_once __DIR__ . '/../../../../repositories/host-repository.php';
-                $hostRepo = new host_repository();
-                $hosts = $hostRepo->getAllHostsForDropdown();
+                require_once __DIR__ . '/../../../../repositories/user-repository.php';
+                $userRepo = new user_repository();
+                $hosts = $userRepo->getAllHostsForDropdown();
                 foreach ($hosts as $host) {
-                  echo '<option value="' . htmlspecialchars($host['host_id']) . '">' . htmlspecialchars($host['name']) . '</option>';
+                  echo '<option value="' . htmlspecialchars($host['user_id']) . '">' . htmlspecialchars($host['name']) . '</option>';
                 }
                 ?>
               </select>
